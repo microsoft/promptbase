@@ -3,21 +3,33 @@ import sys, json, re
 from promptbase.utils import run_batch_jobs, text_completion
 from datasets import load_dataset
 
-ds = load_dataset("hendrycks/competition_math")["test"]
-
 prompts = []
-for row in ds:
-    prompt = (
-        row["problem"]
-        + "\nPlease end your solution with Answer: $\\boxed{number}$ where number is the numerical answer without unit.\nSolution:"
-    )
-    prompts.append(prompt)
+rows = []
 
+def fetch_data():
+    ds = load_dataset("hendrycks/competition_math")["test"]
+
+    global prompts
+    for row in ds:
+        prompt = (
+            row["problem"]
+            + "\nPlease end your solution with Answer: $\\boxed{number}$ where number is the numerical answer without unit.\nSolution:"
+        )
+        prompts.append(prompt)
+
+
+def fetch_data_2():
+    global rows
+    # open gpt4.jsonl
+    with open("gpt4.jsonl") as f:
+        for line in f:
+            row = json.loads(line)
+            row["answer"] = extract_substrings(row["proof"])
+            rows.append(row)
 
 def extract_substrings(text):
     parts = text.split(r"\boxed")
     matches = []
-
     for part in parts[1:]:  # Skip the first part as it does not start with \boxed
         if part.startswith("{"):
             brace_level = 0
@@ -71,15 +83,6 @@ def generate():
 
 
 # parse
-
-
-# open gpt4.jsonl
-rows = []
-with open("gpt4.jsonl") as f:
-    for line in f:
-        row = json.loads(line)
-        row["answer"] = extract_substrings(row["proof"])
-        rows.append(row)
 
 
 def check_answer(official, student):

@@ -4,25 +4,27 @@ from promptbase import utils
 from datasets import Dataset
 from collections import Counter
 
-
-data_file = utils.fetch_dataset_blob("humaneval")
-ds = Dataset.from_file(data_file)
-chat_mode = False
 prompts = []
-for row in ds:
-    if chat_mode:
-        prompt = (
-            row["prompt"]
-            + "\n\nPlease complete the function above together with the function header."
-        )
-    else:
-        prompt = (
-            "## Here is the official solution of one python exercise via only one function:\n"
-            + row["prompt"]
-        )  # 118
-        # prompt = f"## Solution of the coding exercise `{row['entry_point']}`:\n" + row["prompt"]
-        # prompt = f"## Official solution of the coding exercise `{row['entry_point']}`:\n" + row["prompt"]
-    prompts.append(prompt)
+
+def fetch_data():
+    global prompts
+    data_file = utils.fetch_dataset_blob("humaneval")
+    ds = Dataset.from_file(data_file)
+    chat_mode = False
+    for row in ds:
+        if chat_mode:
+            prompt = (
+                row["prompt"]
+                + "\n\nPlease complete the function above together with the function header."
+            )
+        else:
+            prompt = (
+                "## Here is the official solution of one python exercise via only one function:\n"
+                + row["prompt"]
+            )  # 118
+            # prompt = f"## Solution of the coding exercise `{row['entry_point']}`:\n" + row["prompt"]
+            # prompt = f"## Official solution of the coding exercise `{row['entry_point']}`:\n" + row["prompt"]
+        prompts.append(prompt)
 
 
 def extract_substrings(text):
