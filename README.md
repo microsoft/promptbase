@@ -71,7 +71,7 @@ Next, decide which tests you'd like to run. You can choose from:
 - math
 - mmlu
 
-Before running the tests, you will need to download the datasets from the original sources and place them in the `src/promptbase/datasets` directory.
+Before running the tests, you will need to download the datasets from the original sources (see below) and place them in the `src/promptbase/datasets` directory.
 
 After downloading datasets and installing the promptbase package, you can run a test with:
 
