@@ -76,6 +76,8 @@ B. No
 
 If GPT-4 thinks the question does require a scratch-pad, then the contribution of the Chain-of-Thought component of the ensemble is doubled. If it doesn't, we halve that contribution (and let the ensemble instead depend more on the direct few-shot prompts). Dynamically leveraging the appropriate prompting technique in the ensemble led to a further +0.5% performance improvement across the MMLU.
 
+We note that Medprompt+ relies on accessing confidence scores (logprobs) from GPT-4. These are not publicly available via the current API but will be enabled for all in the near future.
+
 
 ## Running Scripts
 
