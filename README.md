@@ -57,9 +57,10 @@ On working to push further with refinement of Medprompt, we noticed that perform
 
 First, clone the repo and install the promptbase package:
 
-bash```
+```bash
 cd src
-pip install -e .```
+pip install -e .
+```
 
 Next, decide which tests you'd like to run. You can choose from:
 
