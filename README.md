@@ -61,6 +61,20 @@ We found that applying Medprompt without modification to the whole MMLU achieved
 
 On working to push further with refinement of Medprompt, we noticed that performance was relatively poor for specific topics of the MMLU. MMLU contains a great diversity of types of questions, depending on the discipline and specific benchmark at hand. How might we push GPT-4 to perform even better on MMLU given the diversity of problems?
 
+We focused on extension to a portfolio approach based on the observation that some topical areas tend to ask questions that would require multiple steps of reasoning and perhaps a scratch pad to keep track of multiple parts of a solution. Other areas seek factual answers that follow more directly from questions. Medprompt employs “chain-of-thought” (CoT) reasoning, resonating with multi-step solving.  We wondered if the sophisticated Medprompt-classic approach might do less well on very simple questions and if the system might do better if a simpler method were used for the factual queries. 
+
+Following this argument, we found that we could boost the performance on MMLU by extending MedPrompt with a simple two-method prompt portfolio. We add to the classic Medprompt a set of 10 simple, direct few-shot prompts soliciting an answer directly without Chain of Thought. We then ask GPT-4 for help with deciding on the best strategy for each topic area and question. As a screening call, for each question we first ask GPT-4:
+```
+# Question
+{{ question }}
+ 
+# Task
+Does answering the question above require a scratch-pad?
+A. Yes
+B. No
+```
+
+If GPT-4 thinks the question does require a scratch-pad, then the contribution of the Chain-of-Thought component of the ensemble is doubled. If it doesn't, we halve that contribution (and let the ensemble instead depend more on the direct few-shot prompts). Dynamically leveraging the appropriate prompting technique in the ensemble led to a further +0.5% performance improvement across the MMLU.
 
 
 ## Running Scripts
