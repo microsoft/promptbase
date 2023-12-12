@@ -5,12 +5,14 @@ from datasets import Dataset
 from collections import Counter
 
 prompts = []
+chat_mode = False
+ds = None
 
 def fetch_data():
     global prompts
+    global ds
     data_file = utils.fetch_dataset_blob("humaneval")
     ds = Dataset.from_file(data_file)
-    chat_mode = False
     for row in ds:
         if chat_mode:
             prompt = (
