@@ -1,7 +1,12 @@
 # generate.py
-import sys, json
+import json
+import pathlib
+
 from promptbase.utils import text_completion, run_batch_jobs
 from datasets import load_dataset
+
+
+my_path = pathlib.Path(__file__).parent.resolve()
 
 ds = load_dataset("gsm8k", "main")["test"]
 
@@ -62,7 +67,7 @@ def solve(idx):
             break
 
     if answer:
-        with open("gsm8k.jsonl", "a") as f:
+        with open(my_path.parent / "datasets" / "gsm8k.jsonl", "a") as f:
             f.write(json.dumps({"idx": idx, "answer": answer, "proof": text}) + "\n")
 
 
@@ -72,7 +77,7 @@ def generate():
 
 def evaluate():
     rows = []
-    with open("gsm8k.jsonl") as f:
+    with open(my_path.parent / "datasets" / "gsm8k.jsonl", "r") as f:
         for line in f:
             row = json.loads(line)
             row["answer"] = extract_substrings(row["proof"])

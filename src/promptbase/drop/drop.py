@@ -31,52 +31,60 @@ def extract_valid_answers(validated_answers):
 
     return answers
 
-with open(DROP_DATASET_PATH, "r") as f:
-    data = json.load(f)
 
+computed_idxs = set()
 prompts = []
 answers = []
-for key in data:
-    passage = data[key]["passage"]
-    for qa in data[key]["qa_pairs"]:
-        prompt_question = qa["question"]
-        answers.append(extract_valid_answers(qa["validated_answers"]))
-        if CHAT_MODE:
-            prompt = [{"role": "system", "content": dedent("""\
-            Answer the following reading comprehension **Question** based on the **Passage** below.
-            First, think step by step and write an **Explanation** for reasoning through the question.
-            Then, when prompted by the user for a **Final Answer**, analyze your explanation and write just the **Final Answer** succinctly using as few words as possible. A good final answer may just be a Name, Place, Date, Number, etc. and does not have additional explanatory text. You should specify numbers in numeric form (e.g 1, 2, 3) and not alphabetical (one, two, three). Do not say the final answer until the user asks for it.""")},
-            {"role": "user", "content": dedent(f"""\
-            **Passage:** {passage}
-            ----
-            **Question:** {prompt_question}
-            ----
-            **Explanation**:""")}]
-            prompts.append(prompt)
-        else:
-            prompt = dedent(f"""\
-            Answer the following reading comprehension **Question** based on the **Passage** below.
-            First, think step by step and write an **Explanation** for reasoning through the question.
-            Then, analyze your explanation and write just the **Final Answer** succinctly using as few words as possible. A good final answer may just be a Name, Place, Date, Number, etc. and does not have additional explanatory text. You should specify numbers in numeric form (e.g 1, 2, 3) and not alphabetical (one, two, three).
-            ----
-            **Passage:** {passage}
-            ----
-            **Question:** {prompt_question}
-            ----
-            **Explanation**: """)
-            prompts.append(prompt)
+
+def fetch_data():
+    global prompts
+    global answers
+    global computed_idxs
+    with open(DROP_DATASET_PATH, "r") as f:
+        data = json.load(f)
 
 
-if CHAT_MODE:
-    computed_idxs = set()
-    if os.path.isfile("drops_cot_raw_responses_chat.jsonl"):
-        with open("drops_cot_raw_responses_chat.jsonl", "r") as f:
-            computed_idxs = set([json.loads(line)["idx"] for line in f])
-else:
-    computed_idxs = set()
-    if os.path.isfile("drops_cot_raw_responses.jsonl"):
-        with open("drops_cot_raw_responses.jsonl", "r") as f:
-            computed_idxs = set([json.loads(line)["idx"] for line in f])
+    for key in data:
+        passage = data[key]["passage"]
+        for qa in data[key]["qa_pairs"]:
+            prompt_question = qa["question"]
+            answers.append(extract_valid_answers(qa["validated_answers"]))
+            if CHAT_MODE:
+                prompt = [{"role": "system", "content": dedent("""\
+                Answer the following reading comprehension **Question** based on the **Passage** below.
+                First, think step by step and write an **Explanation** for reasoning through the question.
+                Then, when prompted by the user for a **Final Answer**, analyze your explanation and write just the **Final Answer** succinctly using as few words as possible. A good final answer may just be a Name, Place, Date, Number, etc. and does not have additional explanatory text. You should specify numbers in numeric form (e.g 1, 2, 3) and not alphabetical (one, two, three). Do not say the final answer until the user asks for it.""")},
+                {"role": "user", "content": dedent(f"""\
+                **Passage:** {passage}
+                ----
+                **Question:** {prompt_question}
+                ----
+                **Explanation**:""")}]
+                prompts.append(prompt)
+            else:
+                prompt = dedent(f"""\
+                Answer the following reading comprehension **Question** based on the **Passage** below.
+                First, think step by step and write an **Explanation** for reasoning through the question.
+                Then, analyze your explanation and write just the **Final Answer** succinctly using as few words as possible. A good final answer may just be a Name, Place, Date, Number, etc. and does not have additional explanatory text. You should specify numbers in numeric form (e.g 1, 2, 3) and not alphabetical (one, two, three).
+                ----
+                **Passage:** {passage}
+                ----
+                **Question:** {prompt_question}
+                ----
+                **Explanation**: """)
+                prompts.append(prompt)
+
+
+    if CHAT_MODE:
+        computed_idxs = set()
+        if os.path.isfile("drops_cot_raw_responses_chat.jsonl"):
+            with open("drops_cot_raw_responses_chat.jsonl", "r") as f:
+                computed_idxs = set([json.loads(line)["idx"] for line in f])
+    else:
+        computed_idxs = set()
+        if os.path.isfile("drops_cot_raw_responses.jsonl"):
+            with open("drops_cot_raw_responses.jsonl", "r") as f:
+                computed_idxs = set([json.loads(line)["idx"] for line in f])
 
 def extract_substrings(text):
     return re.findall(r"```(.*?)```", text, re.DOTALL)
