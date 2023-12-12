@@ -1,7 +1,5 @@
 # promptbase
 
-> Note: Some scripts hosted here are published for reference on methodology, but may not be immediately executable against public APIs. We're working hard on making the pipelines easier to run "out of the box" over the next few days, and appreciate your patience in the interim!
-
 `promptbase` is an evolving collection of resources, best practices, and example scripts for eliciting the best performance from foundation models like `GPT-4`. We currently host scripts demonstrating the [`Medprompt` methodology](https://arxiv.org/abs/2311.16452), including examples of how we further extended this collection of prompting techniques ("`Medprompt+`") into non-medical domains: 
 
 | Benchmark | GPT-4 Prompt | GPT-4 Results | Gemini Ultra Results |
@@ -38,10 +36,20 @@ In the near future, `promptbase` will also offer further case studies and struct
 
 ![](images/medprompt_radar.png)
 
-In this study, we show how the composition of several prompting strategies into a method that we refer to as `Medprompt` can efficiently steer generalist models like GPT-4 to achieve top performance, even when compared to models specifically finetuned for medicine. `Medprompt` composes three distinct strategies together -- including dynamic few-shot selection, self-generated chain of thought, and choice-shuffle ensembling -- to elicit specialist level performance from GPT-4.
+In a recent [study](https://arxiv.org/abs/2311.16452), we showed how the composition of several prompting strategies into a method that we refer to as `Medprompt` can efficiently steer generalist models like GPT-4 to achieve top performance, even when compared to models specifically finetuned for medicine. `Medprompt` composes three distinct strategies together -- including dynamic few-shot selection, self-generated chain of thought, and choice-shuffle ensembling -- to elicit specialist level performance from GPT-4. We briefly describe these strategies here:
 
 ![](images/medprompt_sa_graphic.png)
 
+- **Dynamic Few Shots**: Few-shot learning -- providing several examples of the task and response to a foundation model -- enables models quickly adapt to a specific domain and
+learn to follow the task format. For simplicity and efficiency, the few-shot examples applied in prompting for a particular task are typically fixed; they are unchanged across test examples. This necessitates that the few-shot examples selected are broadly representative and relevant to a wide distribution of text examples. One approach to meeting these requirements is to have domain experts carefully hand-craft exemplars. Even so, this approach cannot guarantee that the curated, fixed few-shot examples will be appropriately representative of every test example. However, with enough available data, we can select _different_ few-shot examples for different task inputs. We refer to this approach as employing dynamic few-shot examples. The method makes use of a mechanism to identify examples based on their similarity to the case at hand. For Medprompt, we did the following to identify representative few shot examples: Given a test example, we choose k training examples that are semantically similar using a k-NN clustering in the embedding space. Specifically, we first use OpenAI's `text-embedding-ada-002` model to embed candidate exemplars for few-shot learning. Then, for each test question x, we retrieve its nearest k neighbors x1, x2, ..., xk from the training set (according to distance in the embedding space of text-embedding-ada-002). These examples -- the ones most similar in embedding space to the test question -- are ultimately registered in the prompt.
+
+- **Self-Generated Chain of Thought (CoT)**: Chain-of-thought (CoT) uses natural language statements, such as “Let’s think step by step,” to explicitly encourage the model to generate a series of intermediate reasoning steps. The approach has been found to significantly improve the ability of foundation models to perform complex reasoning. Most approaches to chain-of-thought center on the use of experts to manually compose few-shot examples with chains of thought for prompting. Rather than rely on human experts, we pursued
+a mechanism to automate the creation of chain-of-thought examples. We found that we could simply ask GPT-4 to generate chain-of-thought for the training examples, with appropriate guardrails for reducing risk of hallucination via incorrect reasoning chains.
+
+- **Majority Vote Ensembling**: [Ensembling](https://en.wikipedia.org/wiki/Ensemble_learning) refers to combining the output of several algorithms together to yield better predictive performance than any individual algorithm. Frontier models like `GPT-4` benefit from ensembling of their own outputs. A simple technique is to have a variety of prompts, or a single prompt with varied `temperature`, and report the most frequent answer amongst the ensemble constituents. For multiple choice questions, we employ a further trick that increases the diversity of the ensemble called `choice-shuffling`, where we shuffle the relative order of the answer choices before generating each reasoning
+path. We then select the most consistent answer, i.e., the one that is least sensitive to choice shuffling, which increases the robustness of the answer.
+
+The combination of these three techniques led to breakthrough performance in Medprompt for medical challenge questions. Implementation details of these techniques can be found here: https://github.com/microsoft/promptbase/tree/main/src/promptbase/mmlu
 
 ## `Medprompt+` | Extending the power of prompting 
 
@@ -51,9 +59,13 @@ Here we provide some intuitive details on how we extended the `medprompt` prompt
 
 We found that applying Medprompt without modification to the whole MMLU achieved a score of 89.1%. Not bad for a single policy working across a great diversity of problems!  But could we push Medprompt to do better?  Simply scaling-up MedPrompt can yield further benefits. As a first step, we increased the number of ensembled calls from five to 20.  This boosted performance to 89.56%. 
 
-On working to push further with refinement of Medprompt, we noticed that performance was relatively poor for specific topics of the MMLU. MMLU contains a great diversity of types of questions, depending on the discipline and specific benchmark at hand. How might we push GPT-4 to perform even better on MMLU given the diversity of problems? 
+On working to push further with refinement of Medprompt, we noticed that performance was relatively poor for specific topics of the MMLU. MMLU contains a great diversity of types of questions, depending on the discipline and specific benchmark at hand. How might we push GPT-4 to perform even better on MMLU given the diversity of problems?
+
+
 
 ## Running Scripts
+
+> Note: Some scripts hosted here are published for reference on methodology, but may not be immediately executable against public APIs. We're working hard on making the pipelines easier to run "out of the box" over the next few days, and appreciate your patience in the interim!
 
 First, clone the repo and install the promptbase package:
 
@@ -97,6 +109,8 @@ To run evaluations, download these datasets and add them to /src/promptbase/data
 Medprompt Blog: https://www.microsoft.com/en-us/research/blog/the-power-of-prompting/
 
 Medprompt Research Paper: https://arxiv.org/abs/2311.16452
+
+Medprompt+: https://www.microsoft.com/en-us/research/blog/steering-at-the-frontier-extending-the-power-of-prompting/
 
 Microsoft Introduction to Prompt Engineering: https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/prompt-engineering
 
