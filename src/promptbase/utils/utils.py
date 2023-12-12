@@ -15,8 +15,8 @@ openai_configs.endpoints = {
         "url": os.getenv("AZURE_OPENAI_EMBEDDINGS_URL"),
     },
     "azure": {
-        "headers": {"Authorization": os.getenv("AZURE_OPENAI_API_KEY")},
-        "url": os.getenv("AZURE_OPENAI_ENDPOINT_URL"),
+        "headers": {"Authorization": f"Bearer {os.getenv('AZURE_OPENAI_CHAT_API_KEY')}"},
+        "url": os.getenv("AZURE_OPENAI_CHAT_ENDPOINT_URL"),
     }
 }
 
