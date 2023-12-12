@@ -1,0 +1,9 @@
+datasets/all_mmlu_questions.json
+datasets/mmlu_questions_train.json
+**/log.md
+**/warnings.log
+*.pyc
+*.json
+*.json.gz
+env/
+src/*.egg-info/*
