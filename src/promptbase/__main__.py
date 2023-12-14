@@ -5,7 +5,7 @@ from promptbase.math import math
 from promptbase.drop import drop
 from promptbase.bigbench import bigbench
 
-VALID_DATASETS = ["gsm8k", "humaneval", "math", "drop"]
+VALID_DATASETS = ["gsm8k", "humaneval", "math", "drop", "bigbench"]
 
 
 def parse_arguments():

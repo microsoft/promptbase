@@ -8,16 +8,6 @@ from datasets import load_dataset
 
 my_path = pathlib.Path(__file__).parent.resolve()
 
-ds = load_dataset("gsm8k", "main")["test"]
-
-prompts = []
-for row in ds:
-    prompt = (
-        row["question"]
-        + "\nPlease end your solution with Answer: $\\boxed{number}$ where number is the numerical answer without unit.\nSolution:"
-    )
-    prompts.append(prompt)
-
 
 def extract_substrings(text):
     parts = text.split(r"\boxed")
@@ -43,12 +33,12 @@ def extract_substrings(text):
     return matches[0]
 
 
-def solve(idx):
-    global prompts
+def solve(task):
+    idx, prompt = task
 
     for retry in range(5):
         response = text_completion(
-            prompt=prompts[idx],
+            prompt=prompt,
             max_tokens=1200 + retry * 500,
             log_file="gsm8k.log",
             max_trial=5,
@@ -67,17 +57,26 @@ def solve(idx):
             break
 
     if answer:
-        with open(my_path.parent / "datasets" / "gsm8k.jsonl", "a") as f:
+        with open(my_path.parent / "generations" / "gsm8k.jsonl", "a") as f:
             f.write(json.dumps({"idx": idx, "answer": answer, "proof": text}) + "\n")
 
 
 def generate():
-    run_batch_jobs(solve, range(len(prompts)), max_thread=20)
+    ds = load_dataset("gsm8k", "main")["test"]
+    tasks = []
+    for idx, row in enumerate(ds):
+        prompt = (
+            row["question"]
+            + "\nPlease end your solution with Answer: $\\boxed{number}$ where number is the numerical answer without unit.\nSolution:"
+        )
+        tasks.append((idx, prompt))
+    run_batch_jobs(solve, tasks, max_thread=20)
 
 
 def evaluate():
     rows = []
-    with open(my_path.parent / "datasets" / "gsm8k.jsonl", "r") as f:
+    ds = load_dataset("gsm8k", "main")["test"]
+    with open(my_path.parent / "generations" / "gsm8k.jsonl", "r") as f:
         for line in f:
             row = json.loads(line)
             row["answer"] = extract_substrings(row["proof"])
@@ -85,8 +84,6 @@ def evaluate():
 
     def check_answer(official, student):
         return abs(official - student) < (abs(official) + 1e-6) * 1e-6
-
-    import re
 
     n_correct = 0
     for i, row in enumerate(rows):
