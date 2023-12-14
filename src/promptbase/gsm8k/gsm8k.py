@@ -57,7 +57,7 @@ def solve(task):
             break
 
     if answer:
-        with open(my_path.parent / "datasets" / "gsm8k.jsonl", "a") as f:
+        with open(my_path.parent / "generations" / "gsm8k.jsonl", "a") as f:
             f.write(json.dumps({"idx": idx, "answer": answer, "proof": text}) + "\n")
 
 
@@ -76,7 +76,7 @@ def generate():
 def evaluate():
     rows = []
     ds = load_dataset("gsm8k", "main")["test"]
-    with open(my_path.parent / "datasets" / "gsm8k.jsonl", "r") as f:
+    with open(my_path.parent / "generations" / "gsm8k.jsonl", "r") as f:
         for line in f:
             row = json.loads(line)
             row["answer"] = extract_substrings(row["proof"])

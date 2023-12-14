@@ -198,7 +198,7 @@ def text_completion(**kwargs):
         )
         message += "########## Response ##########\n"
         message += result.get("text", "NONE") + "\n"
-        with open(kwargs["log_file"], "a") as f:
+        with open(kwargs["log_file"], "a", encoding="utf-8") as f:
             f.write(message)
     return result
 
