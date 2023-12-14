@@ -9,16 +9,6 @@ from datasets import load_dataset
 my_path = pathlib.Path(__file__).parent.resolve()
 
 
-def prompt_generator(ds):
-    for idx, row in enumerate(ds):
-        prompt = (
-            row["question"]
-            + "\nPlease end your solution with Answer: $\\boxed{number}$ where number is the numerical answer without unit.\nSolution:"
-        )
-        yield idx, prompt
-
-
-
 def extract_substrings(text):
     parts = text.split(r"\boxed")
     matches = []
@@ -73,8 +63,14 @@ def solve(task):
 
 def generate():
     ds = load_dataset("gsm8k", "main")["test"]
-    generator = prompt_generator(ds)
-    run_batch_jobs(solve, generator, max_thread=20)
+    tasks = []
+    for idx, row in enumerate(ds):
+        prompt = (
+            row["question"]
+            + "\nPlease end your solution with Answer: $\\boxed{number}$ where number is the numerical answer without unit.\nSolution:"
+        )
+        tasks.append((idx, prompt))
+    run_batch_jobs(solve, tasks, max_thread=20)
 
 
 def evaluate():

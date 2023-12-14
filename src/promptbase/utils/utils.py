@@ -15,7 +15,7 @@ openai_configs.endpoints = {
         "url": os.getenv("AZURE_OPENAI_EMBEDDINGS_URL"),
     },
     "azure": {
-        "headers": {"Authorization": f"Bearer {os.getenv('AZURE_OPENAI_CHAT_API_KEY')}"},
+        "headers": {"api-key": f"{os.getenv('AZURE_OPENAI_CHAT_API_KEY')}"},
         "url": os.getenv("AZURE_OPENAI_CHAT_ENDPOINT_URL"),
     }
 }
@@ -71,10 +71,10 @@ def text_completion_impl(
 ):
     """
     Performs text completion using the openai API with
-    - prompt (str or array of str)
+    - prompt (str or array of str messages if chat model)
     - model ("text-davinci-003", "text-davinci-002", ...)
     - tempature (0 for picking the best token, 1 for more creative solution)
-    - max_tokens (limit the total number of generated tokens. 8193 is the maximum context length text-alpha-002)
+    - max_tokens (limit the total number of generated tokens. 8193 is the maximum context length of gpt-4)
     - max_trial (the number of retry after getting rate limited warning, we rethrow for all other errors)
     - logprobs (return a list of the most likely tokens and its probabilites. either integer in [1,5] or None)
     - stop (string or list of string (up to 4 strings). The returned text will not contain the stop sequence.)
@@ -129,7 +129,8 @@ def text_completion_impl(
                 payload["messages"] = payload["prompt"]
                 del payload["prompt"], payload["logprobs"], payload["echo"]
 
-            logging.info("Request:" + str(payload))
+            logging.info("Request URL: " + url)
+            logging.info("Request payload: " + str(payload))
             r = s.post(url, headers=headers, json=payload, timeout=200)
 
             last_response = r.text
