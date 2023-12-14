@@ -7,3 +7,7 @@ datasets/mmlu_questions_train.json
 *.json.gz
 env/
 src/*.egg-info/*
+src/promptbase/generations/*
+datasets/*
+*.log
+*.jsonl
