@@ -1,11 +1,16 @@
 import datetime
-import os
 import json
-import argparse
+import os
+import pathlib
+
+my_path = pathlib.Path(__file__).parent.resolve()
+
 
 def score(api_type="chat"):
-    ground_truth_dir = os.path.join("..", "datasets", "BigBench", "bbh")
-    answer_dir = os.path.join(".", "results", "answers")
+    ground_truth_dir = my_path.parent / "datasets" / "BigBench" / "bbh"
+    assert ground_truth_dir.exists(), f"Checking for {ground_truth_dir}"
+    assert ground_truth_dir.is_dir()
+    answer_dir = my_path / "results" / "answers"
 
     score_dict = {}
 
@@ -25,7 +30,10 @@ def score(api_type="chat"):
         with open(answer_path) as f:
             answer_data = json.load(f)
 
-        print("Number of ground truth examples: " + str(len(ground_truth_data["examples"])))
+        print(
+            "Number of ground truth examples: "
+            + str(len(ground_truth_data["examples"]))
+        )
         print("Number of answer examples: " + str(len(answer_data)))
         if len(ground_truth_data["examples"]) != len(answer_data):
             print("Number of examples does not match for file: " + filename)
