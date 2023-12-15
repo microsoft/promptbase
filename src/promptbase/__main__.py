@@ -34,6 +34,8 @@ def main():
     elif args.dataset == "bigbench":
         bigbench.generate()
         bigbench.evaluate()
+    else:
+        raise ValueError(f"Bad dataset: {args.dataset}")
 
 
 if __name__ == "__main__":

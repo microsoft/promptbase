@@ -1,15 +1,31 @@
+import logging
+
 import openai
 import requests
 import os
 import json
+import pathlib
 import time
-import argparse
+import sys
 import threading
 
+_logger = logging.getLogger(pathlib.Path(__file__).name)
+_logger.setLevel(logging.INFO)
+_sh = logging.StreamHandler(stream=sys.stdout)
+_sh.setFormatter(
+    logging.Formatter(
+        "%(asctime)s - %(name)s [%(levelname)s] : %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
+)
+_logger.addHandler(_sh)
 
-bigbench_data_root = "../datasets/BigBench"
-cot_prompts_dir = os.path.join(bigbench_data_root, "cot-prompts")
-bbh_test_dir = os.path.join(bigbench_data_root, "bbh")
+
+my_path = pathlib.Path(__file__).parent.resolve()
+
+bigbench_data_root = my_path.parent / "datasets" / "BigBench"
+cot_prompts_dir = bigbench_data_root / "cot-prompts"
+bbh_test_dir = bigbench_data_root / "bbh"
 
 SUBJECTS = [
     "boolean_expressions",
@@ -52,7 +68,7 @@ def extract_chat_qa(few_shot_prompt):
 
 
 def do_chat_cot(bbh_test_path, cot_prompt_path, test_name, cot_results_path):
-    print(f"Processing {test_name}")
+    _logger.info(f"Processing {test_name}")
     test_results = []
     with open(cot_prompt_path, "r", encoding="utf-8") as file:
         cot_prompt_contents = file.read()
@@ -74,25 +90,31 @@ def do_chat_cot(bbh_test_path, cot_prompt_path, test_name, cot_results_path):
     with open(bbh_test_path, "r", encoding="utf-8") as file:
         example_data = json.load(file)
         for i, example in enumerate(example_data["examples"]):
-            print(
+            _logger.info(
                 f"Processing example {i} of {len(example_data['examples'])} for {test_name}"
             )
             prompt_messages = few_shot_messages + [
                 {"role": "user", "content": "Q: " + example["input"]}
             ]
-            header = {"Authorization": os.getenv("AZURE_OPENAI_API_KEY")}
+            # These os.getenv calls shoud probably route to utils.py instead....
+            header = {"Authorization": os.getenv("AZURE_OPENAI_CHAT_API_KEY")}
             data = {
                 "model": "gpt-4-1106-preview",
                 "temperature": 0,
                 "messages": prompt_messages,
                 "max_tokens": 2000,
             }
-            url = os.getenv("AZURE_OPENAI_API_URL")
-            while True:
+            url = os.getenv("AZURE_OPENAI_CHAT_ENDPOINT_URL")
+
+            retry_count = 0
+            max_retries = 5
+            while retry_count < max_retries:
+                retry_count += 1
                 try:
                     response = requests.post(
                         url, headers=header, json=data, timeout=600
                     )
+                    assert response.status_code < 400, f"{response.text}"
                     completion = json.loads(response.text)
                     test_results.append(
                         {
@@ -106,12 +128,16 @@ def do_chat_cot(bbh_test_path, cot_prompt_path, test_name, cot_results_path):
                     )
                     break
                 except Exception as e:
-                    print("Caught exception: ", e)
-                    print("Retrying in 35 seconds...")
+                    _logger.warning("Caught exception: ", e)
+                    _logger.warning("Retrying in 35 seconds...")
                     time.sleep(35)
-            cot_results_filename = os.path.join(cot_results_path, f"{test_name}_chat_cot_results.json")
+            cot_results_filename = os.path.join(
+                cot_results_path, f"{test_name}_chat_cot_results.json"
+            )
             json.dump(
-                cot_results_filename, open(f"{test_name}_chat_cot_results.json", "w"), indent=4
+                cot_results_filename,
+                open(f"{test_name}_chat_cot_results.json", "w"),
+                indent=4,
             )
 
 
@@ -132,7 +158,10 @@ def do_completion_cot(bbh_test_path, cot_prompt_path, test_name, cot_results_pat
                 f"Processing example {i} of {len(example_data['examples'])} for {test_name}"
             )
             prompt = f"{cot_prompt_contents}\n\nQ: {example['input']}\nA: Let's think step by step.\n"
-            while True:
+            retry_count = 0
+            max_retries = 5
+            while retry_count < max_retries:
+                retry_count += 1
                 try:
                     completion = openai.Completion.create(
                         engine="gemini-compete-wus",
@@ -156,17 +185,21 @@ def do_completion_cot(bbh_test_path, cot_prompt_path, test_name, cot_results_pat
                     )
                     break
                 except Exception as e:
-                    print("Caught exception: ", e)
-                    print("Retrying in 5 seconds...")
+                    _logger.warning("Caught exception: ", e)
+                    _logger.warning("Retrying in 5 seconds...")
                     time.sleep(5)
-            cot_results_filename = os.path.join(cot_results_path, f"{test_name}_completion_cot_results.json")
+            cot_results_filename = os.path.join(
+                cot_results_path, f"{test_name}_completion_cot_results.json"
+            )
             json.dump(
                 test_results,
                 open(cot_results_filename, "w"),
                 indent=4,
             )
 
+
 def process_cot(test_name: str, api_type="chat"):
+    _logger.info("Starting process_cot")
     if test_name == "all":
         subjects = SUBJECTS
     elif test_name in SUBJECTS:
@@ -188,14 +221,18 @@ def process_cot(test_name: str, api_type="chat"):
             print(f"COT prompt file {cot_prompt_path} does not exist")
 
         if api_type == "completion":
+            _logger.info(f"Starting completion thread for {bbh_test_path}")
             results_path = os.path.join(".", "results", "cot_results", "completion")
             thread = threading.Thread(
-                target=do_completion_cot, args=(bbh_test_path, cot_prompt_path, subject, results_path)
+                target=do_completion_cot,
+                args=(bbh_test_path, cot_prompt_path, subject, results_path),
             )
         else:
+            _logger.info(f"Starting chat thread for {bbh_test_path}")
             results_path = os.path.join(".", "results", "cot_results", "chat")
             thread = threading.Thread(
-                target=do_chat_cot, args=(bbh_test_path, cot_prompt_path, subject, results_path)
+                target=do_chat_cot,
+                args=(bbh_test_path, cot_prompt_path, subject, results_path),
             )
         threads.append(thread)
         thread.start()

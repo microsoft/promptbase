@@ -119,6 +119,7 @@ To run evaluations, download these datasets and add them to /src/promptbase/data
  - GSM8K: https://github.com/openai/grade-school-math
  - MATH: https://huggingface.co/datasets/hendrycks/competition_math
  - Big-Bench-Hard: https://github.com/suzgunmirac/BIG-Bench-Hard
+   The contents of this repo need to be put into a directory called `BigBench` in the `datasets` directory
 
 ## Other Resources:
 
