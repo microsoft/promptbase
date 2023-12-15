@@ -1,15 +1,24 @@
+import logging
+
 import openai
 import requests
 import os
 import json
+import pathlib
 import time
-import argparse
+import sys
 import threading
 
+_logger = logging.getLogger(__file__)
+_logger.setLevel(logging.INFO)
+_logger.addHandler(logging.StreamHandler())
 
-bigbench_data_root = "../datasets/BigBench"
-cot_prompts_dir = os.path.join(bigbench_data_root, "cot-prompts")
-bbh_test_dir = os.path.join(bigbench_data_root, "bbh")
+
+my_path = pathlib.Path(__file__).parent.resolve()
+
+bigbench_data_root = my_path.parent / "datasets" / "BigBench"
+cot_prompts_dir = bigbench_data_root / "cot-prompts"
+bbh_test_dir = bigbench_data_root / "bbh"
 
 SUBJECTS = [
     "boolean_expressions",
@@ -109,9 +118,13 @@ def do_chat_cot(bbh_test_path, cot_prompt_path, test_name, cot_results_path):
                     print("Caught exception: ", e)
                     print("Retrying in 35 seconds...")
                     time.sleep(35)
-            cot_results_filename = os.path.join(cot_results_path, f"{test_name}_chat_cot_results.json")
+            cot_results_filename = os.path.join(
+                cot_results_path, f"{test_name}_chat_cot_results.json"
+            )
             json.dump(
-                cot_results_filename, open(f"{test_name}_chat_cot_results.json", "w"), indent=4
+                cot_results_filename,
+                open(f"{test_name}_chat_cot_results.json", "w"),
+                indent=4,
             )
 
 
@@ -159,14 +172,18 @@ def do_completion_cot(bbh_test_path, cot_prompt_path, test_name, cot_results_pat
                     print("Caught exception: ", e)
                     print("Retrying in 5 seconds...")
                     time.sleep(5)
-            cot_results_filename = os.path.join(cot_results_path, f"{test_name}_completion_cot_results.json")
+            cot_results_filename = os.path.join(
+                cot_results_path, f"{test_name}_completion_cot_results.json"
+            )
             json.dump(
                 test_results,
                 open(cot_results_filename, "w"),
                 indent=4,
             )
 
+
 def process_cot(test_name: str, api_type="chat"):
+    _logger.info("Starting process_cot")
     if test_name == "all":
         subjects = SUBJECTS
     elif test_name in SUBJECTS:
@@ -190,12 +207,14 @@ def process_cot(test_name: str, api_type="chat"):
         if api_type == "completion":
             results_path = os.path.join(".", "results", "cot_results", "completion")
             thread = threading.Thread(
-                target=do_completion_cot, args=(bbh_test_path, cot_prompt_path, subject, results_path)
+                target=do_completion_cot,
+                args=(bbh_test_path, cot_prompt_path, subject, results_path),
             )
         else:
             results_path = os.path.join(".", "results", "cot_results", "chat")
             thread = threading.Thread(
-                target=do_chat_cot, args=(bbh_test_path, cot_prompt_path, subject, results_path)
+                target=do_chat_cot,
+                args=(bbh_test_path, cot_prompt_path, subject, results_path),
             )
         threads.append(thread)
         thread.start()
