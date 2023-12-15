@@ -11,3 +11,4 @@ src/promptbase/generations/*
 datasets/*
 *.log
 *.jsonl
+src/promptbase/datasets/BigBench/**
