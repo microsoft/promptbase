@@ -1,13 +1,16 @@
 import logging
 
 import openai
-import requests
 import os
 import json
 import pathlib
 import time
 import sys
 import threading
+from promptbase.utils.consts import BIGBENCH_SUBJECTS
+from promptbase.utils import text_completion
+from pathlib import Path
+
 
 _logger = logging.getLogger(pathlib.Path(__file__).name)
 _logger.setLevel(logging.INFO)
@@ -57,7 +60,6 @@ SUBJECTS = [
     "word_sorting",
 ]
 
-
 def extract_chat_qa(few_shot_prompt):
     question = few_shot_prompt.split("\nA: ")[0].strip()
     answer = "A: " + few_shot_prompt.split("\nA: ")[1].strip()
@@ -96,49 +98,17 @@ def do_chat_cot(bbh_test_path, cot_prompt_path, test_name, cot_results_path):
             prompt_messages = few_shot_messages + [
                 {"role": "user", "content": "Q: " + example["input"]}
             ]
-            # These os.getenv calls shoud probably route to utils.py instead....
-            header = {"Authorization": os.getenv("AZURE_OPENAI_CHAT_API_KEY")}
-            data = {
-                "model": "gpt-4-1106-preview",
-                "temperature": 0,
-                "messages": prompt_messages,
-                "max_tokens": 2000,
-            }
-            url = os.getenv("AZURE_OPENAI_CHAT_ENDPOINT_URL")
-
-            retry_count = 0
-            max_retries = 5
-            while retry_count < max_retries:
-                retry_count += 1
-                try:
-                    response = requests.post(
-                        url, headers=header, json=data, timeout=600
-                    )
-                    assert response.status_code < 400, f"{response.text}"
-                    completion = json.loads(response.text)
-                    test_results.append(
-                        {
-                            "index": i,
-                            "test_name": test_name,
-                            "prompt": prompt_messages,
-                            "completion": completion["choices"][0]["message"][
-                                "content"
-                            ],
-                        }
-                    )
-                    break
-                except Exception as e:
-                    _logger.warning("Caught exception: ", e)
-                    _logger.warning("Retrying in 35 seconds...")
-                    time.sleep(35)
-            cot_results_filename = os.path.join(
-                cot_results_path, f"{test_name}_chat_cot_results.json"
+            response = text_completion(prompt=prompt_messages, temperature=0)
+            test_results.append(
+                {
+                    "index": i,
+                    "test_name": test_name,
+                    "prompt": prompt_messages,
+                    "completion": response["text"]
+                }
             )
-            json.dump(
-                cot_results_filename,
-                open(f"{test_name}_chat_cot_results.json", "w"),
-                indent=4,
-            )
+            cot_results_filename = os.path.join(cot_results_path, f"{test_name}_chat_cot_results.json")
+            json.dump(test_results, open(cot_results_filename, "w"), indent=4)
 
 
 def do_completion_cot(bbh_test_path, cot_prompt_path, test_name, cot_results_path):
@@ -158,6 +128,7 @@ def do_completion_cot(bbh_test_path, cot_prompt_path, test_name, cot_results_pat
                 f"Processing example {i} of {len(example_data['examples'])} for {test_name}"
             )
             prompt = f"{cot_prompt_contents}\n\nQ: {example['input']}\nA: Let's think step by step.\n"
+            # TODO - use text_completion utils API
             retry_count = 0
             max_retries = 5
             while retry_count < max_retries:
@@ -201,11 +172,25 @@ def do_completion_cot(bbh_test_path, cot_prompt_path, test_name, cot_results_pat
 def process_cot(test_name: str, api_type="chat"):
     _logger.info("Starting process_cot")
     if test_name == "all":
-        subjects = SUBJECTS
-    elif test_name in SUBJECTS:
+        subjects = BIGBENCH_SUBJECTS
+    elif test_name in BIGBENCH_SUBJECTS:
         subjects = [test_name]
     else:
         print(f"Invalid test name: {test_name}")
+        exit(1)
+
+    current_file_dir = Path(os.path.dirname(os.path.abspath(__file__)))
+    datasets_dir = current_file_dir.parent / "datasets"
+    bigbench_data_root = datasets_dir / "bigbench"
+    cot_prompts_dir = bigbench_data_root / "cot-prompts"
+    bbh_test_dir = bigbench_data_root / "bbh"
+    generations_dir = current_file_dir.parent / "generations"
+
+    if not os.path.exists(cot_prompts_dir):
+        print(f"COT prompt directory {cot_prompts_dir} does not exist")
+        exit(1)
+    elif not os.path.exists(bbh_test_dir):
+        print(f"BBH test directory {bbh_test_dir} does not exist")
         exit(1)
 
     print(f"Processing CoT for BigBench subjects: {subjects}")
@@ -214,7 +199,6 @@ def process_cot(test_name: str, api_type="chat"):
     for subject in subjects:
         bbh_test_path = os.path.join(bbh_test_dir, f"{subject}.json")
         cot_prompt_path = os.path.join(cot_prompts_dir, f"{subject}.txt")
-        # check if they exist
         if not os.path.exists(bbh_test_path):
             print(f"Data file {bbh_test_path} does not exist")
         elif not os.path.exists(cot_prompt_path):
@@ -222,14 +206,16 @@ def process_cot(test_name: str, api_type="chat"):
 
         if api_type == "completion":
             _logger.info(f"Starting completion thread for {bbh_test_path}")
-            results_path = os.path.join(".", "results", "cot_results", "completion")
+            results_path = generations_dir / "bigbench" / "cot_results" / "completion"
+            os.makedirs(results_path, exist_ok=True)
             thread = threading.Thread(
                 target=do_completion_cot,
                 args=(bbh_test_path, cot_prompt_path, subject, results_path),
             )
         else:
             _logger.info(f"Starting chat thread for {bbh_test_path}")
-            results_path = os.path.join(".", "results", "cot_results", "chat")
+            results_path = generations_dir / "bigbench" / "cot_results" / "chat"
+            os.makedirs(results_path, exist_ok=True)
             thread = threading.Thread(
                 target=do_chat_cot,
                 args=(bbh_test_path, cot_prompt_path, subject, results_path),
