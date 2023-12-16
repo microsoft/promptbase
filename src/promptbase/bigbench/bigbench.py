@@ -3,7 +3,7 @@ from .bigbench_score import score
 from .bigbench_answer import process_answers
 from promptbase.utils.consts import BIGBENCH_SUBJECTS
 
-def generate(subject  = "all"):
+def generate(subject: str):
   if subject != "all" and subject not in BIGBENCH_SUBJECTS:
     print(f"Invalid subject: {subject}")
     return

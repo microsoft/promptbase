@@ -47,7 +47,8 @@ def main():
         drop.generate()
         drop.evaluate()
     elif args.dataset == "bigbench":
-        bigbench.generate(args.subject)
+        subject = args.subject if args.subject else "all"
+        bigbench.generate(subject)
         bigbench.evaluate()
     else:
         raise ValueError(f"Bad dataset: {args.dataset}")

@@ -1,5 +1,6 @@
-import json, requests, time, concurrent, datetime, os, types, random, string, logging, re
+import json, requests, time, concurrent, os, types, random, logging
 import concurrent.futures
+import pathlib
 from tqdm import tqdm
 
 openai_configs = types.SimpleNamespace()
@@ -229,3 +230,13 @@ def fetch_dataset_blob(dataset):
         print(f"Downloaded {filename} to {file_path}")
 
     return file_path
+
+
+def get_datasets_path():
+    my_path = pathlib.Path(__file__).parent.resolve()
+    return my_path.parent / "datasets"
+
+
+def get_generations_path():
+    my_path = pathlib.Path(__file__).parent.resolve()
+    return my_path.parent / "generations"

@@ -8,7 +8,7 @@ import time
 import sys
 import threading
 from promptbase.utils.consts import BIGBENCH_SUBJECTS
-from promptbase.utils import text_completion
+from promptbase.utils.helpers import text_completion, get_datasets_path, get_generations_path
 from pathlib import Path
 
 
@@ -23,42 +23,6 @@ _sh.setFormatter(
 )
 _logger.addHandler(_sh)
 
-
-my_path = pathlib.Path(__file__).parent.resolve()
-
-bigbench_data_root = my_path.parent / "datasets" / "BigBench"
-cot_prompts_dir = bigbench_data_root / "cot-prompts"
-bbh_test_dir = bigbench_data_root / "bbh"
-
-SUBJECTS = [
-    "boolean_expressions",
-    "causal_judgement",
-    "date_understanding",
-    "disambiguation_qa",
-    "dyck_languages",
-    "formal_fallacies",
-    "geometric_shapes",
-    "hyperbaton",
-    "logical_deduction_five_objects",
-    "logical_deduction_seven_objects",
-    "logical_deduction_three_objects",
-    "movie_recommendation",
-    "multistep_arithmetic_two",
-    "navigate",
-    "object_counting",
-    "penguins_in_a_table",
-    "reasoning_about_colored_objects",
-    "ruin_names",
-    "salient_translation_error_detection",
-    "snarks",
-    "sports_understanding",
-    "temporal_sequences",
-    "tracking_shuffled_objects_five_objects",
-    "tracking_shuffled_objects_seven_objects",
-    "tracking_shuffled_objects_three_objects",
-    "web_of_lies",
-    "word_sorting",
-]
 
 def extract_chat_qa(few_shot_prompt):
     question = few_shot_prompt.split("\nA: ")[0].strip()
@@ -179,12 +143,10 @@ def process_cot(test_name: str, api_type="chat"):
         print(f"Invalid test name: {test_name}")
         exit(1)
 
-    current_file_dir = Path(os.path.dirname(os.path.abspath(__file__)))
-    datasets_dir = current_file_dir.parent / "datasets"
-    bigbench_data_root = datasets_dir / "bigbench"
+    bigbench_data_root = get_datasets_path() / "BigBench"
     cot_prompts_dir = bigbench_data_root / "cot-prompts"
     bbh_test_dir = bigbench_data_root / "bbh"
-    generations_dir = current_file_dir.parent / "generations"
+    generations_dir = get_generations_path()
 
     if not os.path.exists(cot_prompts_dir):
         print(f"COT prompt directory {cot_prompts_dir} does not exist")
@@ -197,8 +159,8 @@ def process_cot(test_name: str, api_type="chat"):
 
     threads = []
     for subject in subjects:
-        bbh_test_path = os.path.join(bbh_test_dir, f"{subject}.json")
-        cot_prompt_path = os.path.join(cot_prompts_dir, f"{subject}.txt")
+        bbh_test_path = bbh_test_dir / f"{subject}.json"
+        cot_prompt_path = cot_prompts_dir / f"{subject}.txt"
         if not os.path.exists(bbh_test_path):
             print(f"Data file {bbh_test_path} does not exist")
         elif not os.path.exists(cot_prompt_path):

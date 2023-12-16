@@ -1,4 +1,4 @@
-from promptbase.utils import text_completion, run_batch_jobs
+from promptbase.utils.helpers import text_completion, run_batch_jobs
 import json
 import requests
 import time
