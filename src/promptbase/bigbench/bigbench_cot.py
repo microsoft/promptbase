@@ -9,17 +9,9 @@ import time
 import sys
 import threading
 
-_logger = logging.getLogger(pathlib.Path(__file__).name)
-_logger.setLevel(logging.INFO)
-_sh = logging.StreamHandler(stream=sys.stdout)
-_sh.setFormatter(
-    logging.Formatter(
-        "%(asctime)s - %(name)s [%(levelname)s] : %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
-    )
-)
-_logger.addHandler(_sh)
+from promptbase.utils import get_standard_logger_for_file
 
+_logger = get_standard_logger_for_file(__file__)
 
 my_path = pathlib.Path(__file__).parent.resolve()
 

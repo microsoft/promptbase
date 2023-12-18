@@ -9,20 +9,9 @@ import traceback
 import sys
 from promptbase import utils
 from datasets import Dataset
-from collections import Counter
+from collections import Counter 
 
-
-
-_logger = logging.getLogger(pathlib.Path(__file__).name)
-_logger.setLevel(logging.INFO)
-_sh = logging.StreamHandler(stream=sys.stdout)
-_sh.setFormatter(
-    logging.Formatter(
-        "%(asctime)s - %(name)s [%(levelname)s] : %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
-    )
-)
-_logger.addHandler(_sh)
+_logger = utils.get_standard_logger_for_file(__file__)
 
 prompts = []
 chat_mode = False

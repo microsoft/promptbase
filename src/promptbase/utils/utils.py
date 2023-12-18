@@ -1,5 +1,15 @@
-import json, requests, time, concurrent, datetime, os, types, random, string, logging, re
+import concurrent
 import concurrent.futures
+import json
+import logging
+import os
+import pathlib
+import random
+import sys
+import time
+import types
+
+import requests
 from tqdm import tqdm
 
 openai_configs = types.SimpleNamespace()
@@ -30,6 +40,19 @@ openai_configs.busy_message = [
 ]
 openai_configs.filtered_message = "Content filter triggered"
 
+
+def get_standard_logger_for_file(file_path: str) -> logging.Logger:
+    _logger = logging.getLogger(pathlib.Path(file_path).name)
+    _logger.setLevel(logging.INFO)
+    sh = logging.StreamHandler(stream=sys.stdout)
+    sh.setFormatter(
+    logging.Formatter(
+        "%(asctime)s - %(name)s [%(levelname)s] : %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
+    )
+    _logger.addHandler(sh)
+    return _logger
 
 def run_batch_jobs(run_task, tasks, max_thread):
     """
