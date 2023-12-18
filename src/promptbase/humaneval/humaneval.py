@@ -1,15 +1,12 @@
 # Generate
 import hashlib
 import json
-import logging
 import math
-import pathlib
 import re
 import traceback
-import sys
 from promptbase import utils
-from datasets import Dataset, load_dataset
-from collections import Counter 
+from datasets import load_dataset
+from collections import Counter
 
 _logger = utils.get_standard_logger_for_file(__file__)
 
@@ -17,14 +14,15 @@ prompts = []
 chat_mode = False
 ds = None
 
+
 def fetch_data():
     _logger.info("Starting fetch_data")
     global prompts
     global ds
-    #data_file = utils.fetch_dataset_blob("humaneval")
-    ds = load_dataset("openai_humaneval") #Dataset.from_file(data_file
+    # data_file = utils.fetch_dataset_blob("humaneval")
+    ds = load_dataset("openai_humaneval")  # Dataset.from_file(data_file
     _logger.info("Dataset downloaded; starting processing of test split")
-    for row in ds['test']:
+    for row in ds["test"]:
         if chat_mode:
             prompt = (
                 row["prompt"]
@@ -115,7 +113,7 @@ def evaluate():
         )
         code += (
             "\n"
-            + ds["test"][row["idx"]]['test']
+            + ds["test"][row["idx"]]["test"]
             + "\ncheck("
             + ds["test"][row["idx"]]["entry_point"]
             + ")"
@@ -132,6 +130,6 @@ def evaluate():
                 print("=" * 100)
             n_success += 0
 
-    _logger.info("Number of successes:", n_success)
-    _logger.info("Number of rows:", len(rows))
-    _logger.info("Success rate:", n_success / len(rows))
+    _logger.info(f"Number of successes: {n_success}")
+    _logger.info(f"Number of rows: {len(rows)}")
+    _logger.info(f"Success rate: {n_success / len(rows)}")
