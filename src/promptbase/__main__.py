@@ -4,7 +4,7 @@ from promptbase.humaneval import humaneval
 from promptbase.math import math
 from promptbase.drop import drop
 from promptbase.bigbench import bigbench
-from promptbase.utils.consts import BIGBENCH_SUBJECTS
+from promptbase.bigbench.consts import BIGBENCH_SUBJECTS
 
 
 VALID_DATASETS = ["gsm8k", "humaneval", "math", "drop", "bigbench"]

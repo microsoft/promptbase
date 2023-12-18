@@ -1,7 +1,7 @@
 from .bigbench_cot import process_cot
 from .bigbench_score import score
 from .bigbench_answer import process_answers
-from promptbase.utils.consts import BIGBENCH_SUBJECTS
+from promptbase.bigbench.consts import BIGBENCH_SUBJECTS
 
 def generate(subject: str):
   if subject != "all" and subject not in BIGBENCH_SUBJECTS:

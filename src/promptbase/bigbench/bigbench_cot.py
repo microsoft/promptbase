@@ -7,7 +7,7 @@ import pathlib
 import time
 import sys
 import threading
-from promptbase.utils.consts import BIGBENCH_SUBJECTS
+from promptbase.bigbench.consts import BIGBENCH_SUBJECTS
 from promptbase.utils.helpers import text_completion, get_datasets_path, get_generations_path
 from pathlib import Path
 
@@ -177,7 +177,7 @@ def process_cot(test_name: str, api_type="chat"):
         else:
             _logger.info(f"Starting chat thread for {bbh_test_path}")
             results_path = generations_dir / "bigbench" / "cot_results" / "chat"
-            os.makedirs(results_path, exist_ok=True)
+            results_path.mkdir(parents=True, exist_ok=True)
             thread = threading.Thread(
                 target=do_chat_cot,
                 args=(bbh_test_path, cot_prompt_path, subject, results_path),
