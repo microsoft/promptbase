@@ -1,14 +1,35 @@
 # Generate
-import sys, json, re, traceback, hashlib, math
+import hashlib
+import json
+import logging
+import math
+import pathlib
+import re
+import traceback
+import sys
 from promptbase import utils
 from datasets import Dataset
 from collections import Counter
+
+
+
+_logger = logging.getLogger(pathlib.Path(__file__).name)
+_logger.setLevel(logging.INFO)
+_sh = logging.StreamHandler(stream=sys.stdout)
+_sh.setFormatter(
+    logging.Formatter(
+        "%(asctime)s - %(name)s [%(levelname)s] : %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
+)
+_logger.addHandler(_sh)
 
 prompts = []
 chat_mode = False
 ds = None
 
 def fetch_data():
+    _logger.info("Starting fetch_data")
     global prompts
     global ds
     data_file = utils.fetch_dataset_blob("humaneval")
@@ -27,6 +48,7 @@ def fetch_data():
             # prompt = f"## Solution of the coding exercise `{row['entry_point']}`:\n" + row["prompt"]
             # prompt = f"## Official solution of the coding exercise `{row['entry_point']}`:\n" + row["prompt"]
         prompts.append(prompt)
+    _logger.info("Completed fetch_data")
 
 
 def extract_substrings(text):
@@ -67,6 +89,7 @@ def solve(idx):
 
 
 def generate():
+    fetch_data()
     utils.run_batch_jobs(solve, range(len(prompts)), max_thread=20)
 
 
