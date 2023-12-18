@@ -1,5 +1,4 @@
-datasets/all_mmlu_questions.json
-datasets/mmlu_questions_train.json
+**/datasets/*
 **/log.md
 **/warnings.log
 *.pyc
@@ -8,7 +7,6 @@ datasets/mmlu_questions_train.json
 env/
 src/*.egg-info/*
 src/promptbase/generations/*
-datasets/*
 *.log
 *.jsonl
 src/promptbase/datasets/BigBench/**
