@@ -89,7 +89,7 @@ def evaluate():
     _logger.info("Starting evaluate")
     # open gpt4.jsonl
     rows = []
-    with open("gpt4_text_fixed.jsonl") as f:
+    with open("gpt4.jsonl") as f:
         for line in f:
             rows.append(json.loads(line))
 
@@ -115,9 +115,9 @@ def evaluate():
         )
         code += (
             "\n"
-            + ds[row["idx"]]["test"]
+            + ds["test"][row["idx"]]['test']
             + "\ncheck("
-            + ds[row["idx"]]["entry_point"]
+            + ds["test"][row["idx"]]["entry_point"]
             + ")"
         )
 
