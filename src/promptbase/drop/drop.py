@@ -55,7 +55,7 @@ def fetch_data():
     _logger.info("Starting fetch_data")
     zip_file = pathlib.Path(fetch_dataset_blob("drop"))
 
-    with zipfile.ZipFile(zip_file, 'r') as zip_ref:
+    with zipfile.ZipFile(zip_file, "r") as zip_ref:
         zip_ref.extractall(zip_file.parent)
     _logger.info("Data unzipped")
 
