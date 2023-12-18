@@ -57,6 +57,7 @@ def extract_substrings(text):
 
 def solve(idx):
     global prompts
+    _logger.info(f"Starting solve for index {idx}")
 
     for retry in range(5):
         response = utils.text_completion(
@@ -90,10 +91,12 @@ def solve(idx):
 
 def generate():
     fetch_data()
+    _logger.info("Running bach jobs")
     utils.run_batch_jobs(solve, range(len(prompts)), max_thread=20)
 
 
 def evaluate():
+    _logger.info("Starting evaluate")
     # open gpt4.jsonl
     rows = []
     with open("gpt4_text_fixed.jsonl") as f:
@@ -139,6 +142,6 @@ def evaluate():
                 print("=" * 100)
             n_success += 0
 
-    print("Number of successes:", n_success)
-    print("Number of rows:", len(rows))
-    print("Success rate:", n_success / len(rows))
+    _logger.info("Number of successes:", n_success)
+    _logger.info("Number of rows:", len(rows))
+    _logger.info("Success rate:", n_success / len(rows))
