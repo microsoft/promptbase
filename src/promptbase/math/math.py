@@ -1,6 +1,6 @@
 # generate
 import sys, json, re
-from promptbase.utils import run_batch_jobs, text_completion
+from promptbase.utils.helpers import run_batch_jobs, text_completion
 from datasets import load_dataset
 
 ds = None

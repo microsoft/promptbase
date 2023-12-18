@@ -4,6 +4,8 @@ from promptbase.humaneval import humaneval
 from promptbase.math import math
 from promptbase.drop import drop
 from promptbase.bigbench import bigbench
+from promptbase.bigbench.consts import BIGBENCH_SUBJECTS
+
 
 VALID_DATASETS = ["gsm8k", "humaneval", "math", "drop", "bigbench"]
 
@@ -13,12 +15,25 @@ def parse_arguments():
     p.add_argument(
         "dataset", type=str, choices=VALID_DATASETS, help="Name of dataset to test"
     )
-
+    p.add_argument(
+        "--subject", type=str, help="Specify the subject for the dataset"
+    )
+    p.add_argument(
+        "--list_subjects", action='store_true', help="Lists the subjects available for the dataset"
+    )
     return p.parse_args()
 
 
 def main():
     args = parse_arguments()
+
+    if args.list_subjects:
+        if args.dataset == "bigbench":
+            print(BIGBENCH_SUBJECTS)
+        else:
+            print(f"Dataset {args.dataset} does not have subjects")
+        return
+
     if args.dataset == "gsm8k":
         gsm8k.generate()
         gsm8k.evaluate()
@@ -32,7 +47,8 @@ def main():
         drop.generate()
         drop.evaluate()
     elif args.dataset == "bigbench":
-        bigbench.generate()
+        subject = args.subject if args.subject else "all"
+        bigbench.generate(subject)
         bigbench.evaluate()
     else:
         raise ValueError(f"Bad dataset: {args.dataset}")

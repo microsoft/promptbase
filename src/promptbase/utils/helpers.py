@@ -252,3 +252,13 @@ def fetch_dataset_blob(dataset):
         print(f"Downloaded {filename} to {file_path}")
 
     return file_path
+
+
+def get_datasets_path():
+    my_path = pathlib.Path(__file__).parent.resolve()
+    return my_path.parent / "datasets"
+
+
+def get_generations_path():
+    my_path = pathlib.Path(__file__).parent.resolve()
+    return my_path.parent / "generations"
