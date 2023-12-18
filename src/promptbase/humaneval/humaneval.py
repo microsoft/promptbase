@@ -8,7 +8,7 @@ import re
 import traceback
 import sys
 from promptbase import utils
-from datasets import Dataset
+from datasets import Dataset, load_dataset
 from collections import Counter 
 
 _logger = utils.get_standard_logger_for_file(__file__)
@@ -21,9 +21,10 @@ def fetch_data():
     _logger.info("Starting fetch_data")
     global prompts
     global ds
-    data_file = utils.fetch_dataset_blob("humaneval")
-    ds = Dataset.from_file(data_file)
-    for row in ds:
+    #data_file = utils.fetch_dataset_blob("humaneval")
+    ds = load_dataset("openai_humaneval") #Dataset.from_file(data_file
+    _logger.info("Dataset downloaded; starting processing of test split")
+    for row in ds['test']:
         if chat_mode:
             prompt = (
                 row["prompt"]
