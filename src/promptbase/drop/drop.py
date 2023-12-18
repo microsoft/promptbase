@@ -320,7 +320,7 @@ def generate():
     _logger.info("Starting generate")
     fetch_data()
     _logger.info("Beginning batch jobs")
-    run_batch_jobs(solve, range(len(prompts)), max_thread=40)
+    run_batch_jobs(solve, range(len(prompts)), max_thread=4)
 
 
 def evaluate():
