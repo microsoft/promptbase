@@ -8,11 +8,9 @@ import time
 import sys
 import threading
 from promptbase.bigbench.consts import BIGBENCH_SUBJECTS
-from promptbase.utils.helpers import text_completion, get_datasets_path, get_generations_path
+from promptbase.utils.helpers import text_completion, get_datasets_path, get_generations_path, get_standard_logger_for_file
 from pathlib import Path
 
-
-from promptbase.utils import get_standard_logger_for_file
 
 _logger = get_standard_logger_for_file(__file__)
 

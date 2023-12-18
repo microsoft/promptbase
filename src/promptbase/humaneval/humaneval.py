@@ -8,7 +8,7 @@ from promptbase import utils
 from datasets import load_dataset
 from collections import Counter
 
-_logger = utils.get_standard_logger_for_file(__file__)
+_logger = utils.helpers.get_standard_logger_for_file(__file__)
 
 prompts = []
 chat_mode = False
@@ -48,7 +48,7 @@ def solve(idx):
     _logger.info(f"Starting solve for index {idx}")
 
     for retry in range(5):
-        response = utils.text_completion(
+        response = utils.helpers.text_completion(
             prompt=prompts[idx],
             max_tokens=600,
             log_file="human_eval.log",
@@ -80,7 +80,7 @@ def solve(idx):
 def generate():
     fetch_data()
     _logger.info("Running bach jobs")
-    utils.run_batch_jobs(solve, range(len(prompts)), max_thread=20)
+    utils.helpers.run_batch_jobs(solve, range(len(prompts)), max_thread=20)
 
 
 def evaluate():
