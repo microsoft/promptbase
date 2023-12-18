@@ -8,21 +8,11 @@ import time
 import sys
 import threading
 from promptbase.bigbench.consts import BIGBENCH_SUBJECTS
-from promptbase.utils.helpers import text_completion, get_datasets_path, get_generations_path
+from promptbase.utils.helpers import text_completion, get_datasets_path, get_generations_path, get_standard_logger_for_file
 from pathlib import Path
 
 
-_logger = logging.getLogger(pathlib.Path(__file__).name)
-_logger.setLevel(logging.INFO)
-_sh = logging.StreamHandler(stream=sys.stdout)
-_sh.setFormatter(
-    logging.Formatter(
-        "%(asctime)s - %(name)s [%(levelname)s] : %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
-    )
-)
-_logger.addHandler(_sh)
-
+_logger = get_standard_logger_for_file(__file__)
 
 def extract_chat_qa(few_shot_prompt):
     question = few_shot_prompt.split("\nA: ")[0].strip()

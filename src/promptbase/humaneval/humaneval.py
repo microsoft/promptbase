@@ -1,19 +1,28 @@
 # Generate
-import sys, json, re, traceback, hashlib, math
+import hashlib
+import json
+import math
+import re
+import traceback
 from promptbase import utils
-from datasets import Dataset
+from datasets import load_dataset
 from collections import Counter
+
+_logger = utils.helpers.get_standard_logger_for_file(__file__)
 
 prompts = []
 chat_mode = False
 ds = None
 
+
 def fetch_data():
+    _logger.info("Starting fetch_data")
     global prompts
     global ds
-    data_file = utils.fetch_dataset_blob("humaneval")
-    ds = Dataset.from_file(data_file)
-    for row in ds:
+    # data_file = utils.fetch_dataset_blob("humaneval")
+    ds = load_dataset("openai_humaneval")  # Dataset.from_file(data_file
+    _logger.info("Dataset downloaded; starting processing of test split")
+    for row in ds["test"]:
         if chat_mode:
             prompt = (
                 row["prompt"]
@@ -27,6 +36,7 @@ def fetch_data():
             # prompt = f"## Solution of the coding exercise `{row['entry_point']}`:\n" + row["prompt"]
             # prompt = f"## Official solution of the coding exercise `{row['entry_point']}`:\n" + row["prompt"]
         prompts.append(prompt)
+    _logger.info("Completed fetch_data")
 
 
 def extract_substrings(text):
@@ -35,9 +45,10 @@ def extract_substrings(text):
 
 def solve(idx):
     global prompts
+    _logger.info(f"Starting solve for index {idx}")
 
     for retry in range(5):
-        response = utils.text_completion(
+        response = utils.helpers.text_completion(
             prompt=prompts[idx],
             max_tokens=600,
             log_file="human_eval.log",
@@ -67,13 +78,16 @@ def solve(idx):
 
 
 def generate():
-    utils.run_batch_jobs(solve, range(len(prompts)), max_thread=20)
+    fetch_data()
+    _logger.info("Running bach jobs")
+    utils.helpers.run_batch_jobs(solve, range(len(prompts)), max_thread=20)
 
 
 def evaluate():
+    _logger.info("Starting evaluate")
     # open gpt4.jsonl
     rows = []
-    with open("gpt4_text_fixed.jsonl") as f:
+    with open("gpt4.jsonl") as f:
         for line in f:
             rows.append(json.loads(line))
 
@@ -99,9 +113,9 @@ def evaluate():
         )
         code += (
             "\n"
-            + ds[row["idx"]]["test"]
+            + ds["test"][row["idx"]]["test"]
             + "\ncheck("
-            + ds[row["idx"]]["entry_point"]
+            + ds["test"][row["idx"]]["entry_point"]
             + ")"
         )
 
@@ -116,6 +130,6 @@ def evaluate():
                 print("=" * 100)
             n_success += 0
 
-    print("Number of successes:", n_success)
-    print("Number of rows:", len(rows))
-    print("Success rate:", n_success / len(rows))
+    _logger.info(f"Number of successes: {n_success}")
+    _logger.info(f"Number of rows: {len(rows)}")
+    _logger.info(f"Success rate: {n_success / len(rows)}")
