@@ -27,7 +27,7 @@ openai_configs.endpoints = {
     "azure": {
         "headers": {"api-key": f"{os.getenv('AZURE_OPENAI_CHAT_API_KEY')}"},
         "url": os.getenv("AZURE_OPENAI_CHAT_ENDPOINT_URL"),
-    }
+    },
 }
 
 openai_configs.busy_message = [
@@ -47,13 +47,14 @@ def get_standard_logger_for_file(file_path: str) -> logging.Logger:
     _logger.handlers = []
     sh = logging.StreamHandler(stream=sys.stderr)
     sh.setFormatter(
-    logging.Formatter(
-        "%(asctime)s - %(name)s [%(levelname)s] : %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
-    )
+        logging.Formatter(
+            "%(asctime)s - %(name)s [%(levelname)s] : %(message)s",
+            datefmt="%Y-%m-%d %H:%M:%S",
+        )
     )
     _logger.addHandler(sh)
     return _logger
+
 
 def run_batch_jobs(run_task, tasks, max_thread):
     """
@@ -231,7 +232,11 @@ dataset_files = {
     "humaneval": {
         "url": "",
         "filename": "humaneval.arrow",
-    }
+    },
+    "drop": {
+        "url": "https://ai2-public-datasets.s3.amazonaws.com/drop/drop_dataset.zip",
+        "filename": "drop_dataset.zip",
+    },
 }
 
 
