@@ -846,7 +846,7 @@ def process_completion_answers(subject):
         do_completion_answer(cot_results_path, subject)
 
 
-def process_answers(test_name: str, api_type="chat"):
+def process_answers(test_name: str, overwrite=False, api_type="chat"):
     """
     Processes chain-of-thought answers to produce the label in the expected format.
     """

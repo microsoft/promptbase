@@ -26,6 +26,9 @@ def parse_arguments():
         action="store_true",
         help="Lists the subjects available for the dataset",
     )
+    p.add_argument(
+        "--overwrite", action='store_true', help="Overwrites the results of a previous run"
+    )
     return p.parse_args()
 
 
@@ -55,7 +58,8 @@ def main():
         drop.evaluate()
     elif args.dataset == "bigbench":
         subject = args.subject if args.subject else "all"
-        bigbench.generate(subject)
+        overwrite = args.overwrite
+        bigbench.generate(subject, overwrite)
         bigbench.evaluate()
     elif args.dataset == "mmlu":
         # Note that to run the MMLU tests, you will need to download the
