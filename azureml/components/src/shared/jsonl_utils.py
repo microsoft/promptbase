@@ -88,3 +88,21 @@ def line_map(
         f"line_map complete ({successful_lines} successes, {error_lines} failures)"
     )
     return successful_lines, error_lines
+
+
+def line_reduce(
+    *,
+    reducer: Callable[[Dict[str, Any]]],
+    source_file: pathlib.Path,
+    source_encoding: str,
+):
+    assert source_file.exists()
+
+    with open(source_file, "r", encoding=source_encoding) as in_file:
+        current_line = 0
+        for nxt in in_file:
+            _logger.info(f"Processing line: {current_line}")
+            nxt_dict = json.loads(nxt)
+            _logger.info(f"Calling reducer")
+            reducer(nxt_dict)
+    _logger.info(f"line_reduce complete")

@@ -65,6 +65,13 @@ def create_zeroshot_pipeline(
         zeroshot_guidance_job.name = f"zeroshot_guidance"
         zeroshot_guidance_job.compute = run_config.aoai_config.compute_target
 
+        score_job = components.jsonl_score_multiplechoice(
+            input_dataset=zeroshot_guidance_job.outputs.output_dataset,
+            correct_key="correct_answer",  # Set when MMLU fetching
+            response_key="zeroshot_choice",
+        )
+        score_job.name = f"zeroshot_score"
+
     pipeline = basic_pipeline()
     pipeline.experiment_name = (
         f"{run_config.base_experiment_name}_{run_config.mmlu_dataset}"
