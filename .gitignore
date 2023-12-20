@@ -10,3 +10,6 @@ src/promptbase/generations/*
 *.log
 *.jsonl
 src/promptbase/datasets/BigBench/**
+
+
+notebooks/*
