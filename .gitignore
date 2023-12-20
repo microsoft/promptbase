@@ -13,3 +13,6 @@ src/promptbase/datasets/BigBench/**
 
 
 notebooks/*
+
+# Don't include my actual configs
+azureml/pipelines/configs/aml_config.yaml
