@@ -56,7 +56,7 @@ def parse_args():
 def main():
     args = parse_args()
 
-    scorer = Scorer()
+    scorer = Scorer(correct_key=args.correct_key, response_key=args.response_key)
     line_reduce(
         reducer=scorer,
         source_file=args.input_dataset,
