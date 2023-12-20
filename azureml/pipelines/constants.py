@@ -4,7 +4,9 @@ COMPONENTS_DIR = (Path(__file__).parent.parent / "components").absolute()
 
 ENVIRONMENTS_DIR = (Path(__file__).parent.parent / "environments").absolute()
 
-GUIDANCE_PROGRAMS_DIR = (Path(__file__).parent.parent.parent / "guidance_programs").absolute()
+GUIDANCE_PROGRAMS_DIR = (
+    Path(__file__).parent.parent.parent / "guidance_programs"
+).absolute()
 
 ENVIRONMENT_FILE = ENVIRONMENTS_DIR / "promptbase-env.yaml"
 

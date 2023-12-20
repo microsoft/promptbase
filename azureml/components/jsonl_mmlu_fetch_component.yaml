@@ -17,6 +17,7 @@ inputs:
     - clinical_knowledge
     - college_biology
     - college_medicine
+    - medical_genetics
     - professional_medicine
   output_encoding:
     type: string
