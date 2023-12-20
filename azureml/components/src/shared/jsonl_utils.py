@@ -92,7 +92,7 @@ def line_map(
 
 def line_reduce(
     *,
-    reducer: Callable[[Dict[str, Any]]],
+    reducer: Callable[[Dict[str, Any]], None],
     source_file: pathlib.Path,
     source_encoding: str,
 ):
