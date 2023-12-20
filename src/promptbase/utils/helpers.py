@@ -8,6 +8,7 @@ import random
 import sys
 import time
 import types
+from typing import Optional
 
 import requests
 from tqdm import tqdm
@@ -94,6 +95,7 @@ def text_completion_impl(
     frequency_penalty=0.0,
     max_trial=100,
     retry_wait=0.2,
+    api_type: Optional[str]=None,
     **kwargs,
 ):
     """
@@ -110,13 +112,14 @@ def text_completion_impl(
     model_config = openai_configs.models[model]
     endpoint = openai_configs.endpoints[model_config["endpoint"]]
     s = requests.Session()
-    if model_config["type"] == "chat":
+    api_type = api_type or model_config["type"]
+    if api_type == "chat":
         if type(prompt) is list and type(prompt[0]) is str:
             assert len(prompt) == 1  # chat model only support 1 prompt at a time
             prompt = prompt[0]
         if type(prompt) is str:
             prompt = [{"role": "user", "content": prompt}]
-    elif model_config["type"] == "completion":
+    elif api_type == "completion":
         if type(prompt) is list and type(prompt[0]) is dict:
             prompt = (
                 "".join(

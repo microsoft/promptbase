@@ -3,10 +3,6 @@ import copy
 import threading
 from promptbase.utils.helpers import text_completion, get_generations_path, get_standard_logger_for_file
 
-cot_results_dir = get_generations_path() / "bigbench" / "cot_results"
-answers_dir = get_generations_path() / "bigbench" / "answers"
-chat_answers_dir = answers_dir / "chat"
-completion_answers_dir = answers_dir / "completion"
 multiple_choice_instruction = (
     "A multiple choice answer inside parentheses, e.g. (A), and nothing more",
 )
@@ -756,7 +752,11 @@ def do_answer(cot_result_path, answer_results_path):
     _logger.info("Done processing answers for %s", test_name)
 
 
+cot_results_dir = get_generations_path() / "bigbench" / "cot_results"
+answers_dir = get_generations_path() / "bigbench" / "answers"
+
 def process_chat_answers(subject, overwrite):
+    chat_answers_dir = answers_dir / "chat"
     if not chat_answers_dir.exists():
         chat_answers_dir.mkdir(parents=True, exist_ok=True)
     answer_results_path = chat_answers_dir / f"{subject}_chat_answers.json"
@@ -772,13 +772,9 @@ def process_chat_answers(subject, overwrite):
 
 
 def process_completion_answers(subject, overwrite):
-    cot_results_filename = (
-        cot_results_dir / "completion" / f"{subject}_completion_cot_results.json"
-    )
-    if not cot_results_filename.exists():
-        _logger.error(
-            f"COT result file {cot_results_filename} does not exist, skipping"
-        )
+    completion_answers_dir = answers_dir / "completion"
+    if not completion_answers_dir.exists():
+        completion_answers_dir.mkdir(parents=True, exist_ok=True)
     answer_results_path = completion_answers_dir / f"{subject}_completion_answers.json"
     if overwrite and answer_results_path.exists():
         answer_results_path.unlink()
