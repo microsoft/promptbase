@@ -13,8 +13,9 @@ _logger.setLevel(logging.INFO)
 
 # This dictionary lists the attributes to be added to ComponentCollector
 ALL_COMPONENTS = dict(
+    jsonl_guidance="jsonl_guidance_component.yaml",
     jsonl_mmlu_fetch="jsonl_mmlu_fetch_component.yaml",
-    uri_folder_to_file="uri_folder_to_file_component.yaml"
+    uri_folder_to_file="uri_folder_to_file_component.yaml",
 )
 
 
