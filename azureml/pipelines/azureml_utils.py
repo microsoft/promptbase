@@ -81,7 +81,7 @@ class ComponentCollector:
 def get_component_collector(
     ml_client: MLClient, version_string: str
 ) -> ComponentCollector:
-    components = ComponentCollector(ml_client, None, COMPONENTS_DIR, version_string)
+    components = ComponentCollector(ml_client, COMPONENTS_DIR, version_string)
     components.prepare()
 
     return components

@@ -16,3 +16,6 @@ notebooks/*
 
 # Don't include my actual configs
 azureml/pipelines/configs/aml_config.yaml
+
+# Don't include Hydra output directory
+azureml/pipelines/outputs/*
