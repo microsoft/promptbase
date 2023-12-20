@@ -156,7 +156,7 @@ def text_completion_impl(
 
             url = endpoint["url"]
 
-            if model_config["type"] == "chat":
+            if api_type == "chat":
                 payload["messages"] = payload["prompt"]
                 del payload["prompt"], payload["logprobs"], payload["echo"]
 
