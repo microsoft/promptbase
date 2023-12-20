@@ -16,6 +16,7 @@ MMLU_DATASETS = [
     "clinical_knowledge",
     "college_biology",
     "college_medicine",
+    "medical_genetics",
     "professional_medicine",
 ]
 SPLITS = ["test", "validation", "dev"]
