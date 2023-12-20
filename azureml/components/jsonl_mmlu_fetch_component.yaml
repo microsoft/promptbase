@@ -32,6 +32,7 @@ command: >-
   python ./jsonl_mmlu_fetch.py
   --mmlu_dataset ${{ inputs.mmlu_dataset }}
   --output_encoding ${{ inputs.output_encoding }}
+  --output_dataset ${{ outputs.output_dataset }}
 
 environment:
   # Will be updated when component uploads
