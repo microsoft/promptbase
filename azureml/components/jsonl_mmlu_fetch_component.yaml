@@ -30,7 +30,7 @@ code: ./src/
 
 command: >-
   python ./jsonl_mmlu_fetch.py
-  --mmlu_dataset {{ inputs.mmlu_dataset }}
+  --mmlu_dataset ${{ inputs.mmlu_dataset }}
   --output_encoding ${{ inputs.output_encoding }}
 
 environment:
