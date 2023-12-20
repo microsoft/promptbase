@@ -41,7 +41,6 @@ def guidance_generation(
     result = lm + zero_shot_multiple_choice(
         question=input["question"], choices=input["choices"]
     )
-    _logger.info("Generation complete")
 
-    result = dict(zeroshot_choice=int(lm["string_choice"]))
+    result = dict(zeroshot_choice=int(result["string_choice"]))
     return result
