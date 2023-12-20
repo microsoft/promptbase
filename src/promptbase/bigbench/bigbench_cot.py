@@ -79,7 +79,7 @@ def do_chat_cot(bbh_test_path, cot_prompt_path, test_name, cot_results_path):
 
 def do_completion_cot(bbh_test_path, cot_prompt_path, test_name, cot_results_path):
     _logger.info("Processing %s", test_name)
-    cot_results_filename = cot_results_path / f"{test_name}_chat_cot_results.json"
+    cot_results_filename = cot_results_path / f"{test_name}_completion_cot_results.json"
     if cot_results_filename.exists():
         test_results = json.load(open(cot_results_filename, "r"))
     else:
