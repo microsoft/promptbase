@@ -16,6 +16,7 @@ from azure.ai.ml.entities import Pipeline
 
 from azureml_utils import get_component_collector
 from configs import AMLConfig, ZeroShotRunConfig
+from constants import GUIDANCE_PROGRAMS_DIR
 from logging_utils import get_standard_logger_for_file
 
 _logger = get_standard_logger_for_file(__file__)
@@ -36,6 +37,12 @@ def create_zeroshot_pipeline(
 ):
     components = get_component_collector(ml_client, version_string)
 
+    zeroshot_program_input = Input(
+        type="uri_file",
+        path=GUIDANCE_PROGRAMS_DIR / run_config.guidance_program,
+        model="download",
+    )
+
     @dsl.pipeline()
     def basic_pipeline() -> Pipeline:
         mmlu_fetch_job = components.jsonl_mmlu_fetch(
@@ -48,6 +55,15 @@ def create_zeroshot_pipeline(
             filename_pattern=f"{run_config.mmlu_split}.jsonl",
         )
         get_split_job.name = f"extract_split_{run_config.mmlu_split}"
+
+        zeroshot_guidance_job = components.jsonl_guidance(
+            guidance_program=zeroshot_program_input,
+            input_dataset=get_split_job.outputs.output_dataset,
+            azure_openai_endpoint=run_config.aoai_config.endpoint,
+            azure_openai_deployed_model=run_config.aoai_config.model,
+        )
+        zeroshot_guidance_job.name = f"zeroshot_guidance"
+        zeroshot_guidance_job.compute = run_config.aoai_config.compute_target
 
     pipeline = basic_pipeline()
     pipeline.experiment_name = (
