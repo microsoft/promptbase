@@ -9,7 +9,7 @@ It is provided as an 'extra' and was not used to generated the reported results.
 - `components`
   This directory contains the Python [components](https://learn.microsoft.com/en-us/azure/machine-learning/concept-component?view=azureml-api-2) which are used in the AzureML pipelines
 - `environments`
-   This directory contains the definition of the Docker image shared by the various components
+   This directory contains the definition of the [AzureML environment](https://learn.microsoft.com/en-us/azure/machine-learning/concept-environments?view=azureml-api-2) shared by the various components
 - `pipelines`
    This directory contains the code required to submit the pipelines
 - `requirements.txt`
