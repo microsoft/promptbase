@@ -1,0 +1,9 @@
+defaults:
+  - _self_
+  - aml_config
+
+zeroshot_config:
+  base_experiment_name: zeroshot
+  tags:
+  mmlu_dataset: anatomy
+  default_compute_target: isolatedcompute
