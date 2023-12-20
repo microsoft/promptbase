@@ -6,4 +6,5 @@ zeroshot_config:
   base_experiment_name: zeroshot
   tags:
   mmlu_dataset: anatomy
+  mmlu_split: test
   default_compute_target: isolatedcompute

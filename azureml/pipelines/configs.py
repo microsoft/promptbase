@@ -15,4 +15,5 @@ class ZeroShotRunConfig:
     base_experiment_name: str = str()
     tags: Dict[str, str] = field(default_factory=dict)
     mmlu_dataset: str = str()
+    mmlu_split: str = str()
     default_compute_target: str = str()

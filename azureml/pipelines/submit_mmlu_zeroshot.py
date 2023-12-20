@@ -43,6 +43,12 @@ def create_zeroshot_pipeline(
         )
         mmlu_fetch_job.name = f"fetch_mmlu_{run_config.mmlu_dataset}"
 
+        get_split_job = components.uri_folder_to_file(
+            input_dataset=mmlu_fetch_job.outputs.output_dataset,
+            filename_pattern=f"{run_config.mmlu_split}.jsonl",
+        )
+        get_split_job.name = f"extract_split_{run_config.mmlu_split}"
+
     pipeline = basic_pipeline()
     pipeline.experiment_name = (
         f"{run_config.base_experiment_name}_{run_config.mmlu_dataset}"
