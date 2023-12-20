@@ -62,6 +62,7 @@ def main():
         source_file=args.input_dataset,
         source_encoding=args.input_encoding,
     )
+    _logger.info(f"Final result: {json.dumps(scorer.generate_summary())}")
 
     _logger.info("Writing output file")
     with open(args.output_dataset, encoding=args.output_encoding, mode="w") as jf:

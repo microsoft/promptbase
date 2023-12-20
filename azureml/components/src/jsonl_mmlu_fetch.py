@@ -10,7 +10,14 @@ from shared.logging_utils import get_standard_logger_for_file
 
 _logger = get_standard_logger_for_file(__file__)
 
-MMLU_DATASETS = ["anatomy", "clinical_knowledge"]
+MMLU_DATASETS = [
+    "anatomy",
+    "astronomy",
+    "clinical_knowledge",
+    "college_biology",
+    "college_medicine",
+    "professional_medicine",
+]
 SPLITS = ["test", "validation", "dev"]
 
 

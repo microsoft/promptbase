@@ -102,6 +102,7 @@ def line_reduce(
         current_line = 0
         for nxt in in_file:
             _logger.info(f"Processing line: {current_line}")
+            current_line += 1
             nxt_dict = json.loads(nxt)
             _logger.info(f"Calling reducer")
             reducer(nxt_dict)

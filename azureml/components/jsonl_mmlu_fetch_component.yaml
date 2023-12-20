@@ -13,7 +13,11 @@ inputs:
     optional: false
     enum:
     - anatomy
+    - astronomy
     - clinical_knowledge
+    - college_biology
+    - college_medicine
+    - professional_medicine
   output_encoding:
     type: string
     optional: false
