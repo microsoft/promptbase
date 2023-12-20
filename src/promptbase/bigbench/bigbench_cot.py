@@ -1,11 +1,7 @@
-import logging
-
 import openai
 import os
 import json
-import pathlib
 import time
-import sys
 import threading
 from promptbase.bigbench.consts import BIGBENCH_SUBJECTS
 from promptbase.utils.helpers import text_completion, get_datasets_path, get_generations_path, get_standard_logger_for_file
@@ -25,8 +21,8 @@ def extract_chat_qa(few_shot_prompt):
 
 def do_chat_cot(bbh_test_path, cot_prompt_path, test_name, cot_results_path):
     _logger.info(f"Processing {test_name}")
-    cot_results_filename = os.path.join(cot_results_path, f"{test_name}_chat_cot_results.json")
-    if os.path.exists(cot_results_filename):
+    cot_results_filename = cot_results_path / f"{test_name}_chat_cot_results.json"
+    if cot_results_filename.exists():
         test_results = json.load(open(cot_results_filename, "r"))
     else:
         test_results = []
@@ -82,56 +78,40 @@ def do_chat_cot(bbh_test_path, cot_prompt_path, test_name, cot_results_path):
 
 
 def do_completion_cot(bbh_test_path, cot_prompt_path, test_name, cot_results_path):
-    print(f"Processing {test_name}")
-    test_results = []
+    _logger.info("Processing %s", test_name)
+    cot_results_filename = cot_results_path / f"{test_name}_chat_cot_results.json"
+    if cot_results_filename.exists():
+        test_results = json.load(open(cot_results_filename, "r"))
+    else:
+        test_results = []
     with open(cot_prompt_path, "r", encoding="utf-8") as file:
         cot_prompt_contents = file.read()
         # use everything starting with the third line
         cot_prompt_contents = "\n".join(cot_prompt_contents.split("\n")[2:]).strip()
 
-    print("Chain of thought few-shot prompt:\n", cot_prompt_contents)
+    _logger.info("Chain of thought few-shot prompt: %s", cot_prompt_contents)
 
     with open(bbh_test_path, "r", encoding="utf-8") as file:
         example_data = json.load(file)
         for i, example in enumerate(example_data["examples"]):
-            print(
-                f"Processing example {i} of {len(example_data['examples'])} for {test_name}"
-            )
+            _logger.info(f"Processing example {i} of {len(example_data['examples'])} for {test_name}")
+            if any([r["index"] == i for r in test_results]):
+                _logger.info("Skipping example %s of test %s", i, test_name)
+                continue
             prompt = f"{cot_prompt_contents}\n\nQ: {example['input']}\nA: Let's think step by step.\n"
-            # TODO - use text_completion utils API
-            retry_count = 0
-            max_retries = 5
-            while retry_count < max_retries:
-                retry_count += 1
-                try:
-                    completion = openai.Completion.create(
-                        engine="gemini-compete-wus",
-                        prompt=prompt,
-                        temperature=0,
-                        max_tokens=2000,
-                        top_p=1,
-                        frequency_penalty=0,
-                        presence_penalty=0,
-                        best_of=1,
-                        stop="\n\n",
-                        # stop=["\n\n", "\nQ: ", "\nQ:", "\n\nQ:", "\n\nQ: ", "\nQ: "],
-                    )
-                    test_results.append(
-                        {
-                            "index": i,
-                            "test_name": test_name,
-                            "prompt": prompt,
-                            "completion": completion["choices"][0]["text"],
-                        }
-                    )
-                    break
-                except Exception as e:
-                    _logger.warning("Caught exception: %s", e)
-                    _logger.warning("Retrying in 5 seconds...")
-                    time.sleep(5)
-            cot_results_filename = os.path.join(
-                cot_results_path, f"{test_name}_completion_cot_results.json"
-            )
+            try:
+                response = text_completion(prompt=prompt, retry_wait=2, max_trial=int(1e9), stop="\n\n")
+                test_results.append(
+                    {
+                        "index": i,
+                        "test_name": test_name,
+                        "prompt": prompt,
+                        "completion": response["text"],
+                    }
+                )
+            except Exception as e:
+                _logger.warning("Caught exception: %s", e)
+            cot_results_filename = cot_results_path / f"{test_name}_completion_cot_results.json"
             json.dump(
                 test_results,
                 open(cot_results_filename, "w"),
@@ -146,7 +126,7 @@ def process_cot(test_name: str, overwrite=False, api_type="chat"):
     elif test_name in BIGBENCH_SUBJECTS:
         subjects = [test_name]
     else:
-        print(f"Invalid test name: {test_name}")
+        _logger.error(f"Invalid test name: {test_name}")
         exit(1)
 
     bigbench_data_root = get_datasets_path() / "BigBench"
@@ -154,32 +134,34 @@ def process_cot(test_name: str, overwrite=False, api_type="chat"):
     bbh_test_dir = bigbench_data_root / "bbh"
     generations_dir = get_generations_path()
 
-    if not os.path.exists(cot_prompts_dir):
-        print(f"COT prompt directory {cot_prompts_dir} does not exist")
+    if not cot_prompts_dir.exists():
+        _logger.error(f"COT prompt directory {cot_prompts_dir} does not exist")
         exit(1)
-    elif not os.path.exists(bbh_test_dir):
-        print(f"BBH test directory {bbh_test_dir} does not exist")
+    elif not bbh_test_dir.exists():
+        _logger.error(f"BBH test directory {bbh_test_dir} does not exist")
         exit(1)
 
-    print(f"Processing CoT for BigBench subjects: {subjects}")
+    _logger.info(f"Processing CoT for BigBench subjects: {subjects}")
 
     threads = []
     for subject in subjects:
         bbh_test_path = bbh_test_dir / f"{subject}.json"
         cot_prompt_path = cot_prompts_dir / f"{subject}.txt"
-        if not os.path.exists(bbh_test_path):
-            print(f"Data file {bbh_test_path} does not exist")
-        elif not os.path.exists(cot_prompt_path):
-            print(f"COT prompt file {cot_prompt_path} does not exist")
+        if not bbh_test_path.exists():
+            _logger.error(f"Data file {bbh_test_path} does not exist")
+            exit(1)
+        elif not cot_prompt_path.exists():
+            _logger.error(f"COT prompt file {cot_prompt_path} does not exist")
+            exit(1)
 
         if api_type == "completion":
             _logger.info(f"Starting completion thread for {bbh_test_path}")
             results_path = generations_dir / "bigbench" / "cot_results" / "completion"
             if overwrite:
-                cot_results_filename = results_path / f"{subject}_chat_cot_results.json"
-                if os.path.exists(cot_results_filename):
-                    os.remove(cot_results_filename)
-            os.makedirs(results_path, exist_ok=True)
+                cot_results_filename = results_path / f"{subject}_completion_cot_results.json"
+                if cot_results_filename.exists():
+                    cot_results_filename.unlink()
+            results_path.mkdir(parents=True, exist_ok=True)
             thread = threading.Thread(
                 target=do_completion_cot,
                 args=(bbh_test_path, cot_prompt_path, subject, results_path),
@@ -190,8 +172,8 @@ def process_cot(test_name: str, overwrite=False, api_type="chat"):
             results_path.mkdir(parents=True, exist_ok=True)
             if overwrite:
                 cot_results_filename = results_path / f"{subject}_chat_cot_results.json"
-                if os.path.exists(cot_results_filename):
-                    os.remove(cot_results_filename)
+                if cot_results_filename.exists():
+                    cot_results_filename.unlink()
             thread = threading.Thread(
                 target=do_chat_cot,
                 args=(bbh_test_path, cot_prompt_path, subject, results_path),

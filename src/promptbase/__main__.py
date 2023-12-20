@@ -22,9 +22,13 @@ def parse_arguments():
     )
     p.add_argument("--subject", type=str, help="Specify the subject for the dataset")
     p.add_argument(
-        "--list_subjects",
-        action="store_true",
-        help="Lists the subjects available for the dataset",
+        "--subject", type=str, help="Specify the subject for the dataset"
+    )
+    p.add_argument(
+        "--mode", type=str, default="chat", choices=["chat", "completion"], help="Prompting mode for the model (chat or completion)"
+    )
+    p.add_argument(
+        "--list_subjects", action='store_true', help="Lists the subjects available for the dataset"
     )
     p.add_argument(
         "--overwrite", action='store_true', help="Overwrites the results of a previous run"
@@ -44,6 +48,8 @@ def main():
             print(f"Dataset {args.dataset} does not have subjects")
         return
 
+    mode = args.mode
+
     if args.dataset == "gsm8k":
         gsm8k.generate()
         gsm8k.evaluate()
@@ -59,7 +65,7 @@ def main():
     elif args.dataset == "bigbench":
         subject = args.subject if args.subject else "all"
         overwrite = args.overwrite
-        bigbench.generate(subject, overwrite)
+        bigbench.generate(subject, overwrite, mode)
         bigbench.evaluate()
     elif args.dataset == "mmlu":
         # Note that to run the MMLU tests, you will need to download the

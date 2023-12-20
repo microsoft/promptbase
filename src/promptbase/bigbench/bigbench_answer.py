@@ -1,14 +1,17 @@
-import openai
-import requests
-import os
 import json
-import time
-import argparse
 import copy
 import threading
+from promptbase.utils.helpers import text_completion, get_generations_path, get_standard_logger_for_file
 
-cot_results_dir = os.path.join(".", "results", "cot_results")
-multiple_choice_instruction = "A multiple choice answer inside parentheses, e.g. (A), and nothing more",
+cot_results_dir = get_generations_path() / "bigbench" / "cot_results"
+answers_dir = get_generations_path() / "bigbench" / "answers"
+chat_answers_dir = answers_dir / "chat"
+completion_answers_dir = answers_dir / "completion"
+multiple_choice_instruction = (
+    "A multiple choice answer inside parentheses, e.g. (A), and nothing more",
+)
+_logger = get_standard_logger_for_file(__file__)
+
 
 def get_summarization_prompt(original_instruction, answer_format):
     return f'You are a standardized test answer formatting assistant. You are given a question followed by a long-form solution. Write the final answer in a short, standard format. The test specifies the format to be EXACTLY "{answer_format}". The original long-form answer was written by an assistant that was given this instruction: "{original_instruction}"'
@@ -696,63 +699,6 @@ few_shot_examples = {
 }
 
 
-def do_chat_answer(cot_result_path, test_name):
-    print(f"Processing {test_name}")
-    with open(cot_result_path, "r", encoding="utf-8") as file:
-        cot_results = json.load(file)
-    answers = []
-
-    for i, cot in enumerate(cot_results):
-        print(f"Processing example {i} of {len(cot_results)} for {test_name}")
-        prompt_messages = copy.deepcopy(few_shot_examples[test_name])
-        prompt_messages.append(
-            {
-                "role": "user",
-                "content": f"{cot['prompt'][-1]['content']}\n\n{cot['completion']}",
-            }
-        )
-        header = {"Authorization": os.getenv("AZURE_OPENAI_API_KEY")}
-        data = {
-            "model": "gpt-4-1106-preview",
-            "temperature": 0,
-            "messages": prompt_messages,
-            "max_tokens": 100,
-        }
-        url = os.getenv("AZURE_OPENAI_API_URL")
-        attempts = 0
-        while True and attempts < 10:
-            try:
-                attempts += 1
-                response = requests.post(url, headers=header, json=data, timeout=600)
-                completion = json.loads(response.text)
-                answers.append(
-                    {
-                        "index": i,
-                        "test_name": test_name,
-                        "prompt": prompt_messages,
-                        "completion": completion["choices"][0]["message"]["content"],
-                    }
-                )
-                break
-            except Exception as e:
-                if attempts == 10:
-                    print("Failed to get answer for example ", i)
-                    answers.append(
-                        {
-                            "index": i,
-                            "test_name": test_name,
-                            "prompt": prompt_messages,
-                            "completion": "Failed to get answer",
-                        }
-                    )
-                    break
-                else:
-                    print("Caught exception: ", e)
-                    print("Retrying in 5 seconds...")
-                    time.sleep(5)
-        json.dump(answers, open(f"{test_name}_chat_answers.json", "w"), indent=4)
-
-
 def get_completion_fewshot(test_name):
     # Need to transform the chat few-shot examples into completion few-shot examples
     chat_few_shot = copy.deepcopy(few_shot_examples[test_name])
@@ -767,83 +713,84 @@ def get_completion_fewshot(test_name):
     return f"{instruction}\n\n{qa1}\n\n{fa_str}{final_answer_1}\n\n{qa2}\n\n{fa_str}{final_answer_2}\n\n{qa3}\n\n{fa_str}{final_answer_3}"
 
 
-def do_completion_answer(cot_result_path, test_name):
-    print(f"Processing {test_name}")
+def do_answer(cot_result_path, answer_results_path):
     with open(cot_result_path, "r", encoding="utf-8") as file:
         cot_results = json.load(file)
-    answers = []
+    if len(cot_results) == 0:
+        _logger.error(f"Empty COT results in {cot_result_path}")
+        return
+    test_name = cot_results[0]["test_name"]
+    _logger.info(f"Processing answers for {test_name}")
+    if answer_results_path.exists():
+        answers = json.load(open(answer_results_path, "r", encoding="utf-8"))
+    else:
+        answers = []
 
     for i, cot in enumerate(cot_results):
-        print(f"Processing example {i} of {len(cot_results)} for {test_name}")
+        _logger.info(f"Processing answer {i} of {len(cot_results)} for {test_name}")
+        if any([r["index"] == i for r in answers]):
+            _logger.info("Skipping answer %s of test %s", i, test_name)
+            continue
         prompt_messages = copy.deepcopy(few_shot_examples[test_name])
-        cot_prompt = cot['prompt'].split('\n\nQ:')[-1]
-        qa_prompt = f"Q:{cot_prompt}{cot['completion']}"
         prompt_messages.append(
             {
                 "role": "user",
-                "content": qa_prompt,
+                "content": f"{cot['prompt'][-1]['content']}\n\n{cot['completion']}",
             }
         )
-        header = {"Authorization": os.getenv("AZURE_OPENAI_API_KEY")}
-        data = {
-            "model": "gpt-4-1106-preview",
-            "temperature": 0,
-            "messages": prompt_messages,
-            "max_tokens": 100,
-        }
-        url = os.getenv("AZURE_OPENAI_API_URL")
-        attempts = 0
-        while True and attempts < 10:
-            try:
-                attempts += 1
-                response = requests.post(url, headers=header, json=data, timeout=600)
-                completion = json.loads(response.text)
-                answers.append(
-                    {
-                        "index": i,
-                        "test_name": test_name,
-                        "prompt": prompt_messages,
-                        "completion": completion["choices"][0]["message"]["content"],
-                    }
-                )
-                break
-            except Exception as e:
-                if attempts == 10:
-                    print("Failed to get answer for example ", i)
-                    answers.append(
-                        {
-                            "index": i,
-                            "test_name": test_name,
-                            "prompt": prompt_messages,
-                            "completion": "Failed to get answer",
-                        }
-                    )
-                    break
-                else:
-                    print("Caught exception: ", e)
-                    print("Retrying in 5 seconds...")
-                    time.sleep(5)
-        json.dump(answers, open(f"{test_name}_completion_answers.json", "w"), indent=4)
+        try:
+            response = text_completion(
+                prompt=prompt_messages, max_tokens=100, retry_wait=2, max_trial=int(1e9)
+            )
+            answers.append(
+                {
+                    "index": i,
+                    "test_name": test_name,
+                    "prompt": prompt_messages,
+                    "completion": response["text"],
+                }
+            )
+            json.dump(answers, open(answer_results_path, "w"), indent=4)
+        except Exception as e:
+            _logger.exception("Failed to get answer for example %s", i)
+    _logger.info("Done processing answers for %s", test_name)
 
 
-def process_chat_answers(subject):
-    cot_results_path = os.path.join(
-        cot_results_dir, "chat", f"{subject}_chat_cot_results.json"
-    )
-    if not os.path.exists(cot_results_path):
-        print(f"COT result file {cot_results_path} does not exist")
+def process_chat_answers(subject, overwrite):
+    if not chat_answers_dir.exists():
+        chat_answers_dir.mkdir(parents=True, exist_ok=True)
+    answer_results_path = chat_answers_dir / f"{subject}_chat_answers.json"
+    if overwrite and answer_results_path.exists():
+        answer_results_path.unlink()
+    cot_results_filename = cot_results_dir / "chat" / f"{subject}_chat_cot_results.json"
+    if not cot_results_filename.exists():
+        _logger.error(
+            f"COT result file {cot_results_filename} does not exist, skipping"
+        )
     else:
-        do_chat_answer(cot_results_path, subject)
+        do_answer(cot_results_filename, answer_results_path)
 
 
-def process_completion_answers(subject):
-    cot_results_path = os.path.join(
-        cot_results_dir, "completion", f"{subject}_completion_cot_results.json"
+def process_completion_answers(subject, overwrite):
+    cot_results_filename = (
+        cot_results_dir / "completion" / f"{subject}_completion_cot_results.json"
     )
-    if not os.path.exists(cot_results_path):
-        print(f"COT result file {cot_results_path} does not exist")
+    if not cot_results_filename.exists():
+        _logger.error(
+            f"COT result file {cot_results_filename} does not exist, skipping"
+        )
+    answer_results_path = completion_answers_dir / f"{subject}_completion_answers.json"
+    if overwrite and answer_results_path.exists():
+        answer_results_path.unlink()
+    cot_results_filename = (
+        cot_results_dir / "completion" / f"{subject}_completion_cot_results.json"
+    )
+    if not cot_results_filename.exists():
+        _logger.error(
+            f"COT result file {cot_results_filename} does not exist, skipping"
+        )
     else:
-        do_completion_answer(cot_results_path, subject)
+        do_answer(cot_results_filename, answer_results_path)
 
 
 def process_answers(test_name: str, overwrite=False, api_type="chat"):
@@ -855,19 +802,21 @@ def process_answers(test_name: str, overwrite=False, api_type="chat"):
     else:
         subjects = [test_name]
 
-    print(f"Processing answers for Bigbench subjects: {subjects}")
+    _logger.info(f"Processing answers for Bigbench subjects: {subjects}")
 
     threads = []
     for subject in subjects:
         if api_type == "chat":
-            thread = threading.Thread(target=process_chat_answers, args=(subject,))
+            thread = threading.Thread(
+                target=process_chat_answers, args=(subject, overwrite)
+            )
         else:
             thread = threading.Thread(
-                target=process_completion_answers, args=(subject,)
+                target=process_completion_answers, args=(subject, overwrite)
             )
         threads.append(thread)
         thread.start()
 
     for thread in threads:
         thread.join()
-    print("Done processing answers")
+    _logger.info("Done processing answers")
