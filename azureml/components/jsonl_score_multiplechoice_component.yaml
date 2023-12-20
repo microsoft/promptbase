@@ -1,0 +1,56 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+
+name: jsonl_score_multiplechoice
+version: 0.0.1pre1
+display_name: JSONL Multiple Choice Scorer
+type: command
+description: |
+  Takes a JSONL file of multiple choice questions and correct answers and responses
+  from a model, and produces the overall score.
+  Results are stored in JSON
+is_deterministic: true
+
+inputs:
+  input_dataset:
+    type: uri_file
+    optional: false
+    description: Dataset containing JSONL input
+  input_encoding:
+    type: string
+    optional: false
+    default: utf-8-sig
+    description: Encoding format of the input dataset
+  correct_key:
+    type: string
+    optional: false
+    description: Which key contains the correct answer
+  response_key:
+    type: string
+    optional: false
+    description: Which key contains the answer produced by the model
+  output_encoding:
+    type: string
+    optional: false
+    default: utf-8-sig
+    description: Encoding format of the output dataset
+
+outputs:
+  output_dataset:
+    type: uri_file
+    description: JSON file containing score summary
+
+
+code: ./src/
+
+command: >-
+  python ./jsonl_score_multiplechoice.py
+  --input_dataset ${{ inputs.input_dataset }}
+  --input_encoding ${{ inputs.input_encoding }}
+  --output_dataset ${{ outputs.output_dataset }}
+  --output_encoding ${{ inputs.output_encoding }}
+  --correct_key ${{ inputs.correct_key }}
+  --response_key ${{ inputs.response_key }}
+
+environment:
+  # Will be updated when component uploads
+  image: azureml:promptbase_aml@latest

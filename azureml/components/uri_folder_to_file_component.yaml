@@ -1,0 +1,31 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+type: command
+
+name: uri_folder_to_file
+display_name: 'uri_folder to uri_file'
+description: Extract single uri_file from uri_folder
+is_deterministic: true
+
+inputs:
+  input_dataset:
+    type: uri_folder
+    optional: false
+    description: |
+      A folder dataset containing the desired file
+
+  filename_pattern:
+    type: string
+    optional: false
+    description: Pattern to select the required file
+
+outputs:
+  output_dataset:
+    type: uri_file
+    description: The matched file
+
+command: >-
+  cp ${{ inputs.input_dataset }}/${{ inputs.filename_pattern }} ${{ outputs.output_dataset }}
+
+
+environment:
+  image: mcr.microsoft.com/azureml/openmpi4.1.0-ubuntu20.04:20231011.v1

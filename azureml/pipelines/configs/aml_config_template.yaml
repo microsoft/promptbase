@@ -1,0 +1,4 @@
+aml_config:
+  workspace_name: <Workspace Name>
+  resource_group: <Workspace Resource Group>
+  subscription_id: <Workspace Subscription ID>

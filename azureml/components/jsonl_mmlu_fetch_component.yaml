@@ -1,0 +1,44 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+
+name: jsonl_mmlu_fetch
+version: 0.0.1pre1
+display_name: JSONL MMLU Fetcher
+type: command
+description: Fetches a given MMLU dataset and exports to JSONL
+is_deterministic: true
+
+inputs:
+  mmlu_dataset:
+    type: string
+    optional: false
+    enum:
+    - anatomy
+    - astronomy
+    - clinical_knowledge
+    - college_biology
+    - college_medicine
+    - medical_genetics
+    - professional_medicine
+  output_encoding:
+    type: string
+    optional: false
+    default: utf-8-sig
+    description: Encoding format of the output datasets
+
+outputs:
+  output_dataset:
+    type: uri_folder
+    description: |
+      Folder which will contain 'test.jsonl', 'valdation.jsonl' and 'dev.jsonl'
+
+code: ./src/
+
+command: >-
+  python ./jsonl_mmlu_fetch.py
+  --mmlu_dataset ${{ inputs.mmlu_dataset }}
+  --output_encoding ${{ inputs.output_encoding }}
+  --output_dataset ${{ outputs.output_dataset }}
+
+environment:
+  # Will be updated when component uploads
+  image: azureml:promptbase_aml@latest
