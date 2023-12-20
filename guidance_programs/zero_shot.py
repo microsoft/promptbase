@@ -1,5 +1,7 @@
+# This is a very naive guidance program for doing zero shot multiple choice questions
+# It is not what generated the reported results
+
 import logging
-import re
 import sys
 
 from typing import Any, Dict
