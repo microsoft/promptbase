@@ -14,5 +14,5 @@ conda_file:
     - pip:
       - azure-identity
       - azure-keyvault-secrets
-      - dataset
+      - datasets
       - guidance>0.1.5
