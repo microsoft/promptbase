@@ -62,7 +62,7 @@ def do_chat_cot(bbh_test_path, cot_prompt_path, test_name, cot_results_path):
             prompt_messages = few_shot_messages + [
                 {"role": "user", "content": "Q: " + example["input"]}
             ]
-            response = text_completion(prompt=prompt_messages, max_tokens=2000, retry_wait=2, max_trial=int(1e9), api_type="chat")
+            response = text_completion(prompt=prompt_messages, max_tokens=2000, model="gpt-4-1106-preview", retry_wait=2, max_trial=int(1e9))
             if "text" not in response:
                 _logger.error("Error in example %s of test %s response: %s", i, test_name, response)
                 continue
@@ -100,7 +100,7 @@ def do_completion_cot(bbh_test_path, cot_prompt_path, test_name, cot_results_pat
                 continue
             prompt = f"{cot_prompt_contents}\n\nQ: {example['input']}\nA: Let's think step by step.\n"
             try:
-                response = text_completion(prompt=prompt, max_tokens=2000, retry_wait=2, max_trial=int(1e9), stop="\n\n", api_type="completion")
+                response = text_completion(prompt=prompt, max_tokens=2000, model="gpt4-1106-comp", retry_wait=2, max_trial=int(1e9), stop="\n\n")
                 test_results.append(
                     {
                         "index": i,

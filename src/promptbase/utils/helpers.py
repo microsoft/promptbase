@@ -16,7 +16,8 @@ from tqdm import tqdm
 openai_configs = types.SimpleNamespace()
 
 openai_configs.models = {
-    "gpt-4-1106-preview": {"endpoint": "azure", "type": "chat"},
+    "gpt-4-1106-preview": {"endpoint": "azure_chat", "type": "chat"},
+    "gpt-4-1106-comp": {"endpoint": "azure_comp", "type": "completion"},
     "text-embedding-ada-002": {"endpoint": "openai-embeddings", "type": "embedding"},
 }
 
@@ -25,10 +26,14 @@ openai_configs.endpoints = {
         "headers": {"Authorization": os.getenv("AZURE_OPENAI_API_KEY")},
         "url": os.getenv("AZURE_OPENAI_EMBEDDINGS_URL"),
     },
-    "azure": {
+    "azure_chat": {
         "headers": {"api-key": f"{os.getenv('AZURE_OPENAI_CHAT_API_KEY')}"},
         "url": os.getenv("AZURE_OPENAI_CHAT_ENDPOINT_URL"),
     },
+    "azure_comp": {
+        "headers": {"api-key": f"{os.getenv('AZURE_OPENAI_COMPLETION_API_KEY')}"},
+        "url": os.getenv("AZURE_OPENAI_COMPLETION_ENDPOINT_URL"),
+    }
 }
 
 openai_configs.busy_message = [
@@ -95,7 +100,6 @@ def text_completion_impl(
     frequency_penalty=0.0,
     max_trial=100,
     retry_wait=0.2,
-    api_type: Optional[str]=None,
     **kwargs,
 ):
     """
@@ -112,7 +116,7 @@ def text_completion_impl(
     model_config = openai_configs.models[model]
     endpoint = openai_configs.endpoints[model_config["endpoint"]]
     s = requests.Session()
-    api_type = api_type or model_config["type"]
+    api_type = model_config["type"]
     if api_type == "chat":
         if type(prompt) is list and type(prompt[0]) is str:
             assert len(prompt) == 1  # chat model only support 1 prompt at a time
