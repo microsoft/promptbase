@@ -2,7 +2,9 @@ import dataclasses
 import json
 import multiprocessing
 import pathlib
+import queue
 import tempfile
+import time
 
 from typing import Any, Callable
 
@@ -115,12 +117,61 @@ def _error_to_jsonl_worker(
                 raise ValueError("Too many error items")
 
 
+def _monitor_worker(
+    *,
+    source_queue: multiprocessing.Queue,
+    dest_queue: multiprocessing.Queue,
+    worker_time_queue: multiprocessing.Queue,
+    n_complete_markers_expected: int,
+):
+    logger = get_logger_for_process(__file__, f"monitor")
+    UPDATE_SECS = 30
+    logger.info("Starting")
+    all_times = []
+
+    n_complete_markers_seen = 0
+    while n_complete_markers_seen < n_complete_markers_expected:
+        time.sleep(UPDATE_SECS / (1 + n_complete_markers_seen))
+        src_count = source_queue.qsize()
+        dst_count = dest_queue.qsize()
+
+        # Since qsize() is not reliable for multiprocessing, have a
+        # slightly unpleasant pattern here
+        try:
+            while True:
+                fetched = worker_time_queue.get_nowait()
+                if isinstance(fetched, _WorkCompleteMarker):
+                    n_complete_markers_seen += 1
+                else:
+                    all_times.append(fetched)
+        except queue.Empty:
+            pass
+
+        min_time = -1
+        max_time = -1
+        mean_time = -1
+        if len(all_times) > 0:
+            min_time = min(all_times)
+            max_time = max(all_times)
+            mean_time = sum(all_times) / len(all_times)
+
+        logger.info(f"Items in Source Queue: {src_count}")
+        logger.info(f"Items in Destination Queue: {dst_count}")
+        logger.info(f"Items processed so far: {len(all_times)}")
+        logger.info(
+            f"Times: {min_time:.2f}s (min) {mean_time:.2f}s (mean) {max_time:.2f}s (max)"
+        )
+    logger.info("Completed")
+
+
 def _queue_worker(
     *,
     map_func: Callable[[dict[str, Any]], dict[str, Any] | None],
     source_queue: multiprocessing.Queue,
     dest_queue: multiprocessing.Queue,
     error_queue: multiprocessing.Queue,
+    run_stats_queue: multiprocessing.Queue,
+    worker_time_queue: multiprocessing.Queue,
     id: int,
 ):
     logger = get_logger_for_process(__file__, f"worker{id:02}")
@@ -136,21 +187,28 @@ def _queue_worker(
             done = True
         else:
             logger.info("Processing item")
+            start_time = time.time()
             try:
                 nxt_result = map_func(nxt_item)
+                stop_time = time.time()
                 if nxt_result is not None:
                     dest_queue.put(nxt_result)
                 else:
                     logger.info("map_func returned None")
                 success_count += 1
             except Exception as e:
+                stop_time = time.time()
                 logger.warn(f"Item failed")
                 error_queue.put(nxt_item)
                 failure_count += 1
+            worker_time_queue.put(stop_time - start_time)
     logger.info(f"Completed work items")
     marker = _WorkCompleteMarker(f"queue_worker{id:02}")
     dest_queue.put(marker)
     error_queue.put(marker)
+    worker_time_queue.put(marker)
+    stats = RunStats(success_count=success_count, failure_count=failure_count)
+    run_stats_queue.put(stats)
     _logger.info(f"Exiting")
 
 
@@ -174,12 +232,15 @@ def line_map_mp(
     dest_queue = multiprocessing.Queue(maxsize=2 * n_worker_tasks)
     error_queue = multiprocessing.Queue(maxsize=2 * n_worker_tasks)
 
+    run_stats_queue = multiprocessing.Queue(maxsize=n_worker_tasks)
+    timing_queue = multiprocessing.Queue()
+
     # List of the various processes spawned
     # This will _not_ include the error output worker
 
     worker_processes = []
 
-    # Start enqueuing items
+    # Setup the enqueuer
     enqueue_process = multiprocessing.Process(
         target=_enqueue_from_jsonl_worker,
         kwargs=dict(
@@ -189,10 +250,9 @@ def line_map_mp(
             n_complete_markers=n_worker_tasks,
         ),
     )
-    enqueue_process.start()
     worker_processes.append(enqueue_process)
 
-    # Start the workers
+    # Setup the workers
     for i in range(n_worker_tasks):
         nxt = multiprocessing.Process(
             target=_queue_worker,
@@ -201,13 +261,26 @@ def line_map_mp(
                 source_queue=source_queue,
                 dest_queue=dest_queue,
                 error_queue=error_queue,
+                run_stats_queue=run_stats_queue,
+                worker_time_queue=timing_queue,
                 id=i,
             ),
         )
-        nxt.start()
         worker_processes.append(nxt)
 
-    # Start the output dequeuer
+    # Setup  the monitor
+    monitor_process = multiprocessing.Process(
+        target=_monitor_worker,
+        kwargs=dict(
+            source_queue=source_queue,
+            dest_queue=dest_queue,
+            worker_time_queue=timing_queue,
+            n_complete_markers_expected=n_worker_tasks,
+        ),
+    )
+    worker_processes.append(monitor_process)
+
+    # Setup the output dequeuer
     dequeue_output_process = multiprocessing.Process(
         target=_dequeue_to_jsonl_worker,
         kwargs=dict(
@@ -217,9 +290,9 @@ def line_map_mp(
             n_complete_markers_expected=n_worker_tasks,
         ),
     )
-    dequeue_output_process.start()
     worker_processes.append(dequeue_output_process)
 
+    # Start the error dequeuer
     dequeue_error_output_process = multiprocessing.Process(
         target=_error_to_jsonl_worker,
         kwargs=dict(
@@ -231,6 +304,10 @@ def line_map_mp(
         ),
     )
     dequeue_error_output_process.start()
+
+    # Start the workers
+    for wp in worker_processes:
+        wp.start()
 
     # Wait for processes to complete
 
@@ -247,4 +324,14 @@ def line_map_mp(
     _logger.info("Joining workers")
     for wp in worker_processes:
         wp.join()
+
+    total_successes = 0
+    total_failures = 0
+    for _ in range(n_worker_tasks):
+        nxt: RunStats = run_stats_queue.get()
+        total_successes += nxt.success_count
+        total_failures += nxt.failure_count
+
+    _logger.info(f"Total Successful items: {total_successes}")
+    _logger.info(f"Total Failed items    : {total_failures}")
     _logger.info("line_map_mp completed")
