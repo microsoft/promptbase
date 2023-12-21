@@ -306,7 +306,9 @@ def line_map_mp(
     # Check on errors first, since we may want to kill everything
     dequeue_error_output_process.join()
     if dequeue_output_process.exitcode != 0:
-        _logger.critical(f"Detected non-zero exit from dequeue_error_output_process")
+        _logger.critical(
+            f"Detected non-zero exit from dequeue_error_output_process: {dequeue_output_process.exitcode}"
+        )
         for wp in worker_processes:
             wp.kill()
         _logger.critical("Worker processes terminated")
