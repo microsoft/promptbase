@@ -16,6 +16,12 @@ _logger = get_standard_logger_for_file(__file__)
 
 
 class _JSONLFile:
+    """Line-by-line iteration over a JSONL file
+
+    Can be used in a 'with' statement, and then iterated over.
+    The returned value is a decoded JSON object, rather than
+    the line itself
+    """
     def __init__(self, jsonl_file: pathlib.Path, encoding: str):
         self._file_path = jsonl_file
         self._encoding = encoding
@@ -43,7 +49,7 @@ class ItemState(StrEnum):
 
 
 @dataclasses.dataclass
-class MapResult:
+class _MapResult:
     state: ItemState = ItemState.Success
     time: float = float()
     result: dict[str, Any] | None = None
@@ -53,10 +59,10 @@ def _map_wrapper(
     item: dict[str, Any],
     *,
     map_func: Callable[[dict[str, Any]], dict[str, Any] | None],
-) -> MapResult:
+) -> _MapResult:
     _logger.info(f"Mapping :{item}")
     start = time.time()
-    result = MapResult()
+    result = _MapResult()
     try:
         result.result = map_func(item)
         result.state = ItemState.Success
@@ -99,7 +105,7 @@ def line_map_parallel(
                     n_jobs=n_worker_tasks, return_as="generator", verbose=50
                 )(joblib.delayed(actual_map_func)(x) for x in jsonl_src)
                 for r in result:
-                    assert isinstance(r, MapResult)
+                    assert isinstance(r, _MapResult)
                     all_times.append(r.time)
                     if r.state == ItemState.Success:
                         if r.result is not None:
