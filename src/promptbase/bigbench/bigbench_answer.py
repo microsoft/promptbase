@@ -709,7 +709,7 @@ def get_completion_fewshot(test_name):
     return f"{instruction}\n\n{qa1}\n\n{fa_str}{final_answer_1}\n\n{qa2}\n\n{fa_str}{final_answer_2}\n\n{qa3}\n\n{fa_str}{final_answer_3}"
 
 
-def do_answer(cot_result_path, answer_results_path):
+def do_answer(cot_result_path, answer_results_path, mode):
     with open(cot_result_path, "r", encoding="utf-8") as file:
         cot_results = json.load(file)
     if len(cot_results) == 0:
@@ -728,12 +728,20 @@ def do_answer(cot_result_path, answer_results_path):
             _logger.info("Skipping answer %s of test %s", i, test_name)
             continue
         prompt_messages = copy.deepcopy(few_shot_examples[test_name])
-        prompt_messages.append(
-            {
-                "role": "user",
-                "content": f"{cot['prompt'][-1]['content']}\n\n{cot['completion']}",
-            }
-        )
+        if mode == "chat":
+            prompt_messages.append(
+                {
+                    "role": "user",
+                    "content": f"{cot['prompt'][-1]['content']}\n\n{cot['completion']}",
+                }
+            )
+        elif mode == "completion":
+            prompt_messages.append(
+                {
+                    "role": "user",
+                    "content": f"{cot['prompt']}\n\n{cot['completion']}",
+                }
+            )
         try:
             response = text_completion(
                 prompt=prompt_messages, max_tokens=100, retry_wait=2, max_trial=int(1e9)
@@ -768,7 +776,7 @@ def process_chat_answers(subject, overwrite):
             f"COT result file {cot_results_filename} does not exist, skipping"
         )
     else:
-        do_answer(cot_results_filename, answer_results_path)
+        do_answer(cot_results_filename, answer_results_path, "chat")
 
 
 def process_completion_answers(subject, overwrite):
@@ -786,7 +794,7 @@ def process_completion_answers(subject, overwrite):
             f"COT result file {cot_results_filename} does not exist, skipping"
         )
     else:
-        do_answer(cot_results_filename, answer_results_path)
+        do_answer(cot_results_filename, answer_results_path, "completion")
 
 
 def process_answers(test_name: str, overwrite=False, api_type="chat"):
