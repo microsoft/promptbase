@@ -110,6 +110,8 @@ def _error_to_jsonl_worker(
 
             if n_errors_seen > n_errors_max:
                 logger.fatal(f"Error limit of {n_errors_max} exceeded")
+                logger.fatal(f"Final item: {nxt_output}")
+                # This will kill the process
                 raise ValueError("Too many error items")
 
 
@@ -172,6 +174,11 @@ def line_map_mp(
     dest_queue = multiprocessing.Queue(maxsize=2 * n_worker_tasks)
     error_queue = multiprocessing.Queue(maxsize=2 * n_worker_tasks)
 
+    # List of the various processes spawned
+    # This will _not_ include the error output worker
+
+    worker_processes = []
+
     # Start enqueuing items
     enqueue_process = multiprocessing.Process(
         target=_enqueue_from_jsonl_worker,
@@ -183,9 +190,9 @@ def line_map_mp(
         ),
     )
     enqueue_process.start()
+    worker_processes.append(enqueue_process)
 
     # Start the workers
-    worker_processes = []
     for i in range(n_worker_tasks):
         nxt = multiprocessing.Process(
             target=_queue_worker,
@@ -200,7 +207,7 @@ def line_map_mp(
         nxt.start()
         worker_processes.append(nxt)
 
-    # Start the dequeuers
+    # Start the output dequeuer
     dequeue_output_process = multiprocessing.Process(
         target=_dequeue_to_jsonl_worker,
         kwargs=dict(
@@ -211,6 +218,7 @@ def line_map_mp(
         ),
     )
     dequeue_output_process.start()
+    worker_processes.append(dequeue_output_process)
 
     dequeue_error_output_process = multiprocessing.Process(
         target=_error_to_jsonl_worker,
@@ -225,8 +233,18 @@ def line_map_mp(
     dequeue_error_output_process.start()
 
     # Wait for processes to complete
-    enqueue_process.join()
+
+    # Check on errors first, since we may want to kill everything
+    dequeue_error_output_process.join()
+    if dequeue_output_process.exitcode != 0:
+        _logger.critical(f"Detected non-zero exit from dequeue_error_output_process")
+        for wp in worker_processes:
+            wp.kill()
+        _logger.critical("Worker processes terminated")
+        raise Exception("Too many errors. See log for details")
+
+    # Do a normal exit
+    _logger.info("Joining workers")
     for wp in worker_processes:
         wp.join()
-    dequeue_output_process.join()
-    dequeue_error_output_process.join()
+    _logger.info("line_map_mp completed")
