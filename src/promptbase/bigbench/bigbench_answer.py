@@ -728,6 +728,14 @@ def do_answer(cot_result_path, answer_results_path, mode):
             _logger.info("Skipping answer %s of test %s", i, test_name)
             continue
         prompt_messages = copy.deepcopy(few_shot_examples[test_name])
+        cot_prompt = cot['prompt'].split('\n\nQ:')[-1]
+        qa_prompt = f"Q:{cot_prompt}{cot['completion']}"
+        prompt_messages.append(
+            {
+                "role": "user",
+                "content": qa_prompt,
+            }
+        )
         if mode == "chat":
             prompt_messages.append(
                 {
