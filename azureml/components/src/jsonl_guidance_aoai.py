@@ -28,9 +28,13 @@ def parse_args():
     datasets_group.add_argument("--input_encoding", type=str, required=True)
     datasets_group.add_argument("--output_dataset", type=pathlib.Path, required=True)
     datasets_group.add_argument("--output_encoding", type=str, required=True)
+    datasets_group.add_argument("--error_dataset", type=pathlib.Path, required=True)
+    datasets_group.add_argument("--error_encoding", type=str, required=True)
 
     # Information about the guidance program
     parser.add_argument("--guidance_program", type=pathlib.Path, required=True)
+    parser.add_argument("--guidance_workers", type=int, required=True)
+    parser.add_argument("--max_errors", type=int, required=True)
 
     # Information about the model
     model_group = parser.add_argument_group("Model Endpoint")
@@ -116,6 +120,10 @@ def main():
         dest_file=args.output_dataset,
         source_encoding=args.input_encoding,
         dest_encoding=args.output_encoding,
+        error_file=args.error_dataset,
+        error_encoding=args.error_encoding,
+        n_worker_tasks=args.guidance_workers,
+        n_errors_max=args.max_errors,
     )
 
     _logger.info("Complete")
