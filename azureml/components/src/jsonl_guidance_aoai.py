@@ -10,7 +10,7 @@ from azure.identity import DefaultAzureCredential, get_bearer_token_provider
 
 import guidance
 
-from shared.jsonl_utils import line_map
+from shared.jsonl_utils_parallel import line_map_parallel
 from shared.logging_utils import get_standard_logger_for_file
 
 _logger = get_standard_logger_for_file(__file__)
@@ -110,7 +110,7 @@ def main():
     )
 
     # Run the processing
-    line_map(
+    line_map_parallel(
         map_func=processor,
         source_file=args.input_dataset,
         dest_file=args.output_dataset,
