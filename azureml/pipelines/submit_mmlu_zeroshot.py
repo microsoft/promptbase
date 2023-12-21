@@ -27,7 +27,7 @@ _logger = get_standard_logger_for_file(__file__)
 @dataclass
 class PipelineConfig:
     zeroshot_config: ZeroShotRunConfig = omegaconf.MISSING
-    aml_config: AMLConfig = omegaconf.MISSING
+    azureml_config: AMLConfig = omegaconf.MISSING
 
 
 cs = ConfigStore.instance()
@@ -76,11 +76,11 @@ def create_zeroshot_pipeline(
 
     pipeline = basic_pipeline()
     pipeline.experiment_name = (
-        f"{run_config.base_experiment_name}_{run_config.mmlu_dataset}"
+        f"{run_config.pipeline.base_experiment_name}_{run_config.mmlu_dataset}"
     )
     pipeline.display_name = None
-    pipeline.compute = run_config.default_compute_target
-    if run_config.tags:
+    pipeline.compute = run_config.pipeline.default_compute_target
+    if run_config.pipeline.tags:
         pipeline.tags.update(run_config.tags)
     _logger.info("Pipeline created")
 
@@ -92,17 +92,17 @@ def main(config: PipelineConfig):
     version_string = str(int(time.time()))
     _logger.info(f"AzureML object version for this run: {version_string}")
 
-    _logger.info(f"Azure Subscription: {config.aml_config.subscription_id}")
-    _logger.info(f"Resource Group: {config.aml_config.resource_group}")
-    _logger.info(f"Workspace : {config.aml_config.workspace_name}")
+    _logger.info(f"Azure Subscription: {config.azureml_config.subscription_id}")
+    _logger.info(f"Resource Group: {config.azureml_config.resource_group}")
+    _logger.info(f"Workspace : {config.azureml_config.workspace_name}")
 
     credential = DefaultAzureCredential(exclude_shared_token_cache_credential=True)
 
     ws_client = MLClient(
         credential=credential,
-        subscription_id=config.aml_config.subscription_id,
-        resource_group_name=config.aml_config.resource_group,
-        workspace_name=config.aml_config.workspace_name,
+        subscription_id=config.azureml_config.subscription_id,
+        resource_group_name=config.azureml_config.resource_group,
+        workspace_name=config.azureml_config.workspace_name,
         logging_enable=False,
     )
 
