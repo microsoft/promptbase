@@ -4,6 +4,8 @@ import pathlib
 
 from typing import Any
 
+import mlflow
+
 from shared.jsonl_utils import line_reduce
 from shared.logging_utils import get_standard_logger_for_file
 
@@ -62,11 +64,15 @@ def main():
         source_file=args.input_dataset,
         source_encoding=args.input_encoding,
     )
-    _logger.info(f"Final result: {json.dumps(scorer.generate_summary())}")
+    summary = scorer.generate_summary()
+    _logger.info(f"Final result: {json.dumps(summary)}")
+
+    for k, v in summary.items():
+        mlflow.log_metric(k, v)
 
     _logger.info("Writing output file")
     with open(args.output_dataset, encoding=args.output_encoding, mode="w") as jf:
-        json.dump(scorer.generate_summary(), jf, indent=4)
+        json.dump(summary, jf, indent=4)
 
 
 if __name__ == "__main__":

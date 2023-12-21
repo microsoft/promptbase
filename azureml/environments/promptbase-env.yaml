@@ -16,3 +16,5 @@ conda_file:
       - azure-keyvault-secrets
       - datasets
       - guidance>0.1.5
+      - mlflow
+      - azureml-mlflow
