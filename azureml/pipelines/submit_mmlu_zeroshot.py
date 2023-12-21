@@ -60,9 +60,12 @@ def create_zeroshot_pipeline(
 
         zeroshot_guidance_job = components.jsonl_guidance(
             guidance_program=zeroshot_program_input,
+            guidance_workers=run_config.guidance_workers,
+            max_errors=run_config.max_errors,
             input_dataset=get_split_job.outputs.output_dataset,
             azure_openai_endpoint=run_config.aoai_config.endpoint,
             azure_openai_deployed_model=run_config.aoai_config.model,
+
         )
         zeroshot_guidance_job.name = f"zeroshot_guidance"
         zeroshot_guidance_job.compute = run_config.aoai_config.compute_target

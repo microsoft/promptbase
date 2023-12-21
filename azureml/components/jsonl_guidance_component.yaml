@@ -13,12 +13,12 @@ inputs:
     optional: false
     description: Python file containing the guidance program
   guidance_workers:
-    type: int
+    type: integer
     optional: false
     default: 4
     description: Number of workers to use
   max_errors:
-    type: int
+    type: integer
     optional: false
     default: 5
     description: Maximum number of failed lines to tolerate
@@ -45,7 +45,7 @@ inputs:
     optional: false
     default: utf-8-sig
     description: Encoding format of the output dataset
-  output_encoding:
+  error_encoding:
     type: string
     optional: false
     default: utf-8-sig
@@ -65,7 +65,7 @@ command: >-
   python ./jsonl_guidance_aoai.py
   --guidance_program ${{ inputs.guidance_program }}
   --guidance_workers ${{ inputs.guidance_workers }}
-  --max_errors ${{ max_errors }}
+  --max_errors ${{ inputs.max_errors }}
   --input_dataset ${{ inputs.input_dataset }}
   --input_encoding ${{ inputs.input_encoding }}
   --azure_openai_endpoint ${{ inputs.azure_openai_endpoint }}
