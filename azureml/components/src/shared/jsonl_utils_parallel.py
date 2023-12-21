@@ -8,7 +8,7 @@ import time
 from enum import StrEnum
 from typing import Any, Callable
 
-from shared.logging_utils import JSONLFile
+from shared.jsonl_file_utils import JSONLReader, JSONLWriter
 from shared.logging_utils import get_standard_logger_for_file
 
 import joblib
@@ -48,13 +48,6 @@ def _map_wrapper(
     return result
 
 
-def _get_error_file(error_file_path: pathlib.Path | None, error_encoding: str | None):
-    if error_file_path:
-        return open(error_file_path, "a", encoding=error_encoding)
-    else:
-        return tempfile.TemporaryFile(mode="w", encoding="utf-8-sig")
-
-
 def line_map_parallel(
     *,
     map_func: Callable[[dict[str, Any]], dict[str, Any] | None],
@@ -71,9 +64,9 @@ def line_map_parallel(
 
     n_errors = 0
     all_times = []
-    with JSONLFile(source_file, source_encoding) as jsonl_src:
-        with open(dest_file, "w", encoding=dest_encoding) as out_file:
-            with _get_error_file(error_file, error_encoding) as err_file:
+    with JSONLReader(source_file, source_encoding) as jsonl_src:
+        with JSONLWriter(dest_file, dest_encoding) as out_file:
+            with JSONLWriter(error_file, error_encoding) as err_file:
                 result = joblib.Parallel(
                     n_jobs=n_worker_tasks, return_as="generator", verbose=50
                 )(joblib.delayed(actual_map_func)(x) for x in jsonl_src)
@@ -82,14 +75,10 @@ def line_map_parallel(
                     all_times.append(r.time)
                     if r.state == ItemState.Success:
                         if r.result is not None:
-                            nxt_output = json.dumps(r.result)
-                            out_file.write(nxt_output)
-                            out_file.write("\n")
+                            out_file.write_line(r.result)
                     else:
                         # r.result will always be the input item
-                        nxt_err = json.dumps(r.result)
-                        err_file.write(nxt_err)
-                        err_file.write("\n")
+                        err_file.write_line(r.result)
                         n_errors += 1
                         if n_errors > n_errors_max:
                             _logger.critical("Too many errors")

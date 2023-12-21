@@ -48,6 +48,7 @@ class JSONLWriter:
         if self._file_path is not None:
             self._jf = open(self._file_path, "w", encoding=self._encoding)
         else:
+            _logger.info(f"No target path specified, writing to TemporaryFile")
             self._jf = tempfile.TemporaryFile(mode="w", encoding="utf-8-sig")
         return self
 

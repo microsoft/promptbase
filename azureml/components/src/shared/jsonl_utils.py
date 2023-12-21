@@ -6,7 +6,7 @@ import tempfile
 
 from typing import Any, Callable, Tuple
 
-from .jsonl_file_utils import JSONLReader
+from .jsonl_file_utils import JSONLReader, JSONLWriter
 from .logging_utils import get_standard_logger_for_file
 
 _logger = get_standard_logger_for_file(__file__)
@@ -26,34 +26,24 @@ def line_map(
     """Iterate over a JSONL file, applying map_func to each line"""
     assert source_file.exists()
 
-    # If error_file is not specified, set up a temporary file
-    def get_error_file(error_file_path: pathlib.Path | None):
-        if error_file_path:
-            return open(error_file_path, "a", encoding=error_encoding)
-        else:
-            return tempfile.TemporaryFile(mode="w", encoding="utf-8-sig")
-
     successful_lines = 0
     error_lines = 0
     with JSONLReader(source_file, source_encoding) as in_file:
-        with open(dest_file, "w", encoding=dest_encoding) as out_file:
-            with get_error_file(error_file) as err_file:
+        with JSONLWriter(dest_file, dest_encoding) as out_file:
+            with JSONLWriter(error_file, error_encoding) as err_file:
                 current_line = 0
                 for nxt in in_file:
                     _logger.info(f"Processing line: {current_line}")
                     try:
                         nxt_output = map_func(nxt)
                         if nxt_output is not None:
-                            nxt_output_string = json.dumps(nxt_output)
-                            _logger.info(f"Writing output: {nxt_output_string}")
-                            out_file.write(nxt_output_string)
-                            out_file.write("\n")
+                            out_file.write_line(nxt_output)
                         else:
                             _logger.info(f"Skipping because map_func returned 'None'")
                         successful_lines += 1
                     except Exception as e:
                         _logger.warn(f"Caught exception: {e}")
-                        err_file.write(json.dumps(nxt))
+                        err_file.write_line(nxt)
                         error_lines += 1
                     current_line += 1
 

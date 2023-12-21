@@ -104,6 +104,7 @@ def _error_to_jsonl_worker(
                 logger.fatal(f"Final item: {nxt_item}")
                 # This will kill the process
                 raise ValueError("Too many error items")
+        logger.info("About to close error file")
 
 
 def _monitor_worker(
