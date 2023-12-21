@@ -1,0 +1,14 @@
+defaults:
+  - _self_
+  - aml_config
+  - aoai_config
+
+zeroshot_config:
+  pipeline:
+    base_experiment_name: zeroshot
+    tags:
+    default_compute_target: isolatedcompute
+  mmlu_dataset: medical_genetics
+  mmlu_split: test
+  guidance_program: zero_shot.py
+  aoai_config: ${ default_aoai_config }

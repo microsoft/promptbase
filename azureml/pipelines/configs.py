@@ -11,6 +11,13 @@ class AMLConfig:
 
 
 @dataclass
+class PipelineConfig:
+    base_experiment_name: str = str()
+    tags: Dict[str, str] = field(default_factory=dict)
+    default_compute_target: str = str()
+
+
+@dataclass
 class AOAIConfig:
     endpoint: str = str()
     model: str = str()
@@ -19,10 +26,8 @@ class AOAIConfig:
 
 @dataclass
 class ZeroShotRunConfig:
-    base_experiment_name: str = str()
-    tags: Dict[str, str] = field(default_factory=dict)
+    pipeline: PipelineConfig = field(default_factory=PipelineConfig)
     mmlu_dataset: str = str()
     mmlu_split: str = str()
-    default_compute_target: str = str()
     guidance_program: str = str()
     aoai_config: AOAIConfig = field(default_factory=AOAIConfig)

@@ -8,6 +8,8 @@ from dataclasses import dataclass
 import hydra
 from hydra.core.config_store import ConfigStore
 
+import omegaconf
+
 from azure.identity import DefaultAzureCredential
 from azure.ai.ml import MLClient
 
@@ -24,8 +26,8 @@ _logger = get_standard_logger_for_file(__file__)
 
 @dataclass
 class PipelineConfig:
-    zeroshot_config: ZeroShotRunConfig
-    aml_config: AMLConfig
+    zeroshot_config: ZeroShotRunConfig = omegaconf.MISSING
+    aml_config: AMLConfig = omegaconf.MISSING
 
 
 cs = ConfigStore.instance()
