@@ -10,8 +10,9 @@ from azure.identity import DefaultAzureCredential, get_bearer_token_provider
 
 import guidance
 
-from shared.jsonl_utils_parallel import line_map_parallel
+from shared.jsonl_utils_multiprocessing import line_map_mp
 from shared.logging_utils import get_standard_logger_for_file
+
 
 _logger = get_standard_logger_for_file(__file__)
 
@@ -81,11 +82,14 @@ def get_model(
 
 def process_item(
     item: Dict[str, Any],
-    guidance_function: Callable[[Any, Dict[str, Any]], Dict[str, Any]],
-    language_model: guidance.models.Model,
+    program_path: pathlib.Path,
+    endpoint: str,
+    model: str,
 ) -> Dict[str, Any]:
     _logger.info(f"process_item: {item}")
 
+    guidance_function = get_guidance_function(program_path)
+    language_model = get_model(endpoint, model)
     result = guidance_function(language_model, item)
     _logger.info(f"Checking keys")
     for k in result.keys():
@@ -100,21 +104,16 @@ def process_item(
 def main():
     args = parse_args()
 
-    # Get the function
-    guidance_func = get_guidance_function(args.guidance_program)
-
-    # Get the language model
-    llm = get_model(
-        endpoint=args.azure_openai_endpoint, model=args.azure_openai_deployed_model
-    )
-
-    # Bind them together
+    # Bind arguments to the processor function
     processor = functools.partial(
-        process_item, guidance_function=guidance_func, language_model=llm
+        process_item,
+        program_path=args.guidance_program,
+        endpoint=args.azure_openai_endpoint,
+        model=args.azure_openai_deployed_model,
     )
 
     # Run the processing
-    line_map_parallel(
+    line_map_mp(
         map_func=processor,
         source_file=args.input_dataset,
         dest_file=args.output_dataset,
