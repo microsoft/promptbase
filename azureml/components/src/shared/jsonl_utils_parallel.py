@@ -112,7 +112,7 @@ def line_map_parallel(
                         err_file.write(nxt_err)
                         err_file.write("\n")
                         n_errors += 1
-                        if n_errors >= n_errors_max:
+                        if n_errors > n_errors_max:
                             _logger.critical("Too many errors")
                             raise Exception("Too many errors. See log for details")
     _logger.info(f"Min Time : {min(all_times)}s")
