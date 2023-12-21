@@ -8,6 +8,7 @@ import time
 
 from typing import Any, Callable
 
+from .jsonl_file_utils import JSONLReader
 from .logging_utils import get_standard_logger_for_file, get_logger_for_process
 
 
@@ -39,11 +40,10 @@ def _enqueue_from_jsonl_worker(
     logger = get_logger_for_process(__file__, "enqueue")
 
     lines_read = 0
-    with open(source_file, "r", encoding=source_encoding) as in_file:
+    with JSONLReader(source_file, source_encoding) as in_file:
         for nxt in in_file:
             logger.info(f"Reading line {lines_read}")
-            nxt_dict = json.loads(nxt)
-            target_queue.put(nxt_dict)
+            target_queue.put(nxt)
             lines_read += 1
 
     for i in range(n_complete_markers):

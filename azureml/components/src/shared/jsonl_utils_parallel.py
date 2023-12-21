@@ -8,40 +8,12 @@ import time
 from enum import StrEnum
 from typing import Any, Callable
 
+from shared.logging_utils import JSONLFile
 from shared.logging_utils import get_standard_logger_for_file
 
 import joblib
 
 _logger = get_standard_logger_for_file(__file__)
-
-
-class _JSONLFile:
-    """Line-by-line iteration over a JSONL file
-
-    Can be used in a 'with' statement, and then iterated over.
-    The returned value is a decoded JSON object, rather than
-    the line itself
-    """
-
-    def __init__(self, jsonl_file: pathlib.Path, encoding: str):
-        self._file_path = jsonl_file
-        self._encoding = encoding
-        self._jf = None
-
-    def __iter__(self):
-        return self
-
-    def __next__(self) -> dict[str, Any]:
-        nxt_line = next(self._jf)
-        result = json.loads(nxt_line)
-        return result
-
-    def __enter__(self):
-        self._jf = open(self._file_path, "r", encoding=self._encoding)
-        return self
-
-    def __exit__(self, *args):
-        self._jf.close()
 
 
 class ItemState(StrEnum):
@@ -99,7 +71,7 @@ def line_map_parallel(
 
     n_errors = 0
     all_times = []
-    with _JSONLFile(source_file, source_encoding) as jsonl_src:
+    with JSONLFile(source_file, source_encoding) as jsonl_src:
         with open(dest_file, "w", encoding=dest_encoding) as out_file:
             with _get_error_file(error_file, error_encoding) as err_file:
                 result = joblib.Parallel(
