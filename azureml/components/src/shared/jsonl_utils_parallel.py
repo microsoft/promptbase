@@ -22,6 +22,7 @@ class _JSONLFile:
     The returned value is a decoded JSON object, rather than
     the line itself
     """
+
     def __init__(self, jsonl_file: pathlib.Path, encoding: str):
         self._file_path = jsonl_file
         self._encoding = encoding

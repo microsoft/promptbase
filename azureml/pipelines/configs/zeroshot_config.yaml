@@ -8,7 +8,7 @@ zeroshot_config:
     base_experiment_name: zeroshot
     tags:
     default_compute_target: isolatedcompute
-  mmlu_dataset: medical_genetics
+  mmlu_dataset: clinical_knowledge
   mmlu_split: test
   max_errors: 10
   guidance_workers: 5
