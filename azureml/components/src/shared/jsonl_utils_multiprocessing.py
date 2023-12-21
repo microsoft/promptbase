@@ -8,7 +8,7 @@ import time
 
 from typing import Any, Callable
 
-from .jsonl_file_utils import JSONLReader
+from .jsonl_file_utils import JSONLReader, JSONLWriter
 from .logging_utils import get_standard_logger_for_file, get_logger_for_process
 
 
@@ -64,7 +64,7 @@ def _dequeue_to_jsonl_worker(
 
     n_complete_markers_seen = 0
 
-    with open(dest_file, "w", encoding=dest_encoding) as out_file:
+    with JSONLWriter(dest_file, dest_encoding) as out_file:
         while n_complete_markers_seen < n_complete_markers_expected:
             nxt_item = target_queue.get()
             if isinstance(nxt_item, _WorkCompleteMarker):
@@ -72,9 +72,7 @@ def _dequeue_to_jsonl_worker(
                 n_complete_markers_seen += 1
             else:
                 logger.info(f"Writing item")
-                nxt_output = json.dumps(nxt_item)
-                out_file.write(nxt_output)
-                out_file.write("\n")
+                out_file.write_line(nxt_item)
 
 
 def _error_to_jsonl_worker(
@@ -86,17 +84,10 @@ def _error_to_jsonl_worker(
     n_errors_max: int,
 ):
     logger = get_logger_for_process(__file__, f"error")
-
-    def get_error_file(error_file_path: pathlib.Path | None):
-        if error_file_path:
-            return open(error_file_path, "a", encoding=error_encoding)
-        else:
-            return tempfile.TemporaryFile(mode="w", encoding="utf-8-sig")
-
     n_complete_markers_seen = 0
     n_errors_seen = 0
 
-    with get_error_file(error_file) as err_file:
+    with JSONLWriter(error_file, error_encoding) as err_file:
         while n_complete_markers_seen < n_complete_markers_expected:
             nxt_item = target_queue.get()
 
@@ -106,13 +97,11 @@ def _error_to_jsonl_worker(
             else:
                 n_errors_seen += 1
                 logger.warning(f"Received Error Item (total={n_errors_seen})")
-                nxt_output = json.dumps(nxt_item)
-                err_file.write(nxt_output)
-                err_file.write("\n")
+                err_file.write_line(nxt_item)
 
             if n_errors_seen > n_errors_max:
                 logger.fatal(f"Error limit of {n_errors_max} exceeded")
-                logger.fatal(f"Final item: {nxt_output}")
+                logger.fatal(f"Final item: {nxt_item}")
                 # This will kill the process
                 raise ValueError("Too many error items")
 
