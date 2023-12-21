@@ -66,7 +66,7 @@ def main():
         subject = args.subject if args.subject else "all"
         overwrite = args.overwrite
         bigbench.generate(subject, overwrite, mode)
-        bigbench.evaluate()
+        bigbench.evaluate(mode)
     elif args.dataset == "mmlu":
         # Note that to run the MMLU tests, you will need to download the
         # data, and then use the 'format_mmlu.py' script
