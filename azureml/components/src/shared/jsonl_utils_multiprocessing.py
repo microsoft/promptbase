@@ -103,7 +103,9 @@ def _error_to_jsonl_worker(
                 logger.fatal(f"Error limit of {n_errors_max} exceeded")
                 logger.fatal(f"Final item: {nxt_item}")
                 # This will kill the process
-                raise ValueError("Too many error items")
+                raise ValueError(
+                    f"Too many error items ({n_errors_seen} > {n_errors_max})"
+                )
         logger.info("About to close error file")
 
 
