@@ -14,5 +14,8 @@ conda_file:
     - pip:
       - azure-identity
       - azure-keyvault-secrets
+      - azureml-mlflow
       - datasets
       - guidance>0.1.5
+      - joblib
+      - mlflow
