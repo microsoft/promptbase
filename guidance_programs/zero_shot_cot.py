@@ -38,7 +38,7 @@ At the end, you will be asked to chose the best response, based on your analyses
             lm += gen(name=f"cot_{i}")
 
     with user():
-        lm += "Based on the above analyses, which response is correct?"
+        lm += "Based on the above analyses, give the number of the correct response:"
 
     with assistant():
         lm += select([str(i) for i in range(len(choices))], name="string_choice")
