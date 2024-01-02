@@ -5,6 +5,7 @@ import pathlib
 from typing import Any
 
 import mlflow
+import sklearn.metrics as skm
 
 from shared.jsonl_utils import line_reduce
 from shared.logging_utils import get_standard_logger_for_file
@@ -14,23 +15,22 @@ _logger = get_standard_logger_for_file(__file__)
 
 class Scorer:
     def __init__(self, correct_key: str, response_key: str):
-        self.n_correct = 0
-        self.n_total = 0
+        self.y_true = []
+        self.y_pred = []
         self.correct_key = correct_key
         self.response_key = response_key
 
     def __call__(self, line: dict[str, Any]):
-        self.n_total += 1
         correct_answer = line[self.correct_key]
         response_answer = line[self.response_key]
-        if correct_answer == response_answer:
-            self.n_correct += 1
+        self.y_true.append(correct_answer)
+        self.y_pred.append(response_answer)
 
     def generate_summary(self) -> dict[str, Any]:
         result = dict()
-        result["n_correct"] = self.n_correct
-        result["n_total"] = self.n_total
-        result["accuracy"] = self.n_correct / self.n_total
+        result["n_total"] = len(self.y_true)
+        result["accuracy"] = skm.accuracy_score(self.y_true, self.y_pred)
+        result["confusion_matrix"] = skm.confusion_matrix(self.y_true, self.y_pred)
 
         return result
 
