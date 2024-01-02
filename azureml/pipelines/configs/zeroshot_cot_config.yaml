@@ -1,0 +1,16 @@
+defaults:
+  - _self_
+  - aml_config
+  - aoai_config
+
+zeroshot_config:
+  pipeline:
+    base_experiment_name: zeroshot_cot
+    tags:
+    default_compute_target: isolatedcompute
+  mmlu_dataset: clinical_knowledge
+  mmlu_split: test
+  max_errors: 10
+  guidance_workers: 5
+  guidance_program: zero_shot_cot.py
+  aoai_config: ${ default_aoai_config }
