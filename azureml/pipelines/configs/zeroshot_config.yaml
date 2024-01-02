@@ -11,6 +11,6 @@ zeroshot_config:
   mmlu_dataset: clinical_knowledge
   mmlu_split: test
   max_errors: 10
-  guidance_workers: 5
+  guidance_workers: 10
   guidance_program: zero_shot.py
   aoai_config: ${ default_aoai_config }
