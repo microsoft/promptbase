@@ -28,10 +28,15 @@ class Scorer:
 
     def generate_summary(self) -> dict[str, Any]:
         result = dict()
-        result["n_total"] = len(self.y_true)
-        result["accuracy"] = skm.accuracy_score(self.y_true, self.y_pred)
-        result["confusion_matrix"] = skm.confusion_matrix(self.y_true, self.y_pred)
-
+        result["metrics"] = dict()
+        result["metrics"]["n_total"] = len(self.y_true)
+        result["metrics"]["accuracy"] = skm.accuracy_score(self.y_true, self.y_pred)
+        result["figures"] = dict()
+        cm_display = skm.ConfusionMatrixDisplay.from_predictions(
+            self.y_true, self.y_pred
+        )
+        _logger.info(f"cm_display: {dir(cm_display)}")
+        result["figures"]["confusion_matrix"] = cm_display.figure_
         return result
 
 
@@ -65,14 +70,14 @@ def main():
         source_encoding=args.input_encoding,
     )
     summary = scorer.generate_summary()
-    _logger.info(f"Final result: {json.dumps(summary)}")
 
-    for k, v in summary.items():
-        mlflow.log_metric(k, v)
+    mlflow.log_metrics(summary["metrics"])
+    for k, v in summary["figures"].items():
+        mlflow.log_figure(v, f"{k}.png")
 
     _logger.info("Writing output file")
     with open(args.output_dataset, encoding=args.output_encoding, mode="w") as jf:
-        json.dump(summary, jf, indent=4)
+        json.dump(summary["metrics"], jf, indent=4)
 
 
 if __name__ == "__main__":
