@@ -5,6 +5,7 @@
 import logging
 import sys
 
+from textwrap import dedent
 from typing import Any, Dict
 
 import guidance
@@ -22,25 +23,26 @@ def zero_shot_cot_multiple_choice(
 ):
     # Some general instruction to the model
     with system():
-        lm += """You are a student taking a multiple choice test.
-You will be shown a question, and then asked to analyse each of the numbered possible responses.
-At the end, you will be asked to chose the best response, based on your analyses"""
+        lm += dedent(
+            """Answer the following multiple choice **Question**.
+            First, think step by step and write an **Explanation** for reasoning through the question.
+            Then, when prompted by the user for a **Final Answer**, analyze your explanation and write just the number of the correct answer.
+            Do not say the final answer until the user asks for it."""
+        )
 
     with user():
-        lm += question
+        lm += "**Question**\n"
+        lm += question + "\n"
+        for i, choice in enumerate(choices):
+            lm += f"{i} : {choice}" + "\n"
+        lm += "**Explanation**"
 
-    for i, choice in enumerate(choices):
-        with user():
-            lm += "Analyse whether the following response is correct:\n"
-            lm += f"{i} : {choice}"
-        
-        with assistant():
-            lm += gen(name=f"cot_{i}")
+    with assistant():
+        lm += gen(name=f"explanation")
 
     response_choices = [str(i) for i in range(len(choices))]
-
     with user():
-        lm += f"Based on the above analyses, give the number ({response_choices}) of the correct response:"
+        lm += f"**Final Answer**"
 
     with assistant():
         lm += select(response_choices, name="string_choice")
