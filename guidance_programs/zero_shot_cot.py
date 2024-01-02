@@ -17,17 +17,17 @@ _logger.addHandler(logging.StreamHandler(stream=sys.stdout))
 
 
 @guidance
-def zero_shot_multiple_choice(
+def zero_shot_cot_multiple_choice(
     lm: guidance.models.Chat, question: str, choices: list[str]
 ):
     # Some general instruction to the model
     with system():
         lm += """You are a student taking a multiple choice test.
-You will be shown a question, and then asked to analyse each of the possible responses.
+You will be shown a question, and then asked to analyse each of the numbered possible responses.
 At the end, you will be asked to chose the best response, based on your analyses"""
 
     with user():
-        lm += question + "\n"
+        lm += question
 
     for i, choice in enumerate(choices):
         with user():
@@ -37,11 +37,13 @@ At the end, you will be asked to chose the best response, based on your analyses
         with assistant():
             lm += gen(name=f"cot_{i}")
 
+    response_choices = [str(i) for i in range(len(choices))]
+
     with user():
-        lm += "Based on the above analyses, give the number of the correct response:"
+        lm += f"Based on the above analyses, give the number ({response_choices}) of the correct response:"
 
     with assistant():
-        lm += select([str(i) for i in range(len(choices))], name="string_choice")
+        lm += select(response_choices, name="string_choice")
 
     return lm
 
@@ -50,7 +52,7 @@ def guidance_generation(
     lm: guidance.models.Chat, input: Dict[str, Any]
 ) -> Dict[str, Any]:
     _logger.info("Starting guidance_generation")
-    result = lm + zero_shot_multiple_choice(
+    result = lm + zero_shot_cot_multiple_choice(
         question=input["question"], choices=input["choices"]
     )
 
