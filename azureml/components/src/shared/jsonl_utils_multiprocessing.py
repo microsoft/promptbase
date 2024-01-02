@@ -241,7 +241,7 @@ def line_map_mp(
             target_queue=source_queue,
             n_complete_markers=n_worker_tasks,
         ),
-        name="Enqueuer"
+        name="Enqueuer",
     )
     worker_processes.append(enqueue_process)
 
@@ -258,7 +258,7 @@ def line_map_mp(
                 worker_time_queue=timing_queue,
                 id=i,
             ),
-            name=f"Worker {i}"
+            name=f"Worker {i}",
         )
         worker_processes.append(nxt)
 
@@ -271,7 +271,7 @@ def line_map_mp(
             worker_time_queue=timing_queue,
             n_complete_markers_expected=n_worker_tasks,
         ),
-        name="Monitor"
+        name="Monitor",
     )
     worker_processes.append(monitor_process)
 
@@ -284,7 +284,7 @@ def line_map_mp(
             target_queue=dest_queue,
             n_complete_markers_expected=n_worker_tasks,
         ),
-        name="Output"
+        name="Output",
     )
     worker_processes.append(dequeue_output_process)
 
@@ -298,7 +298,7 @@ def line_map_mp(
             n_complete_markers_expected=n_worker_tasks,
             n_errors_max=n_errors_max,
         ),
-        name="Error Output"
+        name="Error Output",
     )
     dequeue_error_output_process.start()
 
