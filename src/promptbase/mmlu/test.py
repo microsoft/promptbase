@@ -1,9 +1,9 @@
 import multiprocessing
 import os
 
-import promptbase.mmlu.MMLU as MMLU
-from promptbase.mmlu.embed_problems import *
-from promptbase.mmlu.problem_utils import *
+from . import MMLU
+from .embed_problems import *
+from .problem_utils import *
 
 dev_name = "MMLU_dev"
 test_name = "MMLU_test"

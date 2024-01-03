@@ -11,9 +11,9 @@ from sklearn.svm import LinearSVC
 from torch.nn import functional as F
 from tqdm import tqdm
 
-import promptbase.mmlu.prompt_templates
-from promptbase.mmlu.eval import *
-from promptbase.utils import *
+from . import prompt_templates
+from .eval import *
+from .utils import *
 
 ########################################
 # Load Problems
