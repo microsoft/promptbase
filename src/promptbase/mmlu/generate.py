@@ -1,8 +1,8 @@
+import os
 import pathlib
 
-import promptbase.mmlu.MMLU as MMLU
-from promptbase.mmlu.embed_problems import *
-from promptbase.mmlu.problem_utils import *
+from . import MMLU
+from .embed_problems import embed_file
 
 model_name = "gpt-4-1106-preview"
 

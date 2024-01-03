@@ -54,6 +54,8 @@ def main():
         bigbench.generate(subject)
         bigbench.evaluate()
     elif args.dataset == "mmlu":
+        # Note that to run the MMLU tests, you will need to download the
+        # data, and then use the 'format_mmlu.py' script
         mmlu.generate(args.subject)
         pass
     else:
