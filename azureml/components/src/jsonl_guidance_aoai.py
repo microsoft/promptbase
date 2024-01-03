@@ -1,6 +1,7 @@
 import argparse
 import functools
 import importlib.util
+import json
 import pathlib
 import sys
 
@@ -31,6 +32,10 @@ def parse_args():
     datasets_group.add_argument("--output_encoding", type=str, required=True)
     datasets_group.add_argument("--error_dataset", type=pathlib.Path, required=True)
     datasets_group.add_argument("--error_encoding", type=str, required=True)
+    datasets_group.add_argument(
+        "--common_dataset", type=pathlib.Path, required=False, default=None
+    )
+    datasets_group.add_argument("--common_encoding", type=str, required=False)
 
     # Information about the guidance program
     parser.add_argument("--guidance_program", type=pathlib.Path, required=True)
@@ -85,12 +90,13 @@ def process_item(
     program_path: pathlib.Path,
     endpoint: str,
     model: str,
+    common_data: any | None,
 ) -> Dict[str, Any]:
     _logger.info(f"process_item: {item}")
 
     guidance_function = get_guidance_function(program_path)
     language_model = get_model(endpoint, model)
-    result = guidance_function(language_model, item)
+    result = guidance_function(language_model, item, common=common_data)
     _logger.info(f"Checking keys")
     for k in result.keys():
         assert k not in item, f"Duplicate key: {k}"
@@ -104,12 +110,22 @@ def process_item(
 def main():
     args = parse_args()
 
+    # Load the common data (if required)
+    common_data = None
+    if args.common_dataset is not None:
+        _logger.info("Loading common dataset")
+        with open(args.common_dataset, "r", encoding=args.common_encoding) as jf:
+            common_data = json.load(jf)
+    else:
+        _logger.info("No common dataset present")
+
     # Bind arguments to the processor function
     processor = functools.partial(
         process_item,
         program_path=args.guidance_program,
         endpoint=args.azure_openai_endpoint,
         model=args.azure_openai_deployed_model,
+        common_data=common_data,
     )
 
     # Run the processing
