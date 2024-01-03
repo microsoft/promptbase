@@ -59,5 +59,5 @@ def guidance_generation(
         question=input["question"], choices=input["choices"], common=common
     )
 
-    result = dict(zeroshot_choice=int(result["string_choice"]))
+    result = dict(zero_or_few_shot_choice=int(result["string_choice"]))
     return result

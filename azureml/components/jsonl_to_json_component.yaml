@@ -1,0 +1,43 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+type: command
+
+name: jsonl_to_json
+display_name: 'JSONL to JSON'
+description: Convert a JSONL file to JSON
+is_deterministic: true
+
+inputs:
+  input_dataset:
+    type: uri_folder
+    optional: false
+    description: |
+      The source JSONL file
+  input_encoding:
+    type: string
+    optional: false
+    default: utf-8-sig
+    description: Encoding format of the input dataset
+  output_encoding:
+    type: string
+    optional: false
+    default: utf-8-sig
+    description: Encoding format of the output dataset
+
+outputs:
+  output_dataset:
+    type: uri_file
+    description: The converted JSON file
+
+
+code: ./src/
+
+command: >-
+  python ./jsonl_to_json.py
+  --input_dataset ${{ inputs.input_dataset }}
+  --input_encoding ${{ inputs.input_encoding }}
+  --output_dataset ${{ outputs.output_dataset }}
+  --output_encoding ${{ inputs.output_encoding }}
+
+environment:
+  # Will be updated when component uploads
+  image: azureml:guidance_aml_env@latest
