@@ -32,7 +32,7 @@ Response with the number corresponding to the best answer."""
                 lm += example["question"] + "\n"
                 for j, choice in enumerate(example["choices"]):
                     lm += f"{j} : {choice}\n"
-                lm += f"Correct Answer: {example['correct_answer"']}"
+                lm += f"Correct Answer: {example['correct_answer']}"
 
     with user():
         lm += question + "\n"
