@@ -12,7 +12,7 @@ class ContentAccumulator:
     def __init__(self):
         self.contents = []
 
-    def __call__(self, line: dict[str, Any]):
+    def __call__(self, line: dict[str, any]):
         self.contents.append(line)
 
 
@@ -43,7 +43,7 @@ def main():
     )
     _logger.info("All lines accumulated")
 
-    with open(args.output_path, "w", encoding=args.output_encoding) as jf:
+    with open(args.output_dataset, "w", encoding=args.output_encoding) as jf:
         jf.dump(acc.content, indent=4)
 
 
