@@ -5,7 +5,8 @@ from promptbase.math import math
 from promptbase.drop import drop
 from promptbase.bigbench import bigbench
 from promptbase.bigbench.consts import BIGBENCH_SUBJECTS
-from promptbase.mmlu import mmlu
+
+import promptbase.mmlu as mmlu
 
 
 VALID_DATASETS = ["gsm8k", "humaneval", "math", "drop", "bigbench", "mmlu"]

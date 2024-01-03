@@ -61,7 +61,7 @@ def main(mmlu_csv_dir: pathlib.Path, output_path: pathlib.Path):
             questions = process_csv_file(csv_file, split_name)
             print(json.dumps(questions[3], indent=4, ensure_ascii=False))
             with open(
-                output_path / f"mmlu_{csv_file.stem}_{split_name}.json",
+                output_path / f"mmlu_{csv_file.stem}.json",
                 "w",
                 encoding="utf-8",
             ) as json_file:
