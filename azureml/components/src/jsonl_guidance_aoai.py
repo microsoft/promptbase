@@ -90,7 +90,7 @@ def process_item(
     program_path: pathlib.Path,
     endpoint: str,
     model: str,
-    common_data: any | None,
+    common_data: Any | None,
 ) -> Dict[str, Any]:
     _logger.info(f"process_item: {item}")
 
