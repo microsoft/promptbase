@@ -17,7 +17,10 @@ _logger.addHandler(logging.StreamHandler(stream=sys.stdout))
 
 @guidance
 def zero_shot_multiple_choice(
-    lm: guidance.models.Chat, question: str, choices: list[str], common: list(dict[str, Any]) | None
+    lm: guidance.models.Chat,
+    question: str,
+    choices: list[str],
+    common: list(dict[str, Any]) | None,
 ):
     # Some general instruction to the model
     with system():
@@ -47,7 +50,9 @@ Response with the number corresponding to the best answer."""
 
 
 def guidance_generation(
-    lm: guidance.models.Chat, input: Dict[str, Any], common: list(dict[str, Any]) | None = None
+    lm: guidance.models.Chat,
+    input: Dict[str, Any],
+    common: list(dict[str, Any]) | None = None,
 ) -> Dict[str, Any]:
     _logger.info("Starting guidance_generation")
     result = lm + zero_shot_multiple_choice(
