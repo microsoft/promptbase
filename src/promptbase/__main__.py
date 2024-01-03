@@ -50,6 +50,8 @@ def main():
         subject = args.subject if args.subject else "all"
         bigbench.generate(subject)
         bigbench.evaluate()
+    elif args.dataset == "mmlu":
+        pass
     else:
         raise ValueError(f"Bad dataset: {args.dataset}")
 
