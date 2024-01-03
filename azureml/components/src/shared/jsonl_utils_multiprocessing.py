@@ -190,7 +190,7 @@ def _queue_worker(
                 success_count += 1
             except Exception as e:
                 stop_time = time.time()
-                logger.warn(f"Item failed")
+                logger.warn(f"Item failed: {e}")
                 error_queue.put(nxt_item)
                 failure_count += 1
             worker_time_queue.put(stop_time - start_time)
