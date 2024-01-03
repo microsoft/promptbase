@@ -7,7 +7,7 @@ from promptbase.bigbench import bigbench
 from promptbase.bigbench.consts import BIGBENCH_SUBJECTS
 
 
-VALID_DATASETS = ["gsm8k", "humaneval", "math", "drop", "bigbench"]
+VALID_DATASETS = ["gsm8k", "humaneval", "math", "drop", "bigbench", "mmlu"]
 
 
 def parse_arguments():
@@ -15,11 +15,11 @@ def parse_arguments():
     p.add_argument(
         "dataset", type=str, choices=VALID_DATASETS, help="Name of dataset to test"
     )
+    p.add_argument("--subject", type=str, help="Specify the subject for the dataset")
     p.add_argument(
-        "--subject", type=str, help="Specify the subject for the dataset"
-    )
-    p.add_argument(
-        "--list_subjects", action='store_true', help="Lists the subjects available for the dataset"
+        "--list_subjects",
+        action="store_true",
+        help="Lists the subjects available for the dataset",
     )
     return p.parse_args()
 
