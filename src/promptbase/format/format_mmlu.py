@@ -5,6 +5,9 @@ import pathlib
 import uuid
 
 
+ALL_QUESTIONS = "all_questions.json"
+
+
 def parse_arguments():
     parser = argparse.ArgumentParser()
 
@@ -17,7 +20,7 @@ def parse_arguments():
 
 
 # Function to process a single CSV file and return a list of question dictionaries
-def process_csv_file(file_path: pathlib.Path, split_name):
+def process_csv_file(file_path: pathlib.Path, split_name: str):
     questions = []
     with open(file_path, "r", encoding="utf-8") as file:
         csv_reader = csv.reader(file)
@@ -42,6 +45,8 @@ def process_csv_file(file_path: pathlib.Path, split_name):
 
 
 def main(mmlu_csv_dir: pathlib.Path, output_path: pathlib.Path):
+    assert mmlu_csv_dir.is_dir()
+    assert output_path.is_dir()
     all_questions = []
 
     splits = dict(
@@ -54,10 +59,16 @@ def main(mmlu_csv_dir: pathlib.Path, output_path: pathlib.Path):
     for split_name, split_path in splits.items():
         for csv_file in split_path.iterdir():
             questions = process_csv_file(csv_file, split_name)
-            all_questions.extend(questions)
             print(json.dumps(questions[3], indent=4, ensure_ascii=False))
+            with open(
+                output_path / f"mmlu_{csv_file.stem}_{split_name}.json",
+                "w",
+                encoding="utf-8",
+            ) as json_file:
+                json.dump(questions, json_file, ensure_ascii=False, indent=4)
+            all_questions.extend(questions)
 
-    with open(output_path, "w", encoding="utf-8") as json_file:
+    with open(output_path / ALL_QUESTIONS, "w", encoding="utf-8") as json_file:
         json.dump(all_questions, json_file, ensure_ascii=False, indent=4)
 
 
