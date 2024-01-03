@@ -1,7 +1,18 @@
-import json, requests, time, concurrent, datetime, os, types, random, string, logging, re
+import concurrent
 import concurrent.futures
-from tqdm import tqdm
+import datetime
+import json
+import logging
+import os
+import random
+import re
+import string
+import time
+import types
+
 import numpy as np
+import requests
+from tqdm import tqdm
 
 logging.basicConfig(level = os.environ.get("LOGLEVEL", "WARN"))
 
