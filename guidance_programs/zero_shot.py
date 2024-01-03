@@ -17,7 +17,7 @@ _logger.addHandler(logging.StreamHandler(stream=sys.stdout))
 
 @guidance
 def zero_shot_multiple_choice(
-    lm: guidance.models.Chat, question: str, choices: list[str]
+    lm: guidance.models.Chat, question: str, choices: list[str], common: list(dict[str, any]) | None
 ):
     # Some general instruction to the model
     with system():
@@ -25,10 +25,20 @@ def zero_shot_multiple_choice(
 You will be shown a question, followed by numbered multiple choice answers.
 Response with the number corresponding to the best answer."""
 
+        if common:
+            lm += "Here are some examples to help you:\n\n"
+            for i, example in enumerate(common):
+                lm += f"Example {i}\n"
+                lm += example["question"] + "\n"
+                for j, choice in enumerate(example["choices"]):
+                    lm += f"{j} : {choice}\n"
+                lm += f"Correct Answer: {example['correct_answer"']}"
+
     with user():
         lm += question + "\n"
         for i, choice in enumerate(choices):
             lm += f"{i} : {choice}\n"
+            lm += "Correct Answer: "
 
     with assistant():
         lm += select([str(i) for i in range(len(choices))], name="string_choice")
@@ -37,11 +47,11 @@ Response with the number corresponding to the best answer."""
 
 
 def guidance_generation(
-    lm: guidance.models.Chat, input: Dict[str, Any]
+    lm: guidance.models.Chat, input: Dict[str, Any], common: list(dict[str, any]) | None = None
 ) -> Dict[str, Any]:
     _logger.info("Starting guidance_generation")
     result = lm + zero_shot_multiple_choice(
-        question=input["question"], choices=input["choices"]
+        question=input["question"], choices=input["choices"], common=common
     )
 
     result = dict(zeroshot_choice=int(result["string_choice"]))
