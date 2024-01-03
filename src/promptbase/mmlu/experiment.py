@@ -1,6 +1,6 @@
 import traceback
 from functools import partial
-from problem_utils import *
+from .problem_utils import *
 
 def prepare_options(options):
     # Set experiment name

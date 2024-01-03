@@ -5,6 +5,7 @@ from promptbase.math import math
 from promptbase.drop import drop
 from promptbase.bigbench import bigbench
 from promptbase.bigbench.consts import BIGBENCH_SUBJECTS
+from promptbase.mmlu import mmlu
 
 
 VALID_DATASETS = ["gsm8k", "humaneval", "math", "drop", "bigbench", "mmlu"]
@@ -30,6 +31,8 @@ def main():
     if args.list_subjects:
         if args.dataset == "bigbench":
             print(BIGBENCH_SUBJECTS)
+        elif args.dataset == "mmlu":
+            pass
         else:
             print(f"Dataset {args.dataset} does not have subjects")
         return
@@ -51,6 +54,7 @@ def main():
         bigbench.generate(subject)
         bigbench.evaluate()
     elif args.dataset == "mmlu":
+        mmlu.generate(args.subject)
         pass
     else:
         raise ValueError(f"Bad dataset: {args.dataset}")

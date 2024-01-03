@@ -22,9 +22,6 @@ from promptbase.utils import *
 MMLU_DATASETS = [ "clinical_knowledge"]
 
 
-my_path = pathlib.Path(__file__).parent.resolve()
-
-mmlu_data_dir = my_path.parent / "datasets" / "mmlu"
 
 problem_files = {
     "MMLU_test": "../datasets/mmlu_questions_test",
