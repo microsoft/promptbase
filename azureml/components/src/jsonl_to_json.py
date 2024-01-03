@@ -45,7 +45,7 @@ def main():
     _logger.info("All lines accumulated")
 
     with open(args.output_dataset, "w", encoding=args.output_encoding) as jf:
-        json.dump(jf, acc.content, indent=4)
+        json.dump(jf, acc.contents, indent=4)
 
 
 if __name__ == "__main__":
