@@ -109,7 +109,7 @@ def main(config: PipelineConfig):
     )
 
     pipeline = create_zeroshot_pipeline(
-        ws_client, config.zeroshot_config, version_string
+        ws_client, config.fewshot_config, version_string
     )
     _logger.info("Submitting pipeline")
     submitted_job = ws_client.jobs.create_or_update(pipeline)
