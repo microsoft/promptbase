@@ -19,3 +19,4 @@ conda_file:
       - guidance>0.1.5
       - joblib
       - mlflow
+      - scikit-learn
