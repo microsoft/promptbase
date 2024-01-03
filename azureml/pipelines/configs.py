@@ -34,6 +34,7 @@ class ZeroShotRunConfig:
     max_errors: int = 5
     aoai_config: AOAIConfig = field(default_factory=AOAIConfig)
 
+
 @dataclass
 class FewShotConfig:
     pipeline: PipelineConfig = field(default_factory=PipelineConfig)

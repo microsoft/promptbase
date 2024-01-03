@@ -15,6 +15,7 @@ class ContentAccumulator:
     def __call__(self, line: dict[str, Any]):
         self.contents.append(line)
 
+
 def parse_args():
     parser = argparse.ArgumentParser(add_help=True)
 
@@ -42,7 +43,7 @@ def main():
     )
     _logger.info("All lines accumulated")
 
-    with open(args.output_path, 'w', encoding=args.output_encoding) as jf:
+    with open(args.output_path, "w", encoding=args.output_encoding) as jf:
         jf.dump(acc.content, indent=4)
 
 

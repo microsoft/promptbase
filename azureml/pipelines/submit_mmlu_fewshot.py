@@ -62,12 +62,12 @@ def create_fewshot_pipeline(
             input_dataset=mmlu_fetch_job.outputs.output_dataset,
             filename_pattern=f"{run_config.fewshot_split}.jsonl",
         )
-        get_fewshot_split_job.name=f"extract_split_{run_config.fewshot_split}"
+        get_fewshot_split_job.name = f"extract_split_{run_config.fewshot_split}"
 
         convert_common_to_json_job = components.jsonl_to_json(
             input_dataset=get_fewshot_split_job.outputs.output_dataset,
         )
-        convert_common_to_json_job.name=f"convert_fewshot_to_json"
+        convert_common_to_json_job.name = f"convert_fewshot_to_json"
 
         fewshot_guidance_job = components.jsonl_guidance(
             guidance_program=fewshot_program_input,
