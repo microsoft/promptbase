@@ -26,16 +26,20 @@ def zero_shot_multiple_choice(
     with system():
         lm += """You are a student taking a multiple choice test.
 You will be shown a question, followed by numbered multiple choice answers.
-Response with the number corresponding to the best answer."""
+Response with the number corresponding to the best answer.
+"""
 
         if common:
-            lm += "Here are some examples to help you:\n\n"
+            _logger.info("Adding few shot examples")
+            lm += "\nHere are some examples to help you:\n\n"
             for i, example in enumerate(common):
                 lm += f"Example {i}\n"
                 lm += example["question"] + "\n"
                 for j, choice in enumerate(example["choices"]):
                     lm += f"{j} : {choice}\n"
-                lm += f"Correct Answer: {example['correct_answer']}"
+                lm += f"Correct Answer: {example['correct_answer']}\n\n"
+
+            lm += "The question you need to answer will be shown next.\n\n"
 
     with user():
         lm += question + "\n"
@@ -58,6 +62,8 @@ def guidance_generation(
     result = lm + zero_shot_multiple_choice(
         question=input["question"], choices=input["choices"], common=common
     )
+
+    _logger.info(f"Result: {result}")
 
     result = dict(zero_or_few_shot_choice=int(result["string_choice"]))
     return result
