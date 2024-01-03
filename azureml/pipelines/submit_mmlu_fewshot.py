@@ -120,9 +120,7 @@ def main(config: PipelineConfig):
         logging_enable=False,
     )
 
-    pipeline = create_fewshot_pipeline(
-        ws_client, config.fewshot_config, version_string
-    )
+    pipeline = create_fewshot_pipeline(ws_client, config.fewshot_config, version_string)
     _logger.info("Submitting pipeline")
     submitted_job = ws_client.jobs.create_or_update(pipeline)
     _logger.info(f"Submitted: {submitted_job.name}")
