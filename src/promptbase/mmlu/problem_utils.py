@@ -47,7 +47,7 @@ def load_problems(file_name):
     if file_name in problem_files:
         file_name = problem_files[file_name]
     else:
-        file_name = mmlu_data_dir / file_name
+        file_name = str(mmlu_data_dir / file_name)
 
     return load_questions(file_name + ".json")
 
