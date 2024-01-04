@@ -102,11 +102,13 @@ def run_batch_jobs(run_task, tasks, max_thread):
 
 openai_configs = types.SimpleNamespace()
 
-openai_configs.models = {}
+openai_configs.models = {
+    "text-embedding-ada-002": {"endpoint": "openai-embeddings", "type": "embedding"},
+}
 
 openai_configs.endpoints = {
     "openai-embeddings": {
-        "headers": {"Authorization": os.getenv("AZURE_OPENAI_API_KEY")},
+        "headers": {"api-key": f"{os.getenv('AZURE_OPENAI_API_KEY')}"},
         "url": os.getenv("AZURE_OPENAI_EMBEDDINGS_URL"),
     }
 }
@@ -132,6 +134,9 @@ def embed(text, model_name="text-embedding-ada-002"):
     data = {"input": text, "model": model_name}
 
     response = requests.post(url, headers=header, json=data, timeout=(30, 600))
+    if response.status_code > 400:
+        print(f"Got bad response from {url}: {response.text}")
+        exit()
     data = response.json()["data"]
     if type(text) == str:
         return data[0]["embedding"]
