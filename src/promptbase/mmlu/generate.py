@@ -3,13 +3,11 @@ import pathlib
 
 from . import MMLU
 from .embed_problems import embed_file
+from .mmlu_paths import mmlu_data_dir
 
 model_name = "gpt-4-1106-preview"
 
 
-my_path = pathlib.Path(__file__).parent.resolve()
-
-mmlu_data_dir = my_path.parent / "datasets" / "mmlu"
 
 
 def generate(dataset_name: str):
