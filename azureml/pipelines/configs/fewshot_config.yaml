@@ -3,13 +3,14 @@ defaults:
   - aml_config
   - aoai_config
 
-zeroshot_config:
+fewshot_config:
   pipeline:
-    base_experiment_name: zeroshot
+    base_experiment_name: fewshot
     tags:
     default_compute_target: isolatedcompute
   mmlu_dataset: clinical_knowledge
   mmlu_split: test
+  fewshot_split: dev
   max_errors: 10
   guidance_workers: 10
   guidance_program: zero_or_few_shot.py
