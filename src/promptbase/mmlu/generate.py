@@ -3,11 +3,9 @@ import pathlib
 
 from . import MMLU
 from .embed_problems import embed_file
-from .mmlu_paths import mmlu_data_dir
+from .mmlu_paths import mmlu_data_dir, mmlu_generations_dir
 
 model_name = "gpt-4-1106-preview"
-
-
 
 
 def generate(dataset_name: str):
@@ -26,7 +24,9 @@ def generate(dataset_name: str):
     MMLU.run_cot_without_rank(
         test_problem,
         run_name=f"{test_problem}/cot_knn",
-        examples=f"expt/{dev_problem}/cot/result",
+        examples=str(
+            mmlu_generations_dir / f"expt" / f"{dev_problem}" / "cot" / "result"
+        ),
         mode="knn",
         num_examples=5,
         num_repeat=5,
@@ -36,7 +36,9 @@ def generate(dataset_name: str):
     MMLU.run_cot_without_rank(
         test_problem,
         run_name=f"{test_problem}/cot_via_knn",
-        examples=f"expt/{test_problem}/cot_knn/result",
+        examples=str(
+            mmlu_generations_dir / f"expt" / f"{test_problem}" / "cot_knn" / "result"
+        ),
         mode="knn",
         num_examples=5,
         num_repeat=15,

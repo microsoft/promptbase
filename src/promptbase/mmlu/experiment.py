@@ -23,7 +23,9 @@ def prepare_options(options):
             name += "_weighted"
         options["name"] = name
 
-    if (mmlu_generations_dir / f"expt/{options['name']}").exists() and "ignore_check" not in options:
+    if (
+        mmlu_generations_dir / f"expt/{options['name']}"
+    ).exists() and "ignore_check" not in options:
         confirm = input(
             f"Are you sure you want to overwrite the content in {options['name']}? (y/n): "
         )
@@ -330,7 +332,8 @@ def run_experiment(options):
             if options.get("verbose", True):
                 print(summary)
             save_problems(
-                f"expt/{options['name']}/result", options["problems"]
+                str(mmlu_generations_dir / f"expt" / f"{options['name']}" / "result"),
+                options["problems"],
             )  # save results regularly
 
         with open("summary.md", "a") as f:
