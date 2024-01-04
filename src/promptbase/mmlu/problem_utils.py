@@ -14,15 +14,14 @@ from tqdm import tqdm
 from . import prompt_templates
 from .eval import *
 
-from .mmlu_paths import mmlu_data_dir
+from .mmlu_paths import mmlu_data_dir, mmlu_generations_dir
 from .utils import *
 
 ########################################
 # Load Problems
 ########################################
 
-MMLU_DATASETS = [ "clinical_knowledge"]
-
+MMLU_DATASETS = ["clinical_knowledge"]
 
 
 problem_files = {
@@ -622,8 +621,9 @@ def compute_statistics(
         summary += f"{expt.replace('^merged@', '').replace('_test','')}\t{count}\t{answer}\t{correct}\t{(correct/(answer+1e-12))*100:.1f}\n"
 
     for expt in results:
-        os.makedirs(os.path.dirname(f"expt/{expt}.json"), exist_ok=True)
-        with open(f"expt/{expt}.json", "w") as f:
+        (mmlu_generations_dir / "expt").mkdir(parents=True, exist_ok=True)
+        # os.makedirs(os.path.dirname(f"expt/{expt}.json"), exist_ok=True)
+        with open(mmlu_generations_dir / "expt" / f"{expt}.json", "w") as f:
             f.write(json.dumps(results[expt]))
 
     if extract_mode is not None:
