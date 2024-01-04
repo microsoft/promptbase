@@ -7,9 +7,9 @@ def prepare_options(options):
     if "name" not in options:
         if type(options["problems"]) is not str or "/" in options["problems"]:
             raise "You need to set the experiment name."
-        name = options["problems"] + "/" + options["prompt_name"]
+        name = f"{options['problems']}/{options['prompt_name']}"
         
-        if options.get("example_selector","") == "knn":
+        if options.get("example_selector", "") == "knn":
             name += "_knn"
         if "embedding_map" in options:
             name += "_weighted"
@@ -209,7 +209,7 @@ def run_experiment(options):
             if options.get("reorder", True):
                 order = random_order(options.get("options", "ABCDEFGHIJ"), used_order)
             else:
-                order = "ABCDEFGHIJ" + random_order("KLMNOPQRST", used_order) # TODO: cleanup file naming
+                order = f"ABCDEFGHIJ{random_order('KLMNOPQRST', used_order)}"  # TODO: cleanup file naming
             used_order.append(order)
             options["order"] = order
             run_batch_jobs(partial(solve, options), options["problems"], max_thread=options.get("max_thread",30))
@@ -221,7 +221,7 @@ def run_experiment(options):
 
         with open("summary.md", "a") as f:
             f.write(summary)
-            f.write("\n" + "=" * 80 + "\n")
+            f.write(f"\n{'=' * 80}\n")
     except KeyboardInterrupt:
         quit()
     except:
