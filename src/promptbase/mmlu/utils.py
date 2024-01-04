@@ -103,6 +103,7 @@ def run_batch_jobs(run_task, tasks, max_thread):
 openai_configs = types.SimpleNamespace()
 
 openai_configs.models = {
+    "gpt-4-1106-preview": {"endpoint": "azure", "type": "chat"},
     "text-embedding-ada-002": {"endpoint": "openai-embeddings", "type": "embedding"},
 }
 
@@ -110,7 +111,11 @@ openai_configs.endpoints = {
     "openai-embeddings": {
         "headers": {"api-key": f"{os.getenv('AZURE_OPENAI_API_KEY')}"},
         "url": os.getenv("AZURE_OPENAI_EMBEDDINGS_URL"),
-    }
+    },
+    "azure": {
+        "headers": {"api-key": f"{os.getenv('AZURE_OPENAI_CHAT_API_KEY')}"},
+        "url": os.getenv("AZURE_OPENAI_CHAT_ENDPOINT_URL"),
+    },
 }
 
 openai_configs.busy_message = [
