@@ -1,5 +1,6 @@
 import copy
 import gzip
+import logging
 import math
 import pathlib
 import random
@@ -20,6 +21,8 @@ from .utils import *
 ########################################
 # Load Problems
 ########################################
+
+_logger = logging.getLogger(__name__)
 
 MMLU_DATASETS = ["clinical_knowledge"]
 
@@ -97,6 +100,7 @@ def set_order(problem, order=default_order):
 
 
 def load_solutions(file_name, options):
+    _logger.info(f"load_solutions: {file_name}")
     only_correct_solution = options.get("only_correct_solution", True)
     solution_difficulty = options.get("solution_difficulty", "all")
     problems = load_problems(file_name)

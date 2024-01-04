@@ -1,4 +1,6 @@
 import argparse
+import logging
+
 from promptbase.gsm8k import gsm8k
 from promptbase.humaneval import humaneval
 from promptbase.math import math
@@ -8,6 +10,7 @@ from promptbase.bigbench.consts import BIGBENCH_SUBJECTS
 
 import promptbase.mmlu as mmlu
 
+logging.basicConfig(level=logging.INFO)
 
 VALID_DATASETS = ["gsm8k", "humaneval", "math", "drop", "bigbench", "mmlu"]
 

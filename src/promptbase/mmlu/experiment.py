@@ -7,6 +7,8 @@ import torch
 from .problem_utils import *
 from .utils import openai_configs, run_batch_jobs, text_completion
 
+from .mmlu_paths import mmlu_generations_dir
+
 
 def prepare_options(options):
     # Set experiment name
@@ -21,7 +23,7 @@ def prepare_options(options):
             name += "_weighted"
         options["name"] = name
 
-    if os.path.exists(f"expt/{options['name']}") and "ignore_check" not in options:
+    if (mmlu_generations_dir / f"expt/{options['name']}").exists() and "ignore_check" not in options:
         confirm = input(
             f"Are you sure you want to overwrite the content in {options['name']}? (y/n): "
         )
@@ -29,7 +31,9 @@ def prepare_options(options):
             quit()
 
     if "log_file" not in options:
-        options["log_file"] = f"expt/{options['name']}/log.md"
+        options["log_file"] = str(
+            mmlu_generations_dir / f"expt" / f"{options['name']}" / "log.md"
+        )
         os.makedirs(os.path.dirname(options["log_file"]), exist_ok=True)
         if os.path.exists(options["log_file"]):
             os.remove(options["log_file"])
