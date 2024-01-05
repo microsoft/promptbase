@@ -1,7 +1,7 @@
 import gzip
 from tqdm import tqdm
-from eval import *
-from utils import *
+from .eval import *
+from .utils import *
 
 def embed_file(file_name):
     ds = load_questions(file_name)

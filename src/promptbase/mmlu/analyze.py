@@ -1,4 +1,4 @@
-from promptbase.mmlu.problem_utils import *
+from .problem_utils import *
 test_problem = "MMLU_test_chemistry"
 
 subjects = '''Astronomy

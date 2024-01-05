@@ -1,6 +1,6 @@
 import copy
 from liquid import Template
-from promptbase.mmlu.experiment import *
+from .experiment import *
 
 letter_5shots = {
     "prompt_name": "letter_5shots",

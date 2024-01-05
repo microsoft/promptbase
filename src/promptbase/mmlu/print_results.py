@@ -1,4 +1,4 @@
-from promptbase.mmlu.problem_utils import *
+from .problem_utils import *
 import gzip
 
 def load_problems(file_name):
