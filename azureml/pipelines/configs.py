@@ -45,3 +45,10 @@ class FewShotConfig:
     guidance_workers: int = 4
     max_errors: int = 5
     aoai_config: AOAIConfig = field(default_factory=AOAIConfig)
+
+
+@dataclass
+class EmbeddingConfig:
+    pipeline: PipelineConfig = field(default_factory=PipelineConfig)
+    mmlu_dataset: str = str()
+    aoai_embedding_config: AOAIConfig = field(default_factory=AOAIConfig)

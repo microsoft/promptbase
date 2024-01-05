@@ -6,7 +6,7 @@ defaults:
 
 embedding_config:
   pipeline:
-    base_experiment_name: zeroshot_cot
+    base_experiment_name: simple_embedding_creation
     tags:
     default_compute_target: isolatedcompute
   mmlu_dataset: clinical_knowledge
