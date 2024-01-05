@@ -9,7 +9,7 @@ model_name = "gpt-4-1106-preview"
 
 
 def generate(dataset_name: str):
-    dev_problem = f"mmlu_{dataset_name}_dev"
+    dev_problem = f"mmlu_{dataset_name}_val"
     test_problem = f"mmlu_{dataset_name}_test"
 
     if not os.path.exists(str(mmlu_data_dir / dev_problem) + ".json.gz"):
