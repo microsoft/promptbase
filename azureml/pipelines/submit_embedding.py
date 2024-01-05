@@ -1,3 +1,5 @@
+# python .\pipelines\submit_embedding.py -cn embedding_config
+
 import time
 
 from dataclasses import dataclass
@@ -10,12 +12,11 @@ import omegaconf
 from azure.identity import DefaultAzureCredential
 from azure.ai.ml import MLClient
 
-from azure.ai.ml import dsl, Input, MLClient
+from azure.ai.ml import dsl, MLClient
 from azure.ai.ml.entities import Pipeline
 
 from azureml_utils import get_component_collector
 from configs import AMLConfig, EmbeddingConfig
-from constants import GUIDANCE_PROGRAMS_DIR
 from logging_utils import get_standard_logger_for_file
 
 _logger = get_standard_logger_for_file(__file__)
