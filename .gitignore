@@ -20,4 +20,4 @@ azureml/pipelines/configs/aoai_config.yaml
 azureml/pipelines/configs/aoai_embedding_config.yaml
 
 # Don't include Hydra output directory
-azureml/pipelines/outputs/*
+azureml/**/outputs/*

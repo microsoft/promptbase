@@ -1,7 +1,6 @@
 defaults:
   - _self_
   - aml_config
-  - aoai_config
   - aoai_embedding_config
 
 embedding_config:
@@ -10,4 +9,5 @@ embedding_config:
     tags:
     default_compute_target: isolatedcompute
   mmlu_dataset: clinical_knowledge
+  mmlu_split: dev
   aoai_embedding_config: ${ default_aoai_embedding_config }

@@ -51,4 +51,5 @@ class FewShotConfig:
 class EmbeddingConfig:
     pipeline: PipelineConfig = field(default_factory=PipelineConfig)
     mmlu_dataset: str = str()
+    mmlu_split: str = str()
     aoai_embedding_config: AOAIConfig = field(default_factory=AOAIConfig)
