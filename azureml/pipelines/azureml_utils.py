@@ -13,6 +13,7 @@ _logger.setLevel(logging.INFO)
 
 # This dictionary lists the attributes to be added to ComponentCollector
 ALL_COMPONENTS = dict(
+    jsonl_embeddings="jsonl_embeddings_aoai_component.yaml",
     jsonl_guidance="jsonl_guidance_component.yaml",
     jsonl_mmlu_fetch="jsonl_mmlu_fetch_component.yaml",
     jsonl_score_multiplechoice="jsonl_score_multiplechoice_component.yaml",
