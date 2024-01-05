@@ -56,7 +56,6 @@ def create_embedding_pipeline(
             workers=run_config.workers,
             max_errors=run_config.max_errors,
             azure_openai_endpoint=run_config.aoai_embedding_config.endpoint,
-            azure_openai_embedding_model=run_config.aoai_embedding_config.model,
         )
         embedding_job.compute = run_config.aoai_embedding_config.compute_target
         embedding_job.name = f"add_embeddings_{run_config.mmlu_split}"

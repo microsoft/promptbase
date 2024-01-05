@@ -1,6 +1,6 @@
 $schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
 
-name: jsonl_guidance_aoai
+name: jsonl_embeddings_aoai
 version: 0.0.1pre1
 display_name: JSONL Embeddings Azure OpenAI
 type: command
@@ -31,10 +31,6 @@ inputs:
     type: string
     optional: false
     description: The AzureAI OpenaAI endpoitn to call
-  azure_openai_embedding_model:
-    type: string
-    optional: false
-    description: The deployment name of the embedding model
   source_key:
     type: string
     optional: false
@@ -67,12 +63,11 @@ code: ./src/
 
 command: >-
   python ./jsonl_embeddings_aoai.py
-  --workers ${{ inputs.guidance_workers }}
+  --workers ${{ inputs.workers }}
   --max_errors ${{ inputs.max_errors }}
   --input_dataset ${{ inputs.input_dataset }}
   --input_encoding ${{ inputs.input_encoding }}
   --azure_openai_endpoint ${{ inputs.azure_openai_endpoint }}
-  --azure_openai_embedding_model ${{ inputs.azure_openai_embedding_model }}
   --output_dataset ${{ outputs.output_dataset }}
   --output_encoding ${{ inputs.output_encoding }}
   --error_dataset ${{ outputs.error_dataset }}

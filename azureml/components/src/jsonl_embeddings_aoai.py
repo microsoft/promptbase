@@ -2,6 +2,8 @@ import argparse
 import functools
 import pathlib
 
+from urllib.parse import urlparse, parse_qs
+
 
 from azure.identity import DefaultAzureCredential, get_bearer_token_provider
 
@@ -34,12 +36,11 @@ def parse_args():
     # Information about the embeddings mode
     model_group = parser.add_argument_group("Model Endpoint")
     model_group.add_argument("--azure_openai_endpoint", type=str, required=True)
-    model_group.add_argument("--azure_openai_embeddings_model", type=str, required=True)
 
     # Information about the keys
     keys_group = parser.add_argument_group("JSON Keys")
-    keys_group.add_argument_group("--source_key", type=str, required=True)
-    keys_group.add_argument_group("--destination_key", type=str, required=True)
+    keys_group.add_argument("--source_key", type=str, required=True)
+    keys_group.add_argument("--destination_key", type=str, required=True)
 
     args = parser.parse_args()
     return args
@@ -51,8 +52,13 @@ def get_aoai_client(
     token_provider = get_bearer_token_provider(
         DefaultAzureCredential(), "https://cognitiveservices.azure.com/.default"
     )
+    parsed_url = urlparse(endpoint)
+    parsed_query = parse_qs(parsed_url.query)
+
     client = AzureOpenAI(
-        azure_endpoint=endpoint, azure_ad_token_provider=token_provider
+        azure_endpoint=endpoint,
+        azure_ad_token_provider=token_provider,
+        api_version=parsed_query["api-version"],
     )
     return client
 
@@ -62,16 +68,17 @@ def process_item(
     src_key: str,
     dst_key: str,
     azure_aoai_endpoint: str,
-    azure_openai_embeddings_model: str,
 ) -> dict[str, any]:
     _logger.info(f"process_item: {item}")
 
     client = get_aoai_client(azure_aoai_endpoint)
 
+    parsed_url = urlparse(azure_aoai_endpoint)
+    deployment_name = parsed_url.path.split("/")[2]
+    _logger.info(f"Got Deployment: {deployment_name}")
+
     embeddings = (
-        client.embeddings.create(
-            input=[item[src_key]], model=azure_openai_embeddings_model
-        )
+        client.embeddings.create(input=[item[src_key]], model=deployment_name)
         .data[0]
         .embedding
     )
@@ -91,7 +98,6 @@ def main():
         src_key=args.source_key,
         dst_key=args.destination_key,
         azure_aoai_endpoint=args.azure_openai_endpoint,
-        azure_openai_embeddings_model=args.azure_openai_embeddings_model,
     )
 
     # Run the processing

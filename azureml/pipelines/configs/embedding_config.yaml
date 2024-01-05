@@ -10,4 +10,8 @@ embedding_config:
     default_compute_target: isolatedcompute
   mmlu_dataset: clinical_knowledge
   mmlu_split: dev
+  source_key: question
+  destination_key: question_embedding
+  workers: 4
+  max_errors: 2
   aoai_embedding_config: ${ default_aoai_embedding_config }
