@@ -1,0 +1,13 @@
+defaults:
+  - _self_
+  - aml_config
+  - aoai_config
+  - aoai_embedding_config
+
+embedding_config:
+  pipeline:
+    base_experiment_name: zeroshot_cot
+    tags:
+    default_compute_target: isolatedcompute
+  mmlu_dataset: clinical_knowledge
+  aoai_embedding_config: ${ default_aoai_embedding_config }
