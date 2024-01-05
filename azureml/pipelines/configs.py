@@ -52,4 +52,8 @@ class EmbeddingConfig:
     pipeline: PipelineConfig = field(default_factory=PipelineConfig)
     mmlu_dataset: str = str()
     mmlu_split: str = str()
+    source_key: str = str()
+    destination_key: str = str()
+    workers: int = 4
+    max_errors: int = 2
     aoai_embedding_config: AOAIConfig = field(default_factory=AOAIConfig)

@@ -49,7 +49,18 @@ def create_embedding_pipeline(
         )
         get_split_job.name = f"extract_split_{run_config.mmlu_split}"
 
-    
+        embedding_job = components.jsonl_embeddings(
+            input_dataset=get_split_job.outputs.output_dataset,
+            source_key=run_config.source_key,
+            destination_key=run_config.destination_key,
+            workers=run_config.workers,
+            max_errors=run_config.max_errors,
+            azure_openai_endpoint=run_config.aoai_embedding_config.endpoint,
+            azure_openai_embedding_model=run_config.aoai_embedding_config.model,
+        )
+        embedding_job.compute = run_config.aoai_embedding_config.compute_target
+        embedding_job.name = f"add_embeddings_{run_config.mmlu_split}"
+
     pipeline = basic_pipeline()
     pipeline.experiment_name = (
         f"{run_config.pipeline.base_experiment_name}_{run_config.mmlu_dataset}"
