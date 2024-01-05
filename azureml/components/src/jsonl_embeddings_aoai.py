@@ -74,7 +74,7 @@ def process_item(
     client = get_aoai_client(azure_aoai_endpoint)
 
     parsed_url = urlparse(azure_aoai_endpoint)
-    deployment_name = parsed_url.path.split("/")[2]
+    deployment_name = parsed_url.path.split("/")[3]
     _logger.info(f"Got Deployment: {deployment_name}")
 
     embeddings = (
