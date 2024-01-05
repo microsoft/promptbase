@@ -80,6 +80,8 @@ def run_batch_jobs(run_task, tasks, max_thread):
     - max_thread: the number of thread we use
     """
     results = []
+    max_failures = 10
+    observed_failures = 0
     with concurrent.futures.ThreadPoolExecutor(max_thread) as executor, tqdm(
         total=len(tasks)
     ) as pbar:
@@ -92,6 +94,9 @@ def run_batch_jobs(run_task, tasks, max_thread):
                 results.append(result)
             except Exception as e:
                 logging.exception("Error occurred during run_batch_jobs.")
+                observed_failures += 1
+                if observed_failures > max_failures:
+                    raise
 
     return results
 
