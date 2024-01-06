@@ -40,6 +40,31 @@ def parse_args():
     return args
 
 
+def compute_knn(
+    item: dict[str, any],
+    *,
+    examples: list[dict[str, any]],
+    example_embedding_matrix: np.ndarray,
+    input_vector_key: str,
+    output_key: str,
+    k_nearest: int,
+) -> dict[str, any]:
+    _logger.info(f"process_item: {item}")
+
+    item_embedding = np.ndarray(item[input_vector_key])
+
+    similarities = np.matmul(example_embedding_matrix, item_embedding)
+    top_k = np.argsort(similarities)[0:k_nearest].tolist()
+    _logger.info(f"k nearest: {top_k}")
+    k_examples = []
+    for k in top_k:
+        k_examples.append(examples[k])
+    item[output_key] = k_examples
+    del item[input_vector_key]
+
+    return item
+
+
 def normalised_vector(input: list[float]) -> np.ndarray:
     result = np.asarray(input)
     result = result / np.linalg.norm(result)
@@ -58,7 +83,29 @@ def main():
         f"Embedding Matrix: {example_embedding_matrix.dtype} {example_embedding_matrix.shape}"
     )
 
-    _logger.info("Complete")
+    # Remove the vectors
+    for e in example_data:
+        del e[args.example_vector_key]
+
+    # Construct the mapping function
+    processor = functools.partial(
+        compute_knn,
+        examples=example_data,
+        example_embedding_matrix=example_embedding_matrix,
+        input_vector_key=args.input_vector_key,
+        output_key=args.output_key,
+        k_nearest=args.k_nearest,
+    )
+
+    s, f = line_map(
+        map_func=processor,
+        source_file=args.input_dataset,
+        source_encoding=args.input_encoding,
+        dest_file=args.output_dataset,
+        dest_encoding=args.output_encoding,
+    )
+
+    _logger.info(f"Complete with {s} successes and {f} failures")
 
 
 if __name__ == "__main__":
