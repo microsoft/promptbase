@@ -77,7 +77,7 @@ def create_knn_fewshot_pipeline(
     components = get_component_collector(ml_client, version_string)
 
     embeddings_key = "question_embedding"
-    knn_key = "k_nearest_neighbours"
+    fewshot_examples_key = "fewshot_examples"
 
     fewshow_program_input = Input(
         type="uri_file",
@@ -113,7 +113,7 @@ def create_knn_fewshot_pipeline(
             example_dataset=examples_with_embeddings,
             input_vector_key=embeddings_key,
             example_vector_key=embeddings_key,
-            output_key=knn_key,
+            output_key=fewshot_examples_key,
             k_nearest=run_config.knn_config.k_nearest,
         )
         knn_job.name = f"select_knn_cosine_similarity"
@@ -126,15 +126,15 @@ def create_knn_fewshot_pipeline(
             azure_openai_endpoint=run_config.aoai_config.endpoint,
             azure_openai_deployed_model=run_config.aoai_config.model,
         )
-        guidance_job.name = f"guidance_knn"
+        guidance_job.name = f"guidance_fewshot"
         guidance_job.compute = run_config.aoai_config.compute_target
 
         score_job = components.jsonl_score_multiplechoice(
             input_dataset=guidance_job.outputs.output_dataset,
             correct_key="correct_answer",  # Set when MMLU fetching
-            response_key="knn_fewshot_choice",
+            response_key="fewshot_choice",
         )
-        score_job.name = f"knn_fewshot_score"
+        score_job.name = f"score_fewshot"
 
     pipeline = basic_pipeline(fewshow_program_input)
     pipeline.experiment_name = (

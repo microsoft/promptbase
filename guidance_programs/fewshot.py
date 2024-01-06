@@ -18,7 +18,7 @@ def zero_shot_multiple_choice(
     lm: guidance.models.Chat,
     question: str,
     choices: list[str],
-    knn: list[dict[str, any]],
+    fewshot_examples: list[dict[str, any]],
 ):
     # Some general instruction to the model
     with system():
@@ -31,7 +31,7 @@ def zero_shot_multiple_choice(
 
         _logger.info("Adding few shot examples")
         lm += "\nHere are some examples to help you:\n\n"
-        for i, example in enumerate(knn):
+        for i, example in enumerate(fewshot_examples):
             lm += f"Example {i}\n"
             lm += example["question"] + "\n"
             for j, choice in enumerate(example["choices"]):
@@ -62,10 +62,10 @@ def guidance_generation(
     result = lm + zero_shot_multiple_choice(
         question=input["question"],
         choices=input["choices"],
-        knn=input["k_nearest_neighbours"],
+        fewshot_examples=input["fewshot_examples"],
     )
 
     _logger.info(f"Result: {result}")
 
-    result = dict(knn_fewshot_choice=int(result["string_choice"]))
+    result = dict(fewshot_choice=int(result["string_choice"]))
     return result
