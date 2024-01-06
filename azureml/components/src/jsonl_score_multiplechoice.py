@@ -31,6 +31,9 @@ class Scorer:
         result["metrics"] = dict()
         result["metrics"]["n_total"] = len(self.y_true)
         result["metrics"]["accuracy"] = skm.accuracy_score(self.y_true, self.y_pred)
+        result["metrics"]["n_correct"] = skm.accuracy_score(
+            self.y_true, self.y_pred, normalize=False
+        )
         result["figures"] = dict()
         cm_display = skm.ConfusionMatrixDisplay.from_predictions(
             self.y_true, self.y_pred
