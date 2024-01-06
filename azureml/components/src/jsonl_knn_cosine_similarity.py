@@ -78,7 +78,7 @@ def main():
 
     example_data = load_jsonl(args.example_dataset, args.example_encoding)
     example_embedding_matrix = np.stack(
-        [normalised_vector(e[args.example_vector_key]) for e in example_data], axis=-1
+        [normalised_vector(e[args.example_vector_key]) for e in example_data], axis=0
     )
     _logger.info(
         f"Embedding Matrix: {example_embedding_matrix.dtype} {example_embedding_matrix.shape}"
