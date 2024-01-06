@@ -1,0 +1,17 @@
+defaults:
+  - _self_
+  - aml_config
+  - aoai_config
+
+knn_fewshot_config:
+  pipeline:
+    base_experiment_name: fewshot_knn
+    tags:
+    default_compute_target: isolatedcompute
+  mmlu_dataset: clinical_knowledge
+  test_split: test
+  example_split: val
+  knn_config:
+    k_nearest: 5
+  aoai_config: ${ default_aoai_config }
+  aoai_embedding_config: ${ default_aoai_embedding_config }
