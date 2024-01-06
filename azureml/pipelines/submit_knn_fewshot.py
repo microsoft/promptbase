@@ -15,6 +15,7 @@ from azure.ai.ml.entities import Pipeline
 
 from azureml_utils import get_component_collector, ComponentCollector
 from configs import AMLConfig, KNNFewshotConfig, AOAIConfig
+from constants import GUIDANCE_PROGRAMS_DIR
 from logging_utils import get_standard_logger_for_file
 
 _logger = get_standard_logger_for_file(__file__)
@@ -76,10 +77,16 @@ def create_knn_fewshot_pipeline(
     components = get_component_collector(ml_client, version_string)
 
     embeddings_key = "question_embedding"
-    knn_key = "knn"
+    knn_key = "k_nearest_neighbours"
+
+    fewshow_program_input = Input(
+        type="uri_file",
+        path=GUIDANCE_PROGRAMS_DIR / run_config.guidance_program,
+        model="download",
+    )
 
     @dsl.pipeline()
-    def basic_pipeline() -> Pipeline:
+    def basic_pipeline(guidance_program: Input) -> Pipeline:
         mmlu_fetch_job = components.jsonl_mmlu_fetch(
             mmlu_dataset=run_config.mmlu_dataset
         )
@@ -111,7 +118,25 @@ def create_knn_fewshot_pipeline(
         )
         knn_job.name = f"select_knn_cosine_similarity"
 
-    pipeline = basic_pipeline()
+        guidance_job = components.jsonl_guidance(
+            guidance_program=guidance_program,
+            guidance_workers=run_config.aoai_config.workers,
+            max_errors=run_config.aoai_config.max_errors,
+            input_dataset=knn_job.outputs.output_dataset,
+            azure_openai_endpoint=run_config.aoai_config.endpoint,
+            azure_openai_deployed_model=run_config.aoai_config.model,
+        )
+        guidance_job.name = f"guidance_knn"
+        guidance_job.compute = run_config.aoai_config.compute_target
+
+        score_job = components.jsonl_score_multiplechoice(
+            input_dataset=guidance_job.outputs.output_dataset,
+            correct_key="correct_answer",  # Set when MMLU fetching
+            response_key="knn_fewshot_choice",
+        )
+        score_job.name = f"knn_fewshot_score"
+
+    pipeline = basic_pipeline(fewshow_program_input)
     pipeline.experiment_name = (
         f"{run_config.pipeline.base_experiment_name}_{run_config.mmlu_dataset}"
     )

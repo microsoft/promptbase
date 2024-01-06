@@ -72,6 +72,7 @@ class KNNFewshotConfig:
     mmlu_dataset: str = str()
     test_split: str = str()
     example_split: str = str()
+    guidance_program: str = str()
     knn_config: KNNConfig = field(default_factory=KNNConfig)
     aoai_config: AOAIConfig = field(default_factory=AOAIConfig)
     aoai_embedding_config: AOAIConfig = field(default_factory=AOAIConfig)
