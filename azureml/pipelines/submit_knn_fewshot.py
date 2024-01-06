@@ -34,31 +34,40 @@ cs.store(name="config", node=PipelineConfig)
 
 def create_embedding_for_split_pipeline(
     components: ComponentCollector,
-    mmlu_folder,
+    mmlu_folder: Input,
     target_split: str,
     embedding_output_key: str,
     aoai_embedding_config: AOAIConfig,
 ):
     question_key = "question"
 
-    get_split_job = components.uri_folder_to_file(
-        input_dataset=mmlu_folder,
-        filename_pattern=f"{target_split}.jsonl",
+    @dsl.pipeline(
+        name=f"extract_embeddings_{target_split}",
+        display_name=f"extract_embeddings_{target_split}",
     )
-    get_split_job.name = f"extract_split_{target_split}"
+    def extract_embeddings(mmlu_dir: Input):
+        get_split_job = components.uri_folder_to_file(
+            input_dataset=mmlu_dir,
+            filename_pattern=f"{target_split}.jsonl",
+        )
+        get_split_job.name = f"extract_split_{target_split}"
 
-    embedding_job = components.jsonl_embeddings(
-        input_dataset=get_split_job.outputs.output_dataset,
-        source_key=question_key,
-        destination_key=embedding_output_key,
-        workers=aoai_embedding_config.workers,
-        max_errors=aoai_embedding_config.max_errors,
-        azure_openai_endpoint=aoai_embedding_config.endpoint,
-    )
-    embedding_job.compute = aoai_embedding_config.compute_target
-    embedding_job.name = f"add_embeddings_{target_split}"
+        embedding_job = components.jsonl_embeddings(
+            input_dataset=get_split_job.outputs.output_dataset,
+            source_key=question_key,
+            destination_key=embedding_output_key,
+            workers=aoai_embedding_config.workers,
+            max_errors=aoai_embedding_config.max_errors,
+            azure_openai_endpoint=aoai_embedding_config.endpoint,
+        )
+        embedding_job.compute = aoai_embedding_config.compute_target
+        embedding_job.name = f"add_embeddings_{target_split}"
 
-    return embedding_job.outputs.output_dataset
+        return {"output_dataset": embedding_job.outputs.output_dataset}
+
+    sub_pipeline = extract_embeddings(mmlu_folder)
+
+    return sub_pipeline.outputs.output_dataset
 
 
 def create_knn_fewshot_pipeline(
