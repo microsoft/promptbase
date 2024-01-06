@@ -45,7 +45,7 @@ Response with the number corresponding to the best answer.
         lm += question + "\n"
         for i, choice in enumerate(choices):
             lm += f"{i} : {choice}\n"
-            lm += "Correct Answer: "
+        lm += "Correct Answer: "
 
     with assistant():
         lm += select([str(i) for i in range(len(choices))], name="string_choice")
