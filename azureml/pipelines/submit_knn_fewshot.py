@@ -10,11 +10,11 @@ import omegaconf
 from azure.identity import DefaultAzureCredential
 from azure.ai.ml import MLClient
 
-from azure.ai.ml import dsl, MLClient
+from azure.ai.ml import dsl, MLClient, Input
 from azure.ai.ml.entities import Pipeline
 
 from azureml_utils import get_component_collector, ComponentCollector
-from configs import AMLConfig, KNNFewshotConfig, AOAIConfig, ParallelConfig
+from configs import AMLConfig, KNNFewshotConfig, AOAIConfig
 from logging_utils import get_standard_logger_for_file
 
 _logger = get_standard_logger_for_file(__file__)
@@ -41,30 +41,24 @@ def create_embedding_for_split_pipeline(
 ):
     question_key = "question"
 
-    @dsl.pipeline(display_name=f"compute_embeddings_{target_split}")
-    def embed_split(mmlu_dir):
-        get_split_job = components.uri_folder_to_file(
-            input_dataset=mmlu_dir,
-            filename_pattern=f"{target_split}.jsonl",
-        )
-        get_split_job.name = f"extract_split_{target_split.mmlu_split}"
+    get_split_job = components.uri_folder_to_file(
+        input_dataset=mmlu_folder,
+        filename_pattern=f"{target_split}.jsonl",
+    )
+    get_split_job.name = f"extract_split_{target_split}"
 
-        embedding_job = components.jsonl_embeddings(
-            input_dataset=get_split_job.outputs.output_dataset,
-            source_key=question_key,
-            destination_key=embedding_output_key,
-            workers=aoai_embedding_config.workers,
-            max_errors=aoai_embedding_config.max_errors,
-            azure_openai_endpoint=aoai_embedding_config.endpointt,
-        )
-        embedding_job.compute = aoai_embedding_config.compute_target
-        embedding_job.name = f"add_embeddings_{target_split}"
+    embedding_job = components.jsonl_embeddings(
+        input_dataset=get_split_job.outputs.output_dataset,
+        source_key=question_key,
+        destination_key=embedding_output_key,
+        workers=aoai_embedding_config.workers,
+        max_errors=aoai_embedding_config.max_errors,
+        azure_openai_endpoint=aoai_embedding_config.endpoint,
+    )
+    embedding_job.compute = aoai_embedding_config.compute_target
+    embedding_job.name = f"add_embeddings_{target_split}"
 
-        return {"output_dataset": embedding_job.outputs.output_dataset}
-
-    sub_pipeline = embed_split(mmlu_folder)
-
-    return sub_pipeline.outputs.output_dataset
+    return embedding_job.outputs.output_dataset
 
 
 def create_knn_fewshot_pipeline(
@@ -84,7 +78,7 @@ def create_knn_fewshot_pipeline(
         test_with_embeddings = create_embedding_for_split_pipeline(
             components,
             mmlu_fetch_job.outputs.output_dataset,
-            run_config.test_split,
+            target_split=run_config.test_split,
             embedding_output_key=embeddings_key,
             aoai_embedding_config=run_config.aoai_embedding_config,
         )
@@ -94,7 +88,7 @@ def create_knn_fewshot_pipeline(
             mmlu_fetch_job.outputs.output_dataset,
             target_split=run_config.example_split,
             embedding_output_key=embeddings_key,
-            aoai_embedding_config=run_config.aoai_embedding_config
+            aoai_embedding_config=run_config.aoai_embedding_config,
         )
 
     pipeline = basic_pipeline()
