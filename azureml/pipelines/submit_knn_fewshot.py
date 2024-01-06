@@ -105,8 +105,9 @@ def create_knn_fewshot_pipeline(
             input_dataset=test_with_embeddings,
             example_dataset=examples_with_embeddings,
             input_vector_key=embeddings_key,
-            example_vectory_key=embeddings_key,
-            output_key=knn_key
+            example_vector_key=embeddings_key,
+            output_key=knn_key,
+            k_nearest=run_config.knn_config.k_nearest,
         )
         knn_job.name = f"select_knn_cosine_similarity"
 

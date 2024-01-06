@@ -48,6 +48,10 @@ inputs:
     type: string
     optional: false
     description: Key in which to store the list of k-nearest neighbours
+  k_nearest:
+    type: int
+    optional: false
+    description: How many neighbours to select
   
   
 outputs:
@@ -69,6 +73,7 @@ command: >-
   --input_vector_key ${{ inputs.input_vector_key }}
   --example_vector_key ${{ inputs.example_vector_key }}
   --output_key ${{ inputs.output_key }}
+  --k_nearest ${{ inputs. k_nearest }}
 
 
 environment:
