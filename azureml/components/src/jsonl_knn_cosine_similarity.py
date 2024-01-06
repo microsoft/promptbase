@@ -28,9 +28,9 @@ def parse_args():
 
     # Information about keys
     key_group = parser.add_argument_group("Keys")
-    key_group.add_argument("--input_vector_key", type=int, required=True)
-    key_group.add_argument("--example_vector_key", type=int, required=True)
-    key_group.add_argument("--output_key", type=int, required=True)
+    key_group.add_argument("--input_vector_key", type=str, required=True)
+    key_group.add_argument("--example_vector_key", type=str, required=True)
+    key_group.add_argument("--output_key", type=str, required=True)
 
     # Information about the algorithm
     algo_group = parser.add_argument_group("Algorithm")
