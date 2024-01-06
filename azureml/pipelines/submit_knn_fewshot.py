@@ -76,6 +76,7 @@ def create_knn_fewshot_pipeline(
     components = get_component_collector(ml_client, version_string)
 
     embeddings_key = "question_embedding"
+    knn_key = "knn"
 
     @dsl.pipeline()
     def basic_pipeline() -> Pipeline:
@@ -99,6 +100,15 @@ def create_knn_fewshot_pipeline(
             embedding_output_key=embeddings_key,
             aoai_embedding_config=run_config.aoai_embedding_config,
         )
+
+        knn_job = components.jsonl_knn_cosine_similarity(
+            input_dataset=test_with_embeddings,
+            example_dataset=examples_with_embeddings,
+            input_vector_key=embeddings_key,
+            example_vectory_key=embeddings_key,
+            output_key=knn_key
+        )
+        knn_job.name = f"select_knn_cosine_similarity"
 
     pipeline = basic_pipeline()
     pipeline.experiment_name = (

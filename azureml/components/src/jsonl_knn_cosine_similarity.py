@@ -36,12 +36,19 @@ def parse_args():
     return args
 
 
+def normalised_vector(input: list[float]) -> np.ndarray:
+    result = np.asarray(input)
+    result = result / np.linalg.norm(result)
+
+    return result
+
+
 def main():
     args = parse_args()
 
     example_data = load_jsonl(args.example_dataset, args.example_encoding)
     example_embedding_matrix = np.stack(
-        [e[args.example_vector_key] for e in example_data], axis=-1
+        [normalised_vector(e[args.example_vector_key]) for e in example_data], axis=-1
     )
     _logger.info(
         f"Embedding Matrix: {example_embedding_matrix.dtype} {example_embedding_matrix.shape}"
