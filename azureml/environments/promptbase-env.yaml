@@ -19,5 +19,6 @@ conda_file:
       - guidance>0.1.5
       - joblib
       - mlflow
+      - numpy
       - openai>=1
       - scikit-learn
