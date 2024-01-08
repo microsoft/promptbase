@@ -17,7 +17,7 @@ def load_answers(file):
 def load_questions(file_path):
     if type(file_path) is str:
         file_path = pathlib.Path(file_path)
-    
+
     gz_path = file_path.with_suffix(file_path.suffix + ".gz")
     print(f"Looking for: {gz_path}")
     if gz_path.exists():
