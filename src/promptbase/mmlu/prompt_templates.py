@@ -3,19 +3,22 @@ from liquid import Template
 logprobs_0shots = {
     "prompt_name": "logprobs_0shots",
     "response_type": "logprobs",
-    "prompt": Template("""## Question
+    "prompt": Template(
+        """## Question
 {{ question }}
 ## Task
 Answer the above question with only 1 letter (such as A)
 
 ## Answer
-""")
+"""
+    ),
 }
 
 logprobs_5shots = {
     "prompt_name": "logprobs_5shots",
     "response_type": "logprobs",
-    "prompt": Template("""{% for item in examples %}## Question
+    "prompt": Template(
+        """{% for item in examples %}## Question
 {{ item.question }}
 ## Answer
 {{ item.answer }}
@@ -23,46 +26,64 @@ logprobs_5shots = {
 {% endfor %}## Question
 {{ question }}
 ## Answer
-"""),
-    "examples": [{"question": """A 6-year-old girl is brought to the emergency department because of right elbow swelling and pain 30 minutes after falling onto her outstretched right arm. She has been unable to move her right elbow since the fall. Physical examination shows bruising, swelling, and tenderness of the right elbow; range of motion is limited by pain. An x-ray of the right arm shows a supracondylar fracture of the humerus with anterior displacement of the proximal fragment. Further evaluation is most likely to show which of the following findings?
+"""
+    ),
+    "examples": [
+        {
+            "question": """A 6-year-old girl is brought to the emergency department because of right elbow swelling and pain 30 minutes after falling onto her outstretched right arm. She has been unable to move her right elbow since the fall. Physical examination shows bruising, swelling, and tenderness of the right elbow; range of motion is limited by pain. An x-ray of the right arm shows a supracondylar fracture of the humerus with anterior displacement of the proximal fragment. Further evaluation is most likely to show which of the following findings?
 
 A. Absent distal radial pulse
 B. Radial deviation of the wrist
 C. Inability to abduct shoulder
 D. Inability to flex the elbow
-""", "answer": "A"
-}, {"question": """Two weeks after undergoing low anterior resection for rectal cancer, a 52-year-old man comes to the physician because of swelling in both feet. He has not had any fever, chills, or shortness of breath. His temperature is 36°C (96.8°F) and pulse is 88/min. Physical examination shows a normal thyroid and no jugular venous distention. Examination of the lower extremities shows bilateral non-pitting edema that extends from the feet to the lower thigh, with deep flexion creases. His skin is warm and dry, and there is no erythema or rash. Microscopic examination of the interstitial space in this patient's lower extremities would be most likely to show the presence of which of the following?
+""",
+            "answer": "A",
+        },
+        {
+            "question": """Two weeks after undergoing low anterior resection for rectal cancer, a 52-year-old man comes to the physician because of swelling in both feet. He has not had any fever, chills, or shortness of breath. His temperature is 36°C (96.8°F) and pulse is 88/min. Physical examination shows a normal thyroid and no jugular venous distention. Examination of the lower extremities shows bilateral non-pitting edema that extends from the feet to the lower thigh, with deep flexion creases. His skin is warm and dry, and there is no erythema or rash. Microscopic examination of the interstitial space in this patient's lower extremities would be most likely to show the presence of which of the following?
 
 A. Acellular, protein-poor fluid
 B. Lymphocytic, hemosiderin-rich fluid
 C. Lipid-rich, protein-rich fluid
 D. Protein-rich, glycosaminoglycan-rich fluid
-""", "answer": "C"
-}, {"question": """A 34-year-old gravida 2, para 1 woman at 37+6 weeks of gestation presents for elective cesarean delivery. She says she has been having increased fatigue over the past few weeks. Past medical history includes gestational hypertension for which she has been taking an antihypertensive drug twice daily since week 24. Her vital signs include: temperature 36.7°C (98.0°F), blood pressure 120/75 mm Hg, pulse 127/min. Physical examination reveals generalized pallor. Her laboratory results reveal microcytic, hypochromic anemia with anisocytosis, hemoglobin of 9 g/dL, a differential with 14% lymphocytes, an ESR of 22 mm/hr, and a reticulocyte production index of 3.1. A direct antiglobulin test is positive. LFTs, creatinine, ferritin level, vitamin B12 level, coagulation studies, and urinalysis are normal. Which of the following is the most likely diagnosis in this patient?
+""",
+            "answer": "C",
+        },
+        {
+            "question": """A 34-year-old gravida 2, para 1 woman at 37+6 weeks of gestation presents for elective cesarean delivery. She says she has been having increased fatigue over the past few weeks. Past medical history includes gestational hypertension for which she has been taking an antihypertensive drug twice daily since week 24. Her vital signs include: temperature 36.7°C (98.0°F), blood pressure 120/75 mm Hg, pulse 127/min. Physical examination reveals generalized pallor. Her laboratory results reveal microcytic, hypochromic anemia with anisocytosis, hemoglobin of 9 g/dL, a differential with 14% lymphocytes, an ESR of 22 mm/hr, and a reticulocyte production index of 3.1. A direct antiglobulin test is positive. LFTs, creatinine, ferritin level, vitamin B12 level, coagulation studies, and urinalysis are normal. Which of the following is the most likely diagnosis in this patient?
 
 A. Preeclampsia
 B. Hereditary spherocytosis
 C. HELLP syndrome
 D. Drug-induced immune hemolytic reaction
-""", "answer": "D"
-}, {"question": """You are counseling a pregnant woman who plans to breast-feed exclusively regarding her newborn's nutritional requirements. The child was born at home and the mother only plans for her newborn to receive vaccinations but no other routine medical care. Which vitamins should be given to the newborn?
+""",
+            "answer": "D",
+        },
+        {
+            "question": """You are counseling a pregnant woman who plans to breast-feed exclusively regarding her newborn's nutritional requirements. The child was born at home and the mother only plans for her newborn to receive vaccinations but no other routine medical care. Which vitamins should be given to the newborn?
 
 A. Folic acid
 B. Vitamin K
 C. Vitamin D
 D. Vitamin K and Vitamin D
-""", "answer": "D"
-}, {"question": """An investigator is studying nutritional deficiencies in humans. A group of healthy volunteers are started on a diet deficient in pantothenic acid. After 4 weeks, several of the volunteers develop irritability, abdominal cramps, and burning paresthesias of their feet. These symptoms are fully reversed after reintroduction of pantothenic acid to their diet. The function of which of the following enzymes was most likely impaired in the volunteers during the study?
+""",
+            "answer": "D",
+        },
+        {
+            "question": """An investigator is studying nutritional deficiencies in humans. A group of healthy volunteers are started on a diet deficient in pantothenic acid. After 4 weeks, several of the volunteers develop irritability, abdominal cramps, and burning paresthesias of their feet. These symptoms are fully reversed after reintroduction of pantothenic acid to their diet. The function of which of the following enzymes was most likely impaired in the volunteers during the study?
 
 A. Methionine synthase
 B. Alpha-ketoglutarate dehydrogenase
 C. Glutathione reductase
 D. Dopamine beta-hydroxylase
-""", "answer": "B"
-}]
+""",
+            "answer": "B",
+        },
+    ],
 }
 
-few_shots_prompt = Template("""{% for item in examples %}## Question
+few_shots_prompt = Template(
+    """{% for item in examples %}## Question
 {{ item.question }}
 ## Answer
 {{ item.answer }}
@@ -70,9 +91,11 @@ few_shots_prompt = Template("""{% for item in examples %}## Question
 {% endfor %}## Question
 {{ question }}
 ## Answer
-""")
+"""
+)
 
-few_shots_prompt_with_context = Template("""{% for item in examples %}## Question
+few_shots_prompt_with_context = Template(
+    """{% for item in examples %}## Question
 {{ item.question }}
 ## Context
 {{ item.answer }}
@@ -80,168 +103,213 @@ few_shots_prompt_with_context = Template("""{% for item in examples %}## Questio
 {% endfor %}## Question
 {{ question }}
 ## Context
-""")
+"""
+)
 
 google_chain_of_thoughts = {
     "prompt_name": "google_chain_of_thoughts",
     "response_type": "MC",
     "prompt": few_shots_prompt,
-    "examples": [{"question": """A 6-year-old girl is brought to the emergency department because of right elbow swelling and pain 30 minutes after falling onto her outstretched right arm. She has been unable to move her right elbow since the fall. Physical examination shows bruising, swelling, and tenderness of the right elbow; range of motion is limited by pain. An x-ray of the right arm shows a supracondylar fracture of the humerus with anterior displacement of the proximal fragment. Further evaluation is most likely to show which of the following findings?
+    "examples": [
+        {
+            "question": """A 6-year-old girl is brought to the emergency department because of right elbow swelling and pain 30 minutes after falling onto her outstretched right arm. She has been unable to move her right elbow since the fall. Physical examination shows bruising, swelling, and tenderness of the right elbow; range of motion is limited by pain. An x-ray of the right arm shows a supracondylar fracture of the humerus with anterior displacement of the proximal fragment. Further evaluation is most likely to show which of the following findings?
 
 A. Absent distal radial pulse
 B. Radial deviation of the wrist
 C. Inability to abduct shoulder
 D. Inability to flex the elbow
-""", "answer": """Explanation: Let's solve this step-by-step, referring to authoritative sources as needed. A supracondylar fracture of the humerus with anterior displacement can potentially injure the brachial artery which runs anterior to the humerus and is responsible for the main blood supply to the forearm, wrist, and hand. This injury can cause an absent distal radial pulse due to decreased blood flow.
-Answer: [A]."""
-}, {"question": """Two weeks after undergoing low anterior resection for rectal cancer, a 52-year-old man comes to the physician because of swelling in both feet. He has not had any fever, chills, or shortness of breath. His temperature is 36°C (96.8°F) and pulse is 88/min. Physical examination shows a normal thyroid and no jugular venous distention. Examination of the lower extremities shows bilateral non-pitting edema that extends from the feet to the lower thigh, with deep flexion creases. His skin is warm and dry, and there is no erythema or rash. Microscopic examination of the interstitial space in this patient's lower extremities would be most likely to show the presence of which of the following?
+""",
+            "answer": """Explanation: Let's solve this step-by-step, referring to authoritative sources as needed. A supracondylar fracture of the humerus with anterior displacement can potentially injure the brachial artery which runs anterior to the humerus and is responsible for the main blood supply to the forearm, wrist, and hand. This injury can cause an absent distal radial pulse due to decreased blood flow.
+Answer: [A].""",
+        },
+        {
+            "question": """Two weeks after undergoing low anterior resection for rectal cancer, a 52-year-old man comes to the physician because of swelling in both feet. He has not had any fever, chills, or shortness of breath. His temperature is 36°C (96.8°F) and pulse is 88/min. Physical examination shows a normal thyroid and no jugular venous distention. Examination of the lower extremities shows bilateral non-pitting edema that extends from the feet to the lower thigh, with deep flexion creases. His skin is warm and dry, and there is no erythema or rash. Microscopic examination of the interstitial space in this patient's lower extremities would be most likely to show the presence of which of the following?
 
 A. Acellular, protein-poor fluid
 B. Lymphocytic, hemosiderin-rich fluid
 C. Lipid-rich, protein-rich fluid
 D. Protein-rich, glycosaminoglycan-rich fluid
-""", "answer": """Explanation: Let's solve this step-by-step, referring to authoritative sources as needed. This patient's symptoms of bilateral non-pitting edema following a surgical procedure involving removal of regional lymph nodes suggest the diagnosis of lymphedema. Lymphedema is a condition characterized by localized fluid retention and tissue swelling caused by a compromised lymphatic system. The fluid accumulated in lymphedema is not merely protein-rich, but also lipid-rich. This occurs due to the blockage of lymphatic vessels which normally serve to drain both lipids and proteins. The interstitial fluid in lymphedema contains a high concentration of proteins, lipids, cells, and cellular debris.
-Answer: [C]."""
-}, {"question": """A 34-year-old gravida 2, para 1 woman at 37+6 weeks of gestation presents for elective cesarean delivery. She says she has been having increased fatigue over the past few weeks. Past medical history includes gestational hypertension for which she has been taking an antihypertensive drug twice daily since week 24. Her vital signs include: temperature 36.7°C (98.0°F), blood pressure 120/75 mm Hg, pulse 127/min. Physical examination reveals generalized pallor. Her laboratory results reveal microcytic, hypochromic anemia with anisocytosis, hemoglobin of 9 g/dL, a differential with 14% lymphocytes, an ESR of 22 mm/hr, and a reticulocyte production index of 3.1. A direct antiglobulin test is positive. LFTs, creatinine, ferritin level, vitamin B12 level, coagulation studies, and urinalysis are normal. Which of the following is the most likely diagnosis in this patient?
+""",
+            "answer": """Explanation: Let's solve this step-by-step, referring to authoritative sources as needed. This patient's symptoms of bilateral non-pitting edema following a surgical procedure involving removal of regional lymph nodes suggest the diagnosis of lymphedema. Lymphedema is a condition characterized by localized fluid retention and tissue swelling caused by a compromised lymphatic system. The fluid accumulated in lymphedema is not merely protein-rich, but also lipid-rich. This occurs due to the blockage of lymphatic vessels which normally serve to drain both lipids and proteins. The interstitial fluid in lymphedema contains a high concentration of proteins, lipids, cells, and cellular debris.
+Answer: [C].""",
+        },
+        {
+            "question": """A 34-year-old gravida 2, para 1 woman at 37+6 weeks of gestation presents for elective cesarean delivery. She says she has been having increased fatigue over the past few weeks. Past medical history includes gestational hypertension for which she has been taking an antihypertensive drug twice daily since week 24. Her vital signs include: temperature 36.7°C (98.0°F), blood pressure 120/75 mm Hg, pulse 127/min. Physical examination reveals generalized pallor. Her laboratory results reveal microcytic, hypochromic anemia with anisocytosis, hemoglobin of 9 g/dL, a differential with 14% lymphocytes, an ESR of 22 mm/hr, and a reticulocyte production index of 3.1. A direct antiglobulin test is positive. LFTs, creatinine, ferritin level, vitamin B12 level, coagulation studies, and urinalysis are normal. Which of the following is the most likely diagnosis in this patient?
 
 A. Preeclampsia
 B. Hereditary spherocytosis
 C. HELLP syndrome
 D. Drug-induced immune hemolytic reaction
-""", "answer": """Explanation: This patient's findings of pallor, tachycardia, microcytic hypochromic anemia with anisocytosis, and a positive direct antiglobulin test (Coombs test) in the setting of an antihypertensive medication use are suggestive of drug-induced immune hemolytic anemia. This condition occurs when drugs (eg, ceftriaxone, penicillin, quinidine, methyldopa) bind to the red blood cell membrane, causing production of anti-drug antibodies that result in hemolysis. The direct antiglobulin test is positive due to the presence of IgG on the red blood cell membrane. Given the recent medication initiation, cessation of the medication is necessary to stop the hemolysis.
-Answer: [D]."""
-}, {"question": """You are counseling a pregnant woman who plans to breast-feed exclusively regarding her newborn's nutritional requirements. The child was born at home and the mother only plans for her newborn to receive vaccinations but no other routine medical care. Which vitamins should be given to the newborn?
+""",
+            "answer": """Explanation: This patient's findings of pallor, tachycardia, microcytic hypochromic anemia with anisocytosis, and a positive direct antiglobulin test (Coombs test) in the setting of an antihypertensive medication use are suggestive of drug-induced immune hemolytic anemia. This condition occurs when drugs (eg, ceftriaxone, penicillin, quinidine, methyldopa) bind to the red blood cell membrane, causing production of anti-drug antibodies that result in hemolysis. The direct antiglobulin test is positive due to the presence of IgG on the red blood cell membrane. Given the recent medication initiation, cessation of the medication is necessary to stop the hemolysis.
+Answer: [D].""",
+        },
+        {
+            "question": """You are counseling a pregnant woman who plans to breast-feed exclusively regarding her newborn's nutritional requirements. The child was born at home and the mother only plans for her newborn to receive vaccinations but no other routine medical care. Which vitamins should be given to the newborn?
 
 A. Folic acid
 B. Vitamin K
 C. Vitamin D
 D. Vitamin K and Vitamin D
-""", "answer": """Explanation: Exclusively breastfed infants are at risk of vitamin D deficiency because breast milk is low in vitamin D, and homebound infants may not get adequate sunlight exposure. In addition, vitamin K deficiency can occur in newborns due to inadequate transplacental transfer, low levels in breast milk, and sterile newborn gut (vitamin K is synthesized by gut bacteria). Thus, infants should receive prophylactic Vitamin K at birth to prevent Vitamin K deficiency bleeding, and Vitamin D supplementation should be started within the first few days of life and continue throughout infancy for those who are exclusively or partially breastfed.
+""",
+            "answer": """Explanation: Exclusively breastfed infants are at risk of vitamin D deficiency because breast milk is low in vitamin D, and homebound infants may not get adequate sunlight exposure. In addition, vitamin K deficiency can occur in newborns due to inadequate transplacental transfer, low levels in breast milk, and sterile newborn gut (vitamin K is synthesized by gut bacteria). Thus, infants should receive prophylactic Vitamin K at birth to prevent Vitamin K deficiency bleeding, and Vitamin D supplementation should be started within the first few days of life and continue throughout infancy for those who are exclusively or partially breastfed.
 
-Answer: [D]."""
-}, {"question": """An investigator is studying nutritional deficiencies in humans. A group of healthy volunteers are started on a diet deficient in pantothenic acid. After 4 weeks, several of the volunteers develop irritability, abdominal cramps, and burning paresthesias of their feet. These symptoms are fully reversed after reintroduction of pantothenic acid to their diet. The function of which of the following enzymes was most likely impaired in the volunteers during the study?
+Answer: [D].""",
+        },
+        {
+            "question": """An investigator is studying nutritional deficiencies in humans. A group of healthy volunteers are started on a diet deficient in pantothenic acid. After 4 weeks, several of the volunteers develop irritability, abdominal cramps, and burning paresthesias of their feet. These symptoms are fully reversed after reintroduction of pantothenic acid to their diet. The function of which of the following enzymes was most likely impaired in the volunteers during the study?
 
 A. Methionine synthase
 B. Alpha-ketoglutarate dehydrogenase
 C. Glutathione reductase
 D. Dopamine beta-hydroxylase
-""", "answer": """Explanation: Pantothenic acid, also known as vitamin B5, is a component of coenzyme A (CoA), which is necessary for the metabolism of carbohydrates, amino acids, and lipids. CoA is also involved in the citric acid cycle (or Krebs cycle), where it forms a complex with acetyl groups (acetyl-CoA) to be oxidized for energy production. Alpha-ketoglutarate dehydrogenase is a key enzyme in the citric acid cycle and requires CoA for its function. Thus, a deficiency in pantothenic acid impairs the function of alpha-ketoglutarate dehydrogenase and disrupts the citric acid cycle, leading to the symptoms observed in the volunteers.
+""",
+            "answer": """Explanation: Pantothenic acid, also known as vitamin B5, is a component of coenzyme A (CoA), which is necessary for the metabolism of carbohydrates, amino acids, and lipids. CoA is also involved in the citric acid cycle (or Krebs cycle), where it forms a complex with acetyl groups (acetyl-CoA) to be oxidized for energy production. Alpha-ketoglutarate dehydrogenase is a key enzyme in the citric acid cycle and requires CoA for its function. Thus, a deficiency in pantothenic acid impairs the function of alpha-ketoglutarate dehydrogenase and disrupts the citric acid cycle, leading to the symptoms observed in the volunteers.
 
-Answer: [B]."""
-}]
+Answer: [B].""",
+        },
+    ],
 }
 
-# The example is generated by 
+# The example is generated by
 # Let's think step by step. Then, write your answer by [A], [B], [C] or [D].
 gpt_chain_of_thoughts = {
     "prompt_name": "gpt_chain_of_thoughts",
     "response_type": "MC",
     "prompt": few_shots_prompt,
-    "examples": [{"question": """A 6-year-old girl is brought to the emergency department because of right elbow swelling and pain 30 minutes after falling onto her outstretched right arm. She has been unable to move her right elbow since the fall. Physical examination shows bruising, swelling, and tenderness of the right elbow; range of motion is limited by pain. An x-ray of the right arm shows a supracondylar fracture of the humerus with anterior displacement of the proximal fragment. Further evaluation is most likely to show which of the following findings?
+    "examples": [
+        {
+            "question": """A 6-year-old girl is brought to the emergency department because of right elbow swelling and pain 30 minutes after falling onto her outstretched right arm. She has been unable to move her right elbow since the fall. Physical examination shows bruising, swelling, and tenderness of the right elbow; range of motion is limited by pain. An x-ray of the right arm shows a supracondylar fracture of the humerus with anterior displacement of the proximal fragment. Further evaluation is most likely to show which of the following findings?
 
 A. Absent distal radial pulse
 B. Radial deviation of the wrist
 C. Inability to abduct shoulder
 D. Inability to flex the elbow
-""", "answer": """A supracondylar fracture of the humerus, especially with anterior displacement of the proximal fragment, is a common and serious injury in children. It can cause injury to the brachial artery, leading to compromised blood flow to the forearm and hand. Therefore, the most likely additional finding in this case would be an absent distal radial pulse due to this potential vascular compromise. This is a serious complication and requires immediate orthopedic consultation and likely surgical intervention to prevent long-term damage.
+""",
+            "answer": """A supracondylar fracture of the humerus, especially with anterior displacement of the proximal fragment, is a common and serious injury in children. It can cause injury to the brachial artery, leading to compromised blood flow to the forearm and hand. Therefore, the most likely additional finding in this case would be an absent distal radial pulse due to this potential vascular compromise. This is a serious complication and requires immediate orthopedic consultation and likely surgical intervention to prevent long-term damage.
 
-So, the answer is [A]."""
-}, {"question": """Two weeks after undergoing low anterior resection for rectal cancer, a 52-year-old man comes to the physician because of swelling in both feet. He has not had any fever, chills, or shortness of breath. His temperature is 36°C (96.8°F) and pulse is 88/min. Physical examination shows a normal thyroid and no jugular venous distention. Examination of the lower extremities shows bilateral non-pitting edema that extends from the feet to the lower thigh, with deep flexion creases. His skin is warm and dry, and there is no erythema or rash. Microscopic examination of the interstitial space in this patient's lower extremities would be most likely to show the presence of which of the following?
+So, the answer is [A].""",
+        },
+        {
+            "question": """Two weeks after undergoing low anterior resection for rectal cancer, a 52-year-old man comes to the physician because of swelling in both feet. He has not had any fever, chills, or shortness of breath. His temperature is 36°C (96.8°F) and pulse is 88/min. Physical examination shows a normal thyroid and no jugular venous distention. Examination of the lower extremities shows bilateral non-pitting edema that extends from the feet to the lower thigh, with deep flexion creases. His skin is warm and dry, and there is no erythema or rash. Microscopic examination of the interstitial space in this patient's lower extremities would be most likely to show the presence of which of the following?
 
 A. Acellular, protein-poor fluid
 B. Lymphocytic, hemosiderin-rich fluid
 C. Lipid-rich, protein-rich fluid
 D. Protein-rich, glycosaminoglycan-rich fluid
-""", "answer": """This patient's bilateral, symmetric lower extremity swelling extending to the thighs, nonpitting quality, and absence of systemic symptoms (eg, shortness of breath, orthopnea) are suggestive of lymphedema. Lymphedema develops due to a blockage in the lymphatic system that prevents lymph fluid from draining adequately. In this case, the patient's recent surgery (low anterior resection for rectal cancer) probably involved extensive lymph node dissection, leading to secondary lymphedema.
+""",
+            "answer": """This patient's bilateral, symmetric lower extremity swelling extending to the thighs, nonpitting quality, and absence of systemic symptoms (eg, shortness of breath, orthopnea) are suggestive of lymphedema. Lymphedema develops due to a blockage in the lymphatic system that prevents lymph fluid from draining adequately. In this case, the patient's recent surgery (low anterior resection for rectal cancer) probably involved extensive lymph node dissection, leading to secondary lymphedema.
 
 Microscopically, lymph is a protein-rich fluid that also contains lipids, lymphocytes, and other substances. It does not typically contain significant amounts of glycosaminoglycans or hemosiderin.
 
-Therefore, the answer is [C]."""
-}, {"question": """A 34-year-old gravida 2, para 1 woman at 37+6 weeks of gestation presents for elective cesarean delivery. She says she has been having increased fatigue over the past few weeks. Past medical history includes gestational hypertension for which she has been taking an antihypertensive drug twice daily since week 24. Her vital signs include: temperature 36.7°C (98.0°F), blood pressure 120/75 mm Hg, pulse 127/min. Physical examination reveals generalized pallor. Her laboratory results reveal microcytic, hypochromic anemia with anisocytosis, hemoglobin of 9 g/dL, a differential with 14% lymphocytes, an ESR of 22 mm/hr, and a reticulocyte production index of 3.1. A direct antiglobulin test is positive. LFTs, creatinine, ferritin level, vitamin B12 level, coagulation studies, and urinalysis are normal. Which of the following is the most likely diagnosis in this patient?
+Therefore, the answer is [C].""",
+        },
+        {
+            "question": """A 34-year-old gravida 2, para 1 woman at 37+6 weeks of gestation presents for elective cesarean delivery. She says she has been having increased fatigue over the past few weeks. Past medical history includes gestational hypertension for which she has been taking an antihypertensive drug twice daily since week 24. Her vital signs include: temperature 36.7°C (98.0°F), blood pressure 120/75 mm Hg, pulse 127/min. Physical examination reveals generalized pallor. Her laboratory results reveal microcytic, hypochromic anemia with anisocytosis, hemoglobin of 9 g/dL, a differential with 14% lymphocytes, an ESR of 22 mm/hr, and a reticulocyte production index of 3.1. A direct antiglobulin test is positive. LFTs, creatinine, ferritin level, vitamin B12 level, coagulation studies, and urinalysis are normal. Which of the following is the most likely diagnosis in this patient?
 
 A. Preeclampsia
 B. Hereditary spherocytosis
 C. HELLP syndrome
 D. Drug-induced immune hemolytic reaction
-""", "answer": """The patient's microcytic, hypochromic anemia and a high reticulocyte count are indicative of increased erythropoiesis, which, in this clinical scenario, is likely due to hemolysis. The positive direct antiglobulin test (Coomb's test) confirms that the hemolysis is immune-mediated. Given that other causes of immune hemolysis such as autoimmune disorders and infections are unlikely in this patient, the most probable cause of hemolysis is a drug-induced immune hemolytic reaction. Drugs can cause immune hemolysis by acting as haptens that bind to the red blood cell membrane, causing the formation of antibodies against the drug-cell complex (immune complex type) or by inducing the formation of autoantibodies against red blood cells (autoimmune type). While any drug can potentially cause immune hemolysis, common culprits include penicillins, cephalosporins, quinidine, and antihypertensives like methyldopa. 
+""",
+            "answer": """The patient's microcytic, hypochromic anemia and a high reticulocyte count are indicative of increased erythropoiesis, which, in this clinical scenario, is likely due to hemolysis. The positive direct antiglobulin test (Coomb's test) confirms that the hemolysis is immune-mediated. Given that other causes of immune hemolysis such as autoimmune disorders and infections are unlikely in this patient, the most probable cause of hemolysis is a drug-induced immune hemolytic reaction. Drugs can cause immune hemolysis by acting as haptens that bind to the red blood cell membrane, causing the formation of antibodies against the drug-cell complex (immune complex type) or by inducing the formation of autoantibodies against red blood cells (autoimmune type). While any drug can potentially cause immune hemolysis, common culprits include penicillins, cephalosporins, quinidine, and antihypertensives like methyldopa. 
 
-Hence, the answer is [D]."""
-}, {"question": """You are counseling a pregnant woman who plans to breast-feed exclusively regarding her newborn's nutritional requirements. The child was born at home and the mother only plans for her newborn to receive vaccinations but no other routine medical care. Which vitamins should be given to the newborn?
+Hence, the answer is [D].""",
+        },
+        {
+            "question": """You are counseling a pregnant woman who plans to breast-feed exclusively regarding her newborn's nutritional requirements. The child was born at home and the mother only plans for her newborn to receive vaccinations but no other routine medical care. Which vitamins should be given to the newborn?
 
 A. Folic acid
 B. Vitamin K
 C. Vitamin D
 D. Vitamin K and Vitamin D
-""", "answer": """The American Academy of Pediatrics (AAP) recommends that all newborns receive a single dose of intramuscular vitamin K at birth. This is because newborns have low stores of vitamin K at birth, leading to a risk of vitamin K deficiency bleeding, also known as hemorrhagic disease of the newborn. This is a potentially life-threatening condition that can cause bleeding into the brain. Because this baby was born at home and the mother plans to avoid routine medical care, this baby may not have received this essential vitamin.
+""",
+            "answer": """The American Academy of Pediatrics (AAP) recommends that all newborns receive a single dose of intramuscular vitamin K at birth. This is because newborns have low stores of vitamin K at birth, leading to a risk of vitamin K deficiency bleeding, also known as hemorrhagic disease of the newborn. This is a potentially life-threatening condition that can cause bleeding into the brain. Because this baby was born at home and the mother plans to avoid routine medical care, this baby may not have received this essential vitamin.
 
 Additionally, the AAP recommends that all infants and children, including those who are breastfed, have a minimum intake of 400 IU/day of vitamin D beginning soon after birth. While breast milk is the best source of most nutrients, it is usually deficient in vitamin D.
 
 The other option, folic acid, is not routinely supplemented in newborns as they usually receive adequate amounts from breast milk or formula.
 
-Therefore, the answer is [D]."""
-}, {"question": """An investigator is studying nutritional deficiencies in humans. A group of healthy volunteers are started on a diet deficient in pantothenic acid. After 4 weeks, several of the volunteers develop irritability, abdominal cramps, and burning paresthesias of their feet. These symptoms are fully reversed after reintroduction of pantothenic acid to their diet. The function of which of the following enzymes was most likely impaired in the volunteers during the study?
+Therefore, the answer is [D].""",
+        },
+        {
+            "question": """An investigator is studying nutritional deficiencies in humans. A group of healthy volunteers are started on a diet deficient in pantothenic acid. After 4 weeks, several of the volunteers develop irritability, abdominal cramps, and burning paresthesias of their feet. These symptoms are fully reversed after reintroduction of pantothenic acid to their diet. The function of which of the following enzymes was most likely impaired in the volunteers during the study?
 
 A. Methionine synthase
 B. Alpha-ketoglutarate dehydrogenase
 C. Glutathione reductase
 D. Dopamine beta-hydroxylase
-""", "answer": """Pantothenic acid is also known as vitamin B5, which is a component of coenzyme A (CoA) and phosphopantetheine. CoA is required for the synthesis and oxidation of fatty acids, and the metabolism of carbohydrates and proteins. One of the enzymes that requires CoA for its function is alpha-ketoglutarate dehydrogenase, a key enzyme in the citric acid cycle (also known as Krebs cycle or TCA cycle).
+""",
+            "answer": """Pantothenic acid is also known as vitamin B5, which is a component of coenzyme A (CoA) and phosphopantetheine. CoA is required for the synthesis and oxidation of fatty acids, and the metabolism of carbohydrates and proteins. One of the enzymes that requires CoA for its function is alpha-ketoglutarate dehydrogenase, a key enzyme in the citric acid cycle (also known as Krebs cycle or TCA cycle).
 
 This enzyme catalyzes the conversion of alpha-ketoglutarate to succinyl CoA, with the concomitant reduction of NAD+ to NADH. Deficiencies in pantothenic acid would impair the function of this enzyme, leading to the observed symptoms.
 
-So, the answer is [B]."""
-}]
+So, the answer is [B].""",
+        },
+    ],
 }
 
 gpt_chain_of_thoughts_with_ranking = {
     "prompt_name": "gpt_chain_of_thoughts_with_ranking",
     "response_type": "decreasing_order",
     "prompt": few_shots_prompt,
-    "examples": [{"question": """A 6-year-old girl is brought to the emergency department because of right elbow swelling and pain 30 minutes after falling onto her outstretched right arm. She has been unable to move her right elbow since the fall. Physical examination shows bruising, swelling, and tenderness of the right elbow; range of motion is limited by pain. An x-ray of the right arm shows a supracondylar fracture of the humerus with anterior displacement of the proximal fragment. Further evaluation is most likely to show which of the following findings?
+    "examples": [
+        {
+            "question": """A 6-year-old girl is brought to the emergency department because of right elbow swelling and pain 30 minutes after falling onto her outstretched right arm. She has been unable to move her right elbow since the fall. Physical examination shows bruising, swelling, and tenderness of the right elbow; range of motion is limited by pain. An x-ray of the right arm shows a supracondylar fracture of the humerus with anterior displacement of the proximal fragment. Further evaluation is most likely to show which of the following findings?
 
 A. Absent distal radial pulse
 B. Radial deviation of the wrist
 C. Inability to abduct shoulder
 D. Inability to flex the elbow
-""", "answer": """A supracondylar fracture of the humerus, especially with anterior displacement of the proximal fragment, is a common and serious injury in children. It can cause injury to the brachial artery, leading to compromised blood flow to the forearm and hand. Therefore, the most likely additional finding in this case would be an absent distal radial pulse due to this potential vascular compromise. This is a serious complication and requires immediate orthopedic consultation and likely surgical intervention to prevent long-term damage.
+""",
+            "answer": """A supracondylar fracture of the humerus, especially with anterior displacement of the proximal fragment, is a common and serious injury in children. It can cause injury to the brachial artery, leading to compromised blood flow to the forearm and hand. Therefore, the most likely additional finding in this case would be an absent distal radial pulse due to this potential vascular compromise. This is a serious complication and requires immediate orthopedic consultation and likely surgical intervention to prevent long-term damage.
 
 So, the answer is [A].
 
 ## Rank the options from most likely to least likely
-Answer: [A] > [D] > [B] > [C]."""
-}, {"question": """Two weeks after undergoing low anterior resection for rectal cancer, a 52-year-old man comes to the physician because of swelling in both feet. He has not had any fever, chills, or shortness of breath. His temperature is 36°C (96.8°F) and pulse is 88/min. Physical examination shows a normal thyroid and no jugular venous distention. Examination of the lower extremities shows bilateral non-pitting edema that extends from the feet to the lower thigh, with deep flexion creases. His skin is warm and dry, and there is no erythema or rash. Microscopic examination of the interstitial space in this patient's lower extremities would be most likely to show the presence of which of the following?
+Answer: [A] > [D] > [B] > [C].""",
+        },
+        {
+            "question": """Two weeks after undergoing low anterior resection for rectal cancer, a 52-year-old man comes to the physician because of swelling in both feet. He has not had any fever, chills, or shortness of breath. His temperature is 36°C (96.8°F) and pulse is 88/min. Physical examination shows a normal thyroid and no jugular venous distention. Examination of the lower extremities shows bilateral non-pitting edema that extends from the feet to the lower thigh, with deep flexion creases. His skin is warm and dry, and there is no erythema or rash. Microscopic examination of the interstitial space in this patient's lower extremities would be most likely to show the presence of which of the following?
 
 A. Acellular, protein-poor fluid
 B. Lymphocytic, hemosiderin-rich fluid
 C. Lipid-rich, protein-rich fluid
 D. Protein-rich, glycosaminoglycan-rich fluid
-""", "answer": """This patient's bilateral, symmetric lower extremity swelling extending to the thighs, nonpitting quality, and absence of systemic symptoms (eg, shortness of breath, orthopnea) are suggestive of lymphedema. Lymphedema develops due to a blockage in the lymphatic system that prevents lymph fluid from draining adequately. In this case, the patient's recent surgery (low anterior resection for rectal cancer) probably involved extensive lymph node dissection, leading to secondary lymphedema.
+""",
+            "answer": """This patient's bilateral, symmetric lower extremity swelling extending to the thighs, nonpitting quality, and absence of systemic symptoms (eg, shortness of breath, orthopnea) are suggestive of lymphedema. Lymphedema develops due to a blockage in the lymphatic system that prevents lymph fluid from draining adequately. In this case, the patient's recent surgery (low anterior resection for rectal cancer) probably involved extensive lymph node dissection, leading to secondary lymphedema.
 
 Microscopically, lymph is a protein-rich fluid that also contains lipids, lymphocytes, and other substances. It does not typically contain significant amounts of glycosaminoglycans or hemosiderin.
 
 Therefore, the answer is [C].
 
 ## Rank the options from most likely to least likely
-Answer: [C] > [D] > [B] > [A]."""
-}, {"question": """A 34-year-old gravida 2, para 1 woman at 37+6 weeks of gestation presents for elective cesarean delivery. She says she has been having increased fatigue over the past few weeks. Past medical history includes gestational hypertension for which she has been taking an antihypertensive drug twice daily since week 24. Her vital signs include: temperature 36.7°C (98.0°F), blood pressure 120/75 mm Hg, pulse 127/min. Physical examination reveals generalized pallor. Her laboratory results reveal microcytic, hypochromic anemia with anisocytosis, hemoglobin of 9 g/dL, a differential with 14% lymphocytes, an ESR of 22 mm/hr, and a reticulocyte production index of 3.1. A direct antiglobulin test is positive. LFTs, creatinine, ferritin level, vitamin B12 level, coagulation studies, and urinalysis are normal. Which of the following is the most likely diagnosis in this patient?
+Answer: [C] > [D] > [B] > [A].""",
+        },
+        {
+            "question": """A 34-year-old gravida 2, para 1 woman at 37+6 weeks of gestation presents for elective cesarean delivery. She says she has been having increased fatigue over the past few weeks. Past medical history includes gestational hypertension for which she has been taking an antihypertensive drug twice daily since week 24. Her vital signs include: temperature 36.7°C (98.0°F), blood pressure 120/75 mm Hg, pulse 127/min. Physical examination reveals generalized pallor. Her laboratory results reveal microcytic, hypochromic anemia with anisocytosis, hemoglobin of 9 g/dL, a differential with 14% lymphocytes, an ESR of 22 mm/hr, and a reticulocyte production index of 3.1. A direct antiglobulin test is positive. LFTs, creatinine, ferritin level, vitamin B12 level, coagulation studies, and urinalysis are normal. Which of the following is the most likely diagnosis in this patient?
 
 A. Preeclampsia
 B. Hereditary spherocytosis
 C. HELLP syndrome
 D. Drug-induced immune hemolytic reaction
-""", "answer": """The patient's microcytic, hypochromic anemia and a high reticulocyte count are indicative of increased erythropoiesis, which, in this clinical scenario, is likely due to hemolysis. The positive direct antiglobulin test (Coomb's test) confirms that the hemolysis is immune-mediated. Given that other causes of immune hemolysis such as autoimmune disorders and infections are unlikely in this patient, the most probable cause of hemolysis is a drug-induced immune hemolytic reaction. Drugs can cause immune hemolysis by acting as haptens that bind to the red blood cell membrane, causing the formation of antibodies against the drug-cell complex (immune complex type) or by inducing the formation of autoantibodies against red blood cells (autoimmune type). While any drug can potentially cause immune hemolysis, common culprits include penicillins, cephalosporins, quinidine, and antihypertensives like methyldopa. 
+""",
+            "answer": """The patient's microcytic, hypochromic anemia and a high reticulocyte count are indicative of increased erythropoiesis, which, in this clinical scenario, is likely due to hemolysis. The positive direct antiglobulin test (Coomb's test) confirms that the hemolysis is immune-mediated. Given that other causes of immune hemolysis such as autoimmune disorders and infections are unlikely in this patient, the most probable cause of hemolysis is a drug-induced immune hemolytic reaction. Drugs can cause immune hemolysis by acting as haptens that bind to the red blood cell membrane, causing the formation of antibodies against the drug-cell complex (immune complex type) or by inducing the formation of autoantibodies against red blood cells (autoimmune type). While any drug can potentially cause immune hemolysis, common culprits include penicillins, cephalosporins, quinidine, and antihypertensives like methyldopa. 
 
 Hence, the answer is [D].
 
 ## Rank the options from most likely to least likely
-Answer: [D] > [A] > [B] > [C]."""
-}, {"question": """You are counseling a pregnant woman who plans to breast-feed exclusively regarding her newborn's nutritional requirements. The child was born at home and the mother only plans for her newborn to receive vaccinations but no other routine medical care. Which vitamins should be given to the newborn?
+Answer: [D] > [A] > [B] > [C].""",
+        },
+        {
+            "question": """You are counseling a pregnant woman who plans to breast-feed exclusively regarding her newborn's nutritional requirements. The child was born at home and the mother only plans for her newborn to receive vaccinations but no other routine medical care. Which vitamins should be given to the newborn?
 
 A. Folic acid
 B. Vitamin K
 C. Vitamin D
 D. Vitamin K and Vitamin D
-""", "answer": """The American Academy of Pediatrics (AAP) recommends that all newborns receive a single dose of intramuscular vitamin K at birth. This is because newborns have low stores of vitamin K at birth, leading to a risk of vitamin K deficiency bleeding, also known as hemorrhagic disease of the newborn. This is a potentially life-threatening condition that can cause bleeding into the brain. Because this baby was born at home and the mother plans to avoid routine medical care, this baby may not have received this essential vitamin.
+""",
+            "answer": """The American Academy of Pediatrics (AAP) recommends that all newborns receive a single dose of intramuscular vitamin K at birth. This is because newborns have low stores of vitamin K at birth, leading to a risk of vitamin K deficiency bleeding, also known as hemorrhagic disease of the newborn. This is a potentially life-threatening condition that can cause bleeding into the brain. Because this baby was born at home and the mother plans to avoid routine medical care, this baby may not have received this essential vitamin.
 
 Additionally, the AAP recommends that all infants and children, including those who are breastfed, have a minimum intake of 400 IU/day of vitamin D beginning soon after birth. While breast milk is the best source of most nutrients, it is usually deficient in vitamin D.
 
@@ -250,22 +318,26 @@ The other option, folic acid, is not routinely supplemented in newborns as they 
 Therefore, the answer is [D].
 
 ## Rank the options from most likely to least likely
-Answer: [D] > [C] > [B] > [A]."""
-}, {"question": """An investigator is studying nutritional deficiencies in humans. A group of healthy volunteers are started on a diet deficient in pantothenic acid. After 4 weeks, several of the volunteers develop irritability, abdominal cramps, and burning paresthesias of their feet. These symptoms are fully reversed after reintroduction of pantothenic acid to their diet. The function of which of the following enzymes was most likely impaired in the volunteers during the study?
+Answer: [D] > [C] > [B] > [A].""",
+        },
+        {
+            "question": """An investigator is studying nutritional deficiencies in humans. A group of healthy volunteers are started on a diet deficient in pantothenic acid. After 4 weeks, several of the volunteers develop irritability, abdominal cramps, and burning paresthesias of their feet. These symptoms are fully reversed after reintroduction of pantothenic acid to their diet. The function of which of the following enzymes was most likely impaired in the volunteers during the study?
 
 A. Methionine synthase
 B. Alpha-ketoglutarate dehydrogenase
 C. Glutathione reductase
 D. Dopamine beta-hydroxylase
-""", "answer": """Pantothenic acid is also known as vitamin B5, which is a component of coenzyme A (CoA) and phosphopantetheine. CoA is required for the synthesis and oxidation of fatty acids, and the metabolism of carbohydrates and proteins. One of the enzymes that requires CoA for its function is alpha-ketoglutarate dehydrogenase, a key enzyme in the citric acid cycle (also known as Krebs cycle or TCA cycle).
+""",
+            "answer": """Pantothenic acid is also known as vitamin B5, which is a component of coenzyme A (CoA) and phosphopantetheine. CoA is required for the synthesis and oxidation of fatty acids, and the metabolism of carbohydrates and proteins. One of the enzymes that requires CoA for its function is alpha-ketoglutarate dehydrogenase, a key enzyme in the citric acid cycle (also known as Krebs cycle or TCA cycle).
 
 This enzyme catalyzes the conversion of alpha-ketoglutarate to succinyl CoA, with the concomitant reduction of NAD+ to NADH. Deficiencies in pantothenic acid would impair the function of this enzyme, leading to the observed symptoms.
 
 So, the answer is [B].
 
 ## Rank the options from most likely to least likely
-Answer: [B] > [C] > [A] > [D]."""
-}]
+Answer: [B] > [C] > [A] > [D].""",
+        },
+    ],
 }
 
 
@@ -273,7 +345,9 @@ gpt_chain_of_thoughts_with_ranking_pubmedqa = {
     "prompt_name": "gpt_chain_of_thoughts_with_ranking_pubmedqa",
     "response_type": "decreasing_order",
     "prompt": few_shots_prompt,
-    "examples": [{"question": """Context: Demonstrate that the rabbit may be used in the training of surgery, in addition to present its perioperative care.
+    "examples": [
+        {
+            "question": """Context: Demonstrate that the rabbit may be used in the training of surgery, in addition to present its perioperative care.
 Context: Thirty two animals, with age and weight, respectively, from 3 to 5.5 months old and 3000 to 4200 grams, were undergone different periods of pre-operative fasting, exclusive intramuscular anesthesia (ketamine+xylazine), laparotomy with total gastrectomy and total splenectomy. It was dosed the pre-operative (initial) and post-surgical (end) serum blood glucose, in addition to quantify the gastric content after the resection of the part.
 Context: The anesthetical-surgical procedure presented a mortality rate of 3.125% (1:32) and a morbidity rate of 6.25% (2:32). It was evidenced an initial mean blood glucose = 199.4 mg/dl and the end = 326.1 mg/dl. In spite of extended fasting (minimum of 2 hours for the absolute fasting and maximum of 8.5 hours for liquids, and 20.5 hours for solids) all animals presented at the end of the surgical procedure any gastric content and a blood glucose increase. Those with fasting for liquids and solids when compared to the quantity of solid gastric content, presented a moderate negative degree of correlation.
 Perioperative care in an animal model for training in abdominal surgery: is it necessary a preoperative fasting?
@@ -281,13 +355,16 @@ Perioperative care in an animal model for training in abdominal surgery: is it n
 A. no
 B. yes
 C. maybe
-""", "answer": """The study showed that despite extended fasting, all animals presented at the end of the surgical procedure with some gastric content and a blood glucose increase. This suggests that preoperative fasting may not be necessary in this animal model for training in abdominal surgery.
+""",
+            "answer": """The study showed that despite extended fasting, all animals presented at the end of the surgical procedure with some gastric content and a blood glucose increase. This suggests that preoperative fasting may not be necessary in this animal model for training in abdominal surgery.
 
 Therefore, the answer is [A].
 
 ## Rank the options from most likely to least likely
-Answer: [A] > [C] > [B]."""
-}, {"question": """Context: As part of a prospective study on quality of life in newly diagnosed lung cancer patients an investigation was carried out to examine whether there were differences among patients' quality of life scores and their socioeconomic status.
+Answer: [A] > [C] > [B].""",
+        },
+        {
+            "question": """Context: As part of a prospective study on quality of life in newly diagnosed lung cancer patients an investigation was carried out to examine whether there were differences among patients' quality of life scores and their socioeconomic status.
 Context: Quality of life was measured at two points in time (baseline and three months after initial treatment) using three standard instruments; the Nottingham Health Profile (NHP), the European Organization for Research and Cancer Treatment Quality of Life Questionnaire (EORTC QLQ-C30) and its lung cancer supplement (QLQ-LC13). Socioeconomic status for each individual patient was derived using Carstairs and Morris Deprivation Category ranging from 1 (least deprived) to 7 (most deprived) on the basis of the postcode sector of their address.
 Context: In all, 129 lung cancer patients entered into the study. Of these data for 82 patients were complete (at baseline and follow-up). 57% of patients were of lower socioeconomic status and they had more health problems, less functioning, and more symptoms as compared to affluent patients. Of these, physical mobility (P = 0.05), energy (P = 0.01), role functioning (P = 0.04), physical functioning (P = 0.03), and breathlessness (P = 0.02) were significant at baseline. However, at follow-up assessment there was no significant difference between patient groups nor did any consistent pattern emerge.
 Quality of life in lung cancer patients: does socioeconomic status matter?
@@ -295,13 +372,16 @@ Quality of life in lung cancer patients: does socioeconomic status matter?
 A. yes
 B. maybe
 C. no
-""", "answer": """The study found that patients of lower socioeconomic status had more health problems, less functioning, and more symptoms as compared to affluent patients. Therefore, socioeconomic status does matter in the quality of life of lung cancer patients.
+""",
+            "answer": """The study found that patients of lower socioeconomic status had more health problems, less functioning, and more symptoms as compared to affluent patients. Therefore, socioeconomic status does matter in the quality of life of lung cancer patients.
 
 So, the answer is [A].
 
 ## Rank the options from most likely to least likely
-Answer: [A] > [B] > [C]."""
-}, {"question": """Context: Prostate-specific antigen (PSA) levels can show wide fluctuations when repeatedly measured. Here we investigatewd if: (a) biopsy timing influences the prostate cancer (PC) detection rate in patients with fluctuating PSA (flu-PSA) in comparison with patients with steadily increasing PSA (si-PSA); (b) PSA slope estimated in patients with flu-PSA predicts a different risk of cancer detection; (c) flu-PSA and si-PSA patients develop PC in topographically different sites; (d) the behaviour of pre-operative PSA is an expression of a disease with defferent characteristics to the following radical prostatectomy.
+Answer: [A] > [B] > [C].""",
+        },
+        {
+            "question": """Context: Prostate-specific antigen (PSA) levels can show wide fluctuations when repeatedly measured. Here we investigatewd if: (a) biopsy timing influences the prostate cancer (PC) detection rate in patients with fluctuating PSA (flu-PSA) in comparison with patients with steadily increasing PSA (si-PSA); (b) PSA slope estimated in patients with flu-PSA predicts a different risk of cancer detection; (c) flu-PSA and si-PSA patients develop PC in topographically different sites; (d) the behaviour of pre-operative PSA is an expression of a disease with defferent characteristics to the following radical prostatectomy.
 Context: The study involved 211 patients who underwent at least a second biopsy after a first negative prostate biopsy. PSA Slope, PSA velocity (PSAV) and PSA doubling time (PSADT) were estimated. Flu-PSA level was defined as a PSA series with at least one PSA value lower than the one immediately preceding it.
 Context: 82 patients had flu-PSA levels and 129 si-PSA levels. There were no significant differences between the two groups in terms of cancer detection, clinical or pathological stage, but the si-PSA group with cancer had a higher Gleason score. No difference was found for PSA Slope between flu-PSA patients with cancer and those without.
 PSA repeatedly fluctuating levels are reassuring enough to avoid biopsy?
@@ -309,11 +389,14 @@ PSA repeatedly fluctuating levels are reassuring enough to avoid biopsy?
 A. maybe
 B. no
 C. yes
-""", "answer": """The study found that there were no significant differences between the two groups in terms of cancer detection, clinical or pathological stage, but the si-PSA group with cancer had a higher Gleason score. No difference was found for PSA Slope between flu-PSA patients with cancer and those without. This suggests that fluctuating PSA levels are not necessarily indicative of a lower risk of prostate cancer. Therefore, the answer is [B].
+""",
+            "answer": """The study found that there were no significant differences between the two groups in terms of cancer detection, clinical or pathological stage, but the si-PSA group with cancer had a higher Gleason score. No difference was found for PSA Slope between flu-PSA patients with cancer and those without. This suggests that fluctuating PSA levels are not necessarily indicative of a lower risk of prostate cancer. Therefore, the answer is [B].
 
 ## Rank the options from most likely to least likely
-Answer: [B] > [A] > [C]."""
-}, {"question": """Context: To examine whether a history of cancer increased the likelihood of a fall in community-dwelling older adults, and if cancer type, stage, or time since diagnosis increased falls.
+Answer: [B] > [A] > [C].""",
+        },
+        {
+            "question": """Context: To examine whether a history of cancer increased the likelihood of a fall in community-dwelling older adults, and if cancer type, stage, or time since diagnosis increased falls.
 Context: A longitudinal, retrospective, cohort study.
 Context: A home- and community-based waiver program in Michigan.
 Context: 862 older adults aged 65 years or older with cancer compared to 8,617 older adults without cancer using data from the Minimum Data Set-Home Care and Michigan cancer registry.
@@ -325,13 +408,16 @@ Do older adults with cancer fall more often?
 A. no
 B. maybe
 C. yes
-""", "answer": """The study found that older adults with cancer fell more often than those without cancer. The fall rate was 33% in older adults with cancer compared to 29% without cancer. Those with a history of cancer were more likely to fall than those without cancer (adjusted odds ratio 1.16; 95% confidence interval [1.02, 1.33]; p = 0.03).
+""",
+            "answer": """The study found that older adults with cancer fell more often than those without cancer. The fall rate was 33% in older adults with cancer compared to 29% without cancer. Those with a history of cancer were more likely to fall than those without cancer (adjusted odds ratio 1.16; 95% confidence interval [1.02, 1.33]; p = 0.03).
 
 So, the answer is [C].
 
 ## Rank the options from most likely to least likely
-Answer: [C] > [B] > [A]."""
-}, {"question": """Context: The United States Food and Drug Administration implemented federal regulations governing mammography under the Mammography Quality Standards Act (MQSA) of 1992. During 1995, its first year in implementation, we examined the impact of the MQSA on the quality of mammography in North Carolina.
+Answer: [C] > [B] > [A].""",
+        },
+        {
+            "question": """Context: The United States Food and Drug Administration implemented federal regulations governing mammography under the Mammography Quality Standards Act (MQSA) of 1992. During 1995, its first year in implementation, we examined the impact of the MQSA on the quality of mammography in North Carolina.
 Context: All mammography facilities were inspected during 1993-1994, and again in 1995. Both inspections evaluated mean glandular radiation dose, phantom image evaluation, darkroom fog, and developer temperature. Two mammography health specialists employed by the North Carolina Division of Radiation Protection performed all inspections and collected and codified data.
 Context: The percentage of facilities that met quality standards increased from the first inspection to the second inspection. Phantom scores passing rate was 31.6% versus 78.2%; darkroom fog passing rate was 74.3% versus 88.5%; and temperature difference passing rate was 62.4% versus 86.9%.
 Has the mammography quality standards act affected the mammography quality in North Carolina?
@@ -339,18 +425,21 @@ Has the mammography quality standards act affected the mammography quality in No
 A. no
 B. yes
 C. maybe
-""", "answer": """The percentage of facilities that met quality standards increased from the first inspection to the second inspection. Phantom scores passing rate was 31.6% versus 78.2%; darkroom fog passing rate was 74.3% versus 88.5%; and temperature difference passing rate was 62.4% versus 86.9%. Therefore, the answer is [B].
+""",
+            "answer": """The percentage of facilities that met quality standards increased from the first inspection to the second inspection. Phantom scores passing rate was 31.6% versus 78.2%; darkroom fog passing rate was 74.3% versus 88.5%; and temperature difference passing rate was 62.4% versus 86.9%. Therefore, the answer is [B].
 
 ## Rank the options from most likely to least likely
-Answer: [B] > [C] > [A]."""
-}]
+Answer: [B] > [C] > [A].""",
+        },
+    ],
 }
 
 
 consider_each_options = {
     "prompt_name": "consider_each_options",
     "response_type": "order",
-    "prompt": Template("""## Task
+    "prompt": Template(
+        """## Task
 1. Start by explaining the relevant facts of the scenario.
 2. Discuss each answer option separately, elaborating on their implications.
 3. Arrange the options from least likely to most likely.
@@ -364,14 +453,18 @@ consider_each_options = {
 {% endfor %}## Question
 {{ question }}
 ## Answer
-"""),
-    "examples": [{"question": """A 6-year-old girl is brought to the emergency department because of right elbow swelling and pain 30 minutes after falling onto her outstretched right arm. She has been unable to move her right elbow since the fall. Physical examination shows bruising, swelling, and tenderness of the right elbow; range of motion is limited by pain. An x-ray of the right arm shows a supracondylar fracture of the humerus with anterior displacement of the proximal fragment. Further evaluation is most likely to show which of the following findings?
+"""
+    ),
+    "examples": [
+        {
+            "question": """A 6-year-old girl is brought to the emergency department because of right elbow swelling and pain 30 minutes after falling onto her outstretched right arm. She has been unable to move her right elbow since the fall. Physical examination shows bruising, swelling, and tenderness of the right elbow; range of motion is limited by pain. An x-ray of the right arm shows a supracondylar fracture of the humerus with anterior displacement of the proximal fragment. Further evaluation is most likely to show which of the following findings?
 
 A. Absent distal radial pulse
 B. Radial deviation of the wrist
 C. Inability to abduct shoulder
 D. Inability to flex the elbow
-""", "answer": """Supracondylar fractures are the most common elbow injuries in children. This fracture typically occurs in a fall onto an outstretched hand, as the force is transmitted to the elbow. The distal fragment of the humerus tends to displace and tilt anteriorly, creating a characteristic fracture line.
+""",
+            "answer": """Supracondylar fractures are the most common elbow injuries in children. This fracture typically occurs in a fall onto an outstretched hand, as the force is transmitted to the elbow. The distal fragment of the humerus tends to displace and tilt anteriorly, creating a characteristic fracture line.
 
 Let's discuss each of the options individually:
 
@@ -385,14 +478,17 @@ D. Inability to flex the elbow: This could certainly occur given the location of
 
 Ranking these options from least likely to most likely, we would have:
 
-Answer: [C] < [B] < [D] < [A]."""
-}, {"question": """Two weeks after undergoing low anterior resection for rectal cancer, a 52-year-old man comes to the physician because of swelling in both feet. He has not had any fever, chills, or shortness of breath. His temperature is 36°C (96.8°F) and pulse is 88/min. Physical examination shows a normal thyroid and no jugular venous distention. Examination of the lower extremities shows bilateral non-pitting edema that extends from the feet to the lower thigh, with deep flexion creases. His skin is warm and dry, and there is no erythema or rash. Microscopic examination of the interstitial space in this patient's lower extremities would be most likely to show the presence of which of the following?
+Answer: [C] < [B] < [D] < [A].""",
+        },
+        {
+            "question": """Two weeks after undergoing low anterior resection for rectal cancer, a 52-year-old man comes to the physician because of swelling in both feet. He has not had any fever, chills, or shortness of breath. His temperature is 36°C (96.8°F) and pulse is 88/min. Physical examination shows a normal thyroid and no jugular venous distention. Examination of the lower extremities shows bilateral non-pitting edema that extends from the feet to the lower thigh, with deep flexion creases. His skin is warm and dry, and there is no erythema or rash. Microscopic examination of the interstitial space in this patient's lower extremities would be most likely to show the presence of which of the following?
 
 A. Acellular, protein-poor fluid
 B. Lymphocytic, hemosiderin-rich fluid
 C. Lipid-rich, protein-rich fluid
 D. Protein-rich, glycosaminoglycan-rich fluid
-""", "answer": """The clinical vignette describes a patient who underwent surgery for rectal cancer and then developed bilateral lower extremity edema extending up to the thighs. This is a common presentation of lymphedema, which can develop after pelvic or retroperitoneal surgery, where the lymph nodes can be disturbed or removed.
+""",
+            "answer": """The clinical vignette describes a patient who underwent surgery for rectal cancer and then developed bilateral lower extremity edema extending up to the thighs. This is a common presentation of lymphedema, which can develop after pelvic or retroperitoneal surgery, where the lymph nodes can be disturbed or removed.
 
 Let's evaluate each answer option:
 
@@ -406,14 +502,17 @@ D. Protein-rich, glycosaminoglycan-rich fluid: This type of fluid can be seen in
 
 Ranking the options from least likely to most likely, we get:
 
-Answer: [D] < [A] < [B] < [C]."""
-}, {"question": """A 34-year-old gravida 2, para 1 woman at 37+6 weeks of gestation presents for elective cesarean delivery. She says she has been having increased fatigue over the past few weeks. Past medical history includes gestational hypertension for which she has been taking an antihypertensive drug twice daily since week 24. Her vital signs include: temperature 36.7°C (98.0°F), blood pressure 120/75 mm Hg, pulse 127/min. Physical examination reveals generalized pallor. Her laboratory results reveal microcytic, hypochromic anemia with anisocytosis, hemoglobin of 9 g/dL, a differential with 14% lymphocytes, an ESR of 22 mm/hr, and a reticulocyte production index of 3.1. A direct antiglobulin test is positive. LFTs, creatinine, ferritin level, vitamin B12 level, coagulation studies, and urinalysis are normal. Which of the following is the most likely diagnosis in this patient?
+Answer: [D] < [A] < [B] < [C].""",
+        },
+        {
+            "question": """A 34-year-old gravida 2, para 1 woman at 37+6 weeks of gestation presents for elective cesarean delivery. She says she has been having increased fatigue over the past few weeks. Past medical history includes gestational hypertension for which she has been taking an antihypertensive drug twice daily since week 24. Her vital signs include: temperature 36.7°C (98.0°F), blood pressure 120/75 mm Hg, pulse 127/min. Physical examination reveals generalized pallor. Her laboratory results reveal microcytic, hypochromic anemia with anisocytosis, hemoglobin of 9 g/dL, a differential with 14% lymphocytes, an ESR of 22 mm/hr, and a reticulocyte production index of 3.1. A direct antiglobulin test is positive. LFTs, creatinine, ferritin level, vitamin B12 level, coagulation studies, and urinalysis are normal. Which of the following is the most likely diagnosis in this patient?
 
 A. Preeclampsia
 B. Hereditary spherocytosis
 C. HELLP syndrome
 D. Drug-induced immune hemolytic reaction
-""", "answer": """This patient's presentation is suggestive of hemolytic anemia, given her fatigue, pallor, tachycardia, microcytic hypochromic anemia with anisocytosis, and a reticulocyte production index indicative of reticulocytosis. Her positive direct antiglobulin test (DAT, also known as direct Coombs' test) suggests an immune cause for her hemolysis.
+""",
+            "answer": """This patient's presentation is suggestive of hemolytic anemia, given her fatigue, pallor, tachycardia, microcytic hypochromic anemia with anisocytosis, and a reticulocyte production index indicative of reticulocytosis. Her positive direct antiglobulin test (DAT, also known as direct Coombs' test) suggests an immune cause for her hemolysis.
 
 Let's evaluate each of the answer choices:
 
@@ -427,14 +526,17 @@ D. Drug-induced immune hemolytic reaction: Certain drugs can induce hemolytic an
 
 Ranking the options from least likely to most likely:
 
-Answer: [B] < [C] < [A] < [D]."""
-}, {"question": """You are counseling a pregnant woman who plans to breast-feed exclusively regarding her newborn's nutritional requirements. The child was born at home and the mother only plans for her newborn to receive vaccinations but no other routine medical care. Which vitamins should be given to the newborn?
+Answer: [B] < [C] < [A] < [D].""",
+        },
+        {
+            "question": """You are counseling a pregnant woman who plans to breast-feed exclusively regarding her newborn's nutritional requirements. The child was born at home and the mother only plans for her newborn to receive vaccinations but no other routine medical care. Which vitamins should be given to the newborn?
 
 A. Folic acid
 B. Vitamin K
 C. Vitamin D
 D. Vitamin K and Vitamin D
-""", "answer": """Breast milk is the recommended source of nutrition for infants because it contains the ideal proportion of nutrients, strengthens the immune system, and promotes bonding. However, it lacks adequate amounts of two important vitamins: vitamin K and vitamin D.
+""",
+            "answer": """Breast milk is the recommended source of nutrition for infants because it contains the ideal proportion of nutrients, strengthens the immune system, and promotes bonding. However, it lacks adequate amounts of two important vitamins: vitamin K and vitamin D.
 
 Let's discuss each option separately:
 
@@ -448,14 +550,17 @@ D. Vitamin K and Vitamin D: As explained above, these are the two important vita
 
 Therefore, ranking from the least to most likely needed vitamins, the order is:
 
-Answer: [A] < [B] < [C] < [D]."""
-}, {"question": """An investigator is studying nutritional deficiencies in humans. A group of healthy volunteers are started on a diet deficient in pantothenic acid. After 4 weeks, several of the volunteers develop irritability, abdominal cramps, and burning paresthesias of their feet. These symptoms are fully reversed after reintroduction of pantothenic acid to their diet. The function of which of the following enzymes was most likely impaired in the volunteers during the study?
+Answer: [A] < [B] < [C] < [D].""",
+        },
+        {
+            "question": """An investigator is studying nutritional deficiencies in humans. A group of healthy volunteers are started on a diet deficient in pantothenic acid. After 4 weeks, several of the volunteers develop irritability, abdominal cramps, and burning paresthesias of their feet. These symptoms are fully reversed after reintroduction of pantothenic acid to their diet. The function of which of the following enzymes was most likely impaired in the volunteers during the study?
 
 A. Methionine synthase
 B. Alpha-ketoglutarate dehydrogenase
 C. Glutathione reductase
 D. Dopamine beta-hydroxylase
-""", "answer": """Pantothenic acid, also known as vitamin B5, is a crucial component of coenzyme A (CoA) and also plays a role in the synthesis of the phosphopantetheine moiety of the acyl carrier protein. CoA is involved in many metabolic pathways, including the TCA cycle and fatty acid metabolism.
+""",
+            "answer": """Pantothenic acid, also known as vitamin B5, is a crucial component of coenzyme A (CoA) and also plays a role in the synthesis of the phosphopantetheine moiety of the acyl carrier protein. CoA is involved in many metabolic pathways, including the TCA cycle and fatty acid metabolism.
 
 Let's examine each option separately:
 
@@ -469,14 +574,16 @@ D. Dopamine beta-hydroxylase: This enzyme is involved in the biosynthesis of nor
 
 So, ranking these options from least likely to most likely to be impaired due to pantothenic acid deficiency, we have:
 
-Answer: [A] < [C] < [D] < [B]."""
-}]
+Answer: [A] < [C] < [D] < [B].""",
+        },
+    ],
 }
 
 consider_each_options_without_judgement = {
     "prompt_name": "consider_each_options_without_judgement",
     "response_type": "order",
-    "prompt": Template("""## Question
+    "prompt": Template(
+        """## Question
 A 6-year-old girl is brought to the emergency department because of right elbow swelling and pain 30 minutes after falling onto her outstretched right arm. She has been unable to move her right elbow since the fall. Physical examination shows bruising, swelling, and tenderness of the right elbow; range of motion is limited by pain. An x-ray of the right arm shows a supracondylar fracture of the humerus with anterior displacement of the proximal fragment. Further evaluation is most likely to show which of the following findings?
 
 A. Absent distal radial pulse
@@ -569,13 +676,15 @@ Answer: [A] < [B] < [C] < [D]
 ## Question
 {{ question }}
 ## Discussion of each option without mentioning if it is correct or not
-""")
+"""
+    ),
 }
 
 consider_each_options_independently = {
     "prompt_name": "consider_each_options_independently",
     "response_type": "order",
-    "prompt": Template("""## Task
+    "prompt": Template(
+        """## Task
 1. Begin by individually evaluating each answer option.
 2. Discuss the pertinent facts from the scenario that help in narrowing down the options.
 3. Organize the options in order of likelihood, from least likely to most likely.
@@ -665,21 +774,25 @@ C. {{ assessments.C }}
 D. {{ assessments.D }}
 
 ## Discuss the relevant facts, explain and arrange the options
-"""),
-    "assessment": Template("""## Question
+"""
+    ),
+    "assessment": Template(
+        """## Question
 {{ question }}
 
 # Proposed answer
 {{ option }}
 
 # Assessment (100 words max)
-""")
+"""
+    ),
 }
 
 score_each_option = {
     "prompt_name": "score_each_option",
     "response_type": "probs",
-    "prompt": Template("""## Task
+    "prompt": Template(
+        """## Task
 1. Start by explaining the relevant facts of the scenario.
 2. Discuss each answer option separately, estimating the correct probability of each option.
 3. Summarize your findings in the format: "Probability: A = [??]%, B = [??]%, C = [??]%, D = [??]%".
@@ -692,14 +805,18 @@ score_each_option = {
 {% endfor %}## Question
 {{ question }}
 ## Answer
-"""),
-    "examples": [{"question": """A 6-year-old girl is brought to the emergency department because of right elbow swelling and pain 30 minutes after falling onto her outstretched right arm. She has been unable to move her right elbow since the fall. Physical examination shows bruising, swelling, and tenderness of the right elbow; range of motion is limited by pain. An x-ray of the right arm shows a supracondylar fracture of the humerus with anterior displacement of the proximal fragment. Further evaluation is most likely to show which of the following findings?
+"""
+    ),
+    "examples": [
+        {
+            "question": """A 6-year-old girl is brought to the emergency department because of right elbow swelling and pain 30 minutes after falling onto her outstretched right arm. She has been unable to move her right elbow since the fall. Physical examination shows bruising, swelling, and tenderness of the right elbow; range of motion is limited by pain. An x-ray of the right arm shows a supracondylar fracture of the humerus with anterior displacement of the proximal fragment. Further evaluation is most likely to show which of the following findings?
 
 A. Absent distal radial pulse
 B. Radial deviation of the wrist
 C. Inability to abduct shoulder
 D. Inability to flex the elbow
-""", "answer": """In this scenario, a 6-year-old girl has fallen onto her outstretched right arm, resulting in swelling, pain, and limited range of motion in the right elbow. The x-ray shows a supracondylar fracture of the humerus with anterior displacement of the proximal fragment. We will now examine each answer option and estimate the probability of each being correct.
+""",
+            "answer": """In this scenario, a 6-year-old girl has fallen onto her outstretched right arm, resulting in swelling, pain, and limited range of motion in the right elbow. The x-ray shows a supracondylar fracture of the humerus with anterior displacement of the proximal fragment. We will now examine each answer option and estimate the probability of each being correct.
 
 A. Absent distal radial pulse: A supracondylar fracture can potentially damage the blood vessels around the elbow, leading to a compromised or absent distal radial pulse. This is a plausible consequence of this type of injury. Probability: A = 80%
 
@@ -710,14 +827,17 @@ C. Inability to abduct shoulder: Abduction of the shoulder primarily involves th
 D. Inability to flex the elbow: Considering the swelling, pain, and limited range of motion observed in the patient's right elbow, it is likely that the patient will have difficulty flexing the elbow due to the fracture. Probability: D = 75%
 
 In summary, the estimated probabilities for each option are as follows:
-Probability: A = 80%, B = 10%, C = 5%, D = 75%."""
-}, {"question": """Two weeks after undergoing low anterior resection for rectal cancer, a 52-year-old man comes to the physician because of swelling in both feet. He has not had any fever, chills, or shortness of breath. His temperature is 36°C (96.8°F) and pulse is 88/min. Physical examination shows a normal thyroid and no jugular venous distention. Examination of the lower extremities shows bilateral non-pitting edema that extends from the feet to the lower thigh, with deep flexion creases. His skin is warm and dry, and there is no erythema or rash. Microscopic examination of the interstitial space in this patient's lower extremities would be most likely to show the presence of which of the following?
+Probability: A = 80%, B = 10%, C = 5%, D = 75%.""",
+        },
+        {
+            "question": """Two weeks after undergoing low anterior resection for rectal cancer, a 52-year-old man comes to the physician because of swelling in both feet. He has not had any fever, chills, or shortness of breath. His temperature is 36°C (96.8°F) and pulse is 88/min. Physical examination shows a normal thyroid and no jugular venous distention. Examination of the lower extremities shows bilateral non-pitting edema that extends from the feet to the lower thigh, with deep flexion creases. His skin is warm and dry, and there is no erythema or rash. Microscopic examination of the interstitial space in this patient's lower extremities would be most likely to show the presence of which of the following?
 
 A. Acellular, protein-poor fluid
 B. Lymphocytic, hemosiderin-rich fluid
 C. Lipid-rich, protein-rich fluid
 D. Protein-rich, glycosaminoglycan-rich fluid
-""", "answer": """In this scenario, a 52-year-old man underwent a low anterior resection for rectal cancer and presented with bilateral non-pitting edema in both feet two weeks after surgery. We will now examine each answer option and estimate the probability of each being correct.
+""",
+            "answer": """In this scenario, a 52-year-old man underwent a low anterior resection for rectal cancer and presented with bilateral non-pitting edema in both feet two weeks after surgery. We will now examine each answer option and estimate the probability of each being correct.
 
 A. Acellular, protein-poor fluid: Non-pitting edema is typically associated with lymphedema, which is characterized by a high protein content in the interstitial fluid. Therefore, it is less likely to be an acellular, protein-poor fluid. Probability: A = 5%
 
@@ -728,14 +848,17 @@ C. Lipid-rich, protein-rich fluid: Non-pitting edema can be seen in conditions s
 D. Protein-rich, glycosaminoglycan-rich fluid: Although non-pitting edema is commonly associated with lymphedema, which is characterized by the accumulation of protein-rich fluid in the interstitial space, the absence of other lymphedema-related signs (such as erythema or rash) makes this option less likely. Probability: D = 15%
 
 In summary, the estimated probabilities for each option are as follows:
-Probability: A = 5%, B = 10%, C = 70%, D = 15%."""
-}, {"question": """A 34-year-old gravida 2, para 1 woman at 37+6 weeks of gestation presents for elective cesarean delivery. She says she has been having increased fatigue over the past few weeks. Past medical history includes gestational hypertension for which she has been taking an antihypertensive drug twice daily since week 24. Her vital signs include: temperature 36.7°C (98.0°F), blood pressure 120/75 mm Hg, pulse 127/min. Physical examination reveals generalized pallor. Her laboratory results reveal microcytic, hypochromic anemia with anisocytosis, hemoglobin of 9 g/dL, a differential with 14% lymphocytes, an ESR of 22 mm/hr, and a reticulocyte production index of 3.1. A direct antiglobulin test is positive. LFTs, creatinine, ferritin level, vitamin B12 level, coagulation studies, and urinalysis are normal. Which of the following is the most likely diagnosis in this patient?
+Probability: A = 5%, B = 10%, C = 70%, D = 15%.""",
+        },
+        {
+            "question": """A 34-year-old gravida 2, para 1 woman at 37+6 weeks of gestation presents for elective cesarean delivery. She says she has been having increased fatigue over the past few weeks. Past medical history includes gestational hypertension for which she has been taking an antihypertensive drug twice daily since week 24. Her vital signs include: temperature 36.7°C (98.0°F), blood pressure 120/75 mm Hg, pulse 127/min. Physical examination reveals generalized pallor. Her laboratory results reveal microcytic, hypochromic anemia with anisocytosis, hemoglobin of 9 g/dL, a differential with 14% lymphocytes, an ESR of 22 mm/hr, and a reticulocyte production index of 3.1. A direct antiglobulin test is positive. LFTs, creatinine, ferritin level, vitamin B12 level, coagulation studies, and urinalysis are normal. Which of the following is the most likely diagnosis in this patient?
 
 A. Preeclampsia
 B. Hereditary spherocytosis
 C. HELLP syndrome
 D. Drug-induced immune hemolytic reaction
-""", "answer": """In this scenario, a 34-year-old pregnant woman presents with increased fatigue, generalized pallor, and laboratory results indicating microcytic, hypochromic anemia with anisocytosis, a positive direct antiglobulin test, and a reticulocyte production index of 3.1. We will now examine each answer option and estimate the probability of each being correct.
+""",
+            "answer": """In this scenario, a 34-year-old pregnant woman presents with increased fatigue, generalized pallor, and laboratory results indicating microcytic, hypochromic anemia with anisocytosis, a positive direct antiglobulin test, and a reticulocyte production index of 3.1. We will now examine each answer option and estimate the probability of each being correct.
 
 A. Preeclampsia: Although the patient has a history of gestational hypertension, her current blood pressure is normal, and there is no mention of proteinuria or other signs of preeclampsia. Probability: A = 5%
 
@@ -746,14 +869,17 @@ C. HELLP syndrome: HELLP syndrome is a severe form of preeclampsia, characterize
 D. Drug-induced immune hemolytic reaction: The patient's positive direct antiglobulin test suggests an immune-mediated hemolytic process. Given her history of taking an antihypertensive drug, it is possible that her anemia is a result of a drug-induced immune hemolytic reaction. Probability: D = 70%
 
 In summary, the estimated probabilities for each option are as follows:
-Probability: A = 5%, B = 10%, C = 15%, D = 70%."""
-}, {"question": """You are counseling a pregnant woman who plans to breast-feed exclusively regarding her newborn's nutritional requirements. The child was born at home and the mother only plans for her newborn to receive vaccinations but no other routine medical care. Which vitamins should be given to the newborn?
+Probability: A = 5%, B = 10%, C = 15%, D = 70%.""",
+        },
+        {
+            "question": """You are counseling a pregnant woman who plans to breast-feed exclusively regarding her newborn's nutritional requirements. The child was born at home and the mother only plans for her newborn to receive vaccinations but no other routine medical care. Which vitamins should be given to the newborn?
 
 A. Folic acid
 B. Vitamin K
 C. Vitamin D
 D. Vitamin K and Vitamin D
-""", "answer": """In the scenario presented, the newborn will be breastfed exclusively and will not receive any routine medical care besides vaccinations. We will now consider which vitamins should be given to the newborn.
+""",
+            "answer": """In the scenario presented, the newborn will be breastfed exclusively and will not receive any routine medical care besides vaccinations. We will now consider which vitamins should be given to the newborn.
 
 A. Folic acid: Folic acid is essential for pregnant women to prevent neural tube defects in the developing fetus. However, it is not routinely given to newborns as a supplement. Probability: A = 5%
 
@@ -764,14 +890,17 @@ C. Vitamin D: Exclusively breastfed infants are at risk of vitamin D deficiency,
 D. Vitamin K and Vitamin D: Given that newborns have low stores of vitamin K and breast milk does not provide enough vitamin D, it is essential to provide both vitamin K and vitamin D supplements to ensure proper blood clotting, bone development, and overall health. Probability: D = 70%
 
 In summary, the estimated probabilities for each option are as follows:
-Probability: A = 5%, B = 40%, C = 25%, D = 70%."""
-}, {"question": """An investigator is studying nutritional deficiencies in humans. A group of healthy volunteers are started on a diet deficient in pantothenic acid. After 4 weeks, several of the volunteers develop irritability, abdominal cramps, and burning paresthesias of their feet. These symptoms are fully reversed after reintroduction of pantothenic acid to their diet. The function of which of the following enzymes was most likely impaired in the volunteers during the study?
+Probability: A = 5%, B = 40%, C = 25%, D = 70%.""",
+        },
+        {
+            "question": """An investigator is studying nutritional deficiencies in humans. A group of healthy volunteers are started on a diet deficient in pantothenic acid. After 4 weeks, several of the volunteers develop irritability, abdominal cramps, and burning paresthesias of their feet. These symptoms are fully reversed after reintroduction of pantothenic acid to their diet. The function of which of the following enzymes was most likely impaired in the volunteers during the study?
 
 A. Methionine synthase
 B. Alpha-ketoglutarate dehydrogenase
 C. Glutathione reductase
 D. Dopamine beta-hydroxylase
-""", "answer": """In this scenario, healthy volunteers were started on a diet deficient in pantothenic acid, which led to the development of irritability, abdominal cramps, and burning paresthesias of their feet. These symptoms were reversed after reintroducing pantothenic acid to their diet. We will now consider which enzyme's function was most likely impaired during the study.
+""",
+            "answer": """In this scenario, healthy volunteers were started on a diet deficient in pantothenic acid, which led to the development of irritability, abdominal cramps, and burning paresthesias of their feet. These symptoms were reversed after reintroducing pantothenic acid to their diet. We will now consider which enzyme's function was most likely impaired during the study.
 
 A. Methionine synthase: This enzyme is involved in the conversion of homocysteine to methionine and requires vitamin B12 as a cofactor. Pantothenic acid deficiency would not directly affect this enzyme's function. Probability: A = 5%
 
@@ -782,58 +911,76 @@ C. Glutathione reductase: This enzyme is involved in maintaining cellular redox 
 D. Dopamine beta-hydroxylase: This enzyme is involved in the synthesis of norepinephrine from dopamine and requires vitamin C as a cofactor. Pantothenic acid deficiency would not directly affect this enzyme's function. Probability: D = 10%
 
 In summary, the estimated probabilities for each option are as follows:
-Probability: A = 5%, B = 80%, C = 5%, D = 10%."""
-}]
+Probability: A = 5%, B = 80%, C = 5%, D = 10%.""",
+        },
+    ],
 }
 
 gpt_chain_of_thoughts_with_context = {
     "prompt_name": "gpt_chain_of_thoughts_with_context",
     "response_type": "answer_letter",
     "prompt": few_shots_prompt,
-    "examples": [{"question": """A 6-year-old girl is brought to the emergency department because of right elbow swelling and pain 30 minutes after falling onto her outstretched right arm. She has been unable to move her right elbow since the fall. Physical examination shows bruising, swelling, and tenderness of the right elbow; range of motion is limited by pain. An x-ray of the right arm shows a supracondylar fracture of the humerus with anterior displacement of the proximal fragment. Further evaluation is most likely to show which of the following findings?
+    "examples": [
+        {
+            "question": """A 6-year-old girl is brought to the emergency department because of right elbow swelling and pain 30 minutes after falling onto her outstretched right arm. She has been unable to move her right elbow since the fall. Physical examination shows bruising, swelling, and tenderness of the right elbow; range of motion is limited by pain. An x-ray of the right arm shows a supracondylar fracture of the humerus with anterior displacement of the proximal fragment. Further evaluation is most likely to show which of the following findings?
 
 A. Absent distal radial pulse
 B. Radial deviation of the wrist
 C. Inability to abduct shoulder
 D. Inability to flex the elbow
-""", "answer": """Considering potential complications, the most severe is injury to the brachial artery. The fracture can compromise this artery, affecting blood flow to the forearm and hand. This can result in an absent distal radial pulse.
-Answer: A"""
-}, {"question": """Two weeks after undergoing low anterior resection for rectal cancer, a 52-year-old man comes to the physician because of swelling in both feet. He has not had any fever, chills, or shortness of breath. His temperature is 36°C (96.8°F) and pulse is 88/min. Physical examination shows a normal thyroid and no jugular venous distention. Examination of the lower extremities shows bilateral non-pitting edema that extends from the feet to the lower thigh, with deep flexion creases. His skin is warm and dry, and there is no erythema or rash. Microscopic examination of the interstitial space in this patient's lower extremities would be most likely to show the presence of which of the following?
+""",
+            "answer": """Considering potential complications, the most severe is injury to the brachial artery. The fracture can compromise this artery, affecting blood flow to the forearm and hand. This can result in an absent distal radial pulse.
+Answer: A""",
+        },
+        {
+            "question": """Two weeks after undergoing low anterior resection for rectal cancer, a 52-year-old man comes to the physician because of swelling in both feet. He has not had any fever, chills, or shortness of breath. His temperature is 36°C (96.8°F) and pulse is 88/min. Physical examination shows a normal thyroid and no jugular venous distention. Examination of the lower extremities shows bilateral non-pitting edema that extends from the feet to the lower thigh, with deep flexion creases. His skin is warm and dry, and there is no erythema or rash. Microscopic examination of the interstitial space in this patient's lower extremities would be most likely to show the presence of which of the following?
 
 A. Acellular, protein-poor fluid
 B. Lymphocytic, hemosiderin-rich fluid
 C. Lipid-rich, protein-rich fluid
 D. Protein-rich, glycosaminoglycan-rich fluid
-""", "answer": """The clinical presentation is most consistent with lymphedema, which commonly occurs secondary to lymphatic obstruction or damage, such as from pelvic lymph node dissection during his recent surgery for rectal cancer. Lymphedema is characterized by an accumulation of protein-rich lymphatic fluid in the interstitial spaces. Lipids are also a significant component of lymph. Therefore, the most likely finding in this patient's lower extremities would be lipid-rich, protein-rich fluid.
-Answer: C"""
-}, {"question": """A 34-year-old gravida 2, para 1 woman at 37+6 weeks of gestation presents for elective cesarean delivery. She says she has been having increased fatigue over the past few weeks. Past medical history includes gestational hypertension for which she has been taking an antihypertensive drug twice daily since week 24. Her vital signs include: temperature 36.7°C (98.0°F), blood pressure 120/75 mm Hg, pulse 127/min. Physical examination reveals generalized pallor. Her laboratory results reveal microcytic, hypochromic anemia with anisocytosis, hemoglobin of 9 g/dL, a differential with 14% lymphocytes, an ESR of 22 mm/hr, and a reticulocyte production index of 3.1. A direct antiglobulin test is positive. LFTs, creatinine, ferritin level, vitamin B12 level, coagulation studies, and urinalysis are normal. Which of the following is the most likely diagnosis in this patient?
+""",
+            "answer": """The clinical presentation is most consistent with lymphedema, which commonly occurs secondary to lymphatic obstruction or damage, such as from pelvic lymph node dissection during his recent surgery for rectal cancer. Lymphedema is characterized by an accumulation of protein-rich lymphatic fluid in the interstitial spaces. Lipids are also a significant component of lymph. Therefore, the most likely finding in this patient's lower extremities would be lipid-rich, protein-rich fluid.
+Answer: C""",
+        },
+        {
+            "question": """A 34-year-old gravida 2, para 1 woman at 37+6 weeks of gestation presents for elective cesarean delivery. She says she has been having increased fatigue over the past few weeks. Past medical history includes gestational hypertension for which she has been taking an antihypertensive drug twice daily since week 24. Her vital signs include: temperature 36.7°C (98.0°F), blood pressure 120/75 mm Hg, pulse 127/min. Physical examination reveals generalized pallor. Her laboratory results reveal microcytic, hypochromic anemia with anisocytosis, hemoglobin of 9 g/dL, a differential with 14% lymphocytes, an ESR of 22 mm/hr, and a reticulocyte production index of 3.1. A direct antiglobulin test is positive. LFTs, creatinine, ferritin level, vitamin B12 level, coagulation studies, and urinalysis are normal. Which of the following is the most likely diagnosis in this patient?
 
 A. Preeclampsia
 B. Hereditary spherocytosis
 C. HELLP syndrome
 D. Drug-induced immune hemolytic reaction
-""", "answer": """Considering the patient's clinical presentation and laboratory findings, it's important to note that her current antihypertensive medication could be playing a role in her condition. Certain drugs can cause immune-mediated hemolytic anemia by triggering the immune system to produce antibodies against red blood cells. This process often leads to premature destruction of red blood cells, resulting in anemia. Given that the woman has been on an antihypertensive drug, which is known to occasionally cause such reactions, and considering her positive direct antiglobulin test and symptoms, the most likely diagnosis is a drug-induced immune hemolytic reaction.
-Answer: D"""
-}, {"question": """You are counseling a pregnant woman who plans to breast-feed exclusively regarding her newborn's nutritional requirements. The child was born at home and the mother only plans for her newborn to receive vaccinations but no other routine medical care. Which vitamins should be given to the newborn?
+""",
+            "answer": """Considering the patient's clinical presentation and laboratory findings, it's important to note that her current antihypertensive medication could be playing a role in her condition. Certain drugs can cause immune-mediated hemolytic anemia by triggering the immune system to produce antibodies against red blood cells. This process often leads to premature destruction of red blood cells, resulting in anemia. Given that the woman has been on an antihypertensive drug, which is known to occasionally cause such reactions, and considering her positive direct antiglobulin test and symptoms, the most likely diagnosis is a drug-induced immune hemolytic reaction.
+Answer: D""",
+        },
+        {
+            "question": """You are counseling a pregnant woman who plans to breast-feed exclusively regarding her newborn's nutritional requirements. The child was born at home and the mother only plans for her newborn to receive vaccinations but no other routine medical care. Which vitamins should be given to the newborn?
 
 A. Folic acid
 B. Vitamin K
 C. Vitamin D
 D. Vitamin K and Vitamin D
-""", "answer": """Given the newborn is exclusively breastfed and receiving minimal medical care, two vitamins are crucial. Vitamin K is needed immediately after birth to prevent bleeding. Vitamin D supplementation is necessary as breast milk typically doesn't provide sufficient amounts.
-Answer: D"""
-}, {"question": """An investigator is studying nutritional deficiencies in humans. A group of healthy volunteers are started on a diet deficient in pantothenic acid. After 4 weeks, several of the volunteers develop irritability, abdominal cramps, and burning paresthesias of their feet. These symptoms are fully reversed after reintroduction of pantothenic acid to their diet. The function of which of the following enzymes was most likely impaired in the volunteers during the study?
+""",
+            "answer": """Given the newborn is exclusively breastfed and receiving minimal medical care, two vitamins are crucial. Vitamin K is needed immediately after birth to prevent bleeding. Vitamin D supplementation is necessary as breast milk typically doesn't provide sufficient amounts.
+Answer: D""",
+        },
+        {
+            "question": """An investigator is studying nutritional deficiencies in humans. A group of healthy volunteers are started on a diet deficient in pantothenic acid. After 4 weeks, several of the volunteers develop irritability, abdominal cramps, and burning paresthesias of their feet. These symptoms are fully reversed after reintroduction of pantothenic acid to their diet. The function of which of the following enzymes was most likely impaired in the volunteers during the study?
 
 A. Methionine synthase
 B. Alpha-ketoglutarate dehydrogenase
 C. Glutathione reductase
 D. Dopamine beta-hydroxylase
-""", "answer": """Alpha-ketoglutarate dehydrogenase is a key enzyme in the citric acid cycle (Krebs cycle). It catalyzes the conversion of alpha-ketoglutarate to succinyl-CoA, a reaction that involves CoA, a molecule derived from pantothenic acid. So, deficiency in pantothenic acid would impair the function of alpha-ketoglutarate dehydrogenase. Therefore, the most likely impaired enzyme in the volunteers during the study was alpha-ketoglutarate dehydrogenase.
-Answer: B"""
-}]
+""",
+            "answer": """Alpha-ketoglutarate dehydrogenase is a key enzyme in the citric acid cycle (Krebs cycle). It catalyzes the conversion of alpha-ketoglutarate to succinyl-CoA, a reaction that involves CoA, a molecule derived from pantothenic acid. So, deficiency in pantothenic acid would impair the function of alpha-ketoglutarate dehydrogenase. Therefore, the most likely impaired enzyme in the volunteers during the study was alpha-ketoglutarate dehydrogenase.
+Answer: B""",
+        },
+    ],
 }
 
-few_shots_cot_prompt = Template("""{% for item in examples %}## Question
+few_shots_cot_prompt = Template(
+    """{% for item in examples %}## Question
 {{ item.question }}
 ## Explanation
 {{ item.answer }}
@@ -841,104 +988,131 @@ few_shots_cot_prompt = Template("""{% for item in examples %}## Question
 {% endfor %}## Question
 {{ question }}
 ## Explanation
-""")
+"""
+)
 
 gpt_chain_of_thoughts_enough_or_not = {
     "prompt_name": "gpt_chain_of_thoughts_enough_or_not",
     "response_type": "answer_letter_md",
     "prompt": few_shots_cot_prompt,
-    "examples": [{"question": """Context: Lymphedema may be identified by simpler circumference changes as compared with changes in limb volume.
+    "examples": [
+        {
+            "question": """Context: Lymphedema may be identified by simpler circumference changes as compared with changes in limb volume.
 Context: Ninety breast cancer patients were prospectively enrolled in an academic trial, and seven upper extremity circumferences were measured quarterly for 3 years. A 10% volume increase or greater than 1 cm increase in arm circumference identified lymphedema with verification by a lymphedema specialist. Sensitivity and specificity of several different criteria for detecting lymphedema were compared using the academic trial as the standard.
 Context: Thirty-nine cases of lymphedema were identified by the academic trial. Using a 10% increase in circumference at two sites as the criterion, half the lymphedema cases were detected (sensitivity 37%). When using a 10% increase in circumference at any site, 74.4% of cases were detected (sensitivity 49%). Detection by a 5% increase in circumference at any site was 91% sensitive.
 Can a practicing surgeon detect early lymphedema reliably?
 
 A. The context gives enough information to answer the question.
 B. The context does not give enough information to answer the question.
-""", "answer": """While the study's data suggests that a surgeon could potentially detect early lymphedema using circumference measurements, it doesn't guarantee the reliability of these methods as they can also result in missed cases or false positives. The surgeon's detection ability could vary based on the method chosen and their training in these techniques. Hence, without comprehensive data, including both sensitivity and specificity of the detection methods, we can't definitively conclude whether a practicing surgeon can reliably detect early lymphedema.
+""",
+            "answer": """While the study's data suggests that a surgeon could potentially detect early lymphedema using circumference measurements, it doesn't guarantee the reliability of these methods as they can also result in missed cases or false positives. The surgeon's detection ability could vary based on the method chosen and their training in these techniques. Hence, without comprehensive data, including both sensitivity and specificity of the detection methods, we can't definitively conclude whether a practicing surgeon can reliably detect early lymphedema.
 
 ## Answer
-B"""
-}, {"question": """Context: This study aims to evaluate local failure patterns in node negative breast cancer patients treated with post-mastectomy radiotherapy including internal mammary chain only.
+B""",
+        },
+        {
+            "question": """Context: This study aims to evaluate local failure patterns in node negative breast cancer patients treated with post-mastectomy radiotherapy including internal mammary chain only.
 Context: Retrospective analysis of 92 internal or central-breast node-negative tumours with mastectomy and external irradiation of the internal mammary chain at the dose of 50 Gy, from 1994 to 1998.
 Context: Local recurrence rate was 5 % (five cases). Recurrence sites were the operative scare and chest wall. Factors associated with increased risk of local failure were age<or = 40 years and tumour size greater than 20mm, without statistical significance.
 Should chest wall irradiation be included after mastectomy and negative node breast cancer?
 
 A. The context gives enough information to answer the question.
 B. The context does not give enough information to answer the question.
-""", "answer": """The context provides some information on local failure rates following mastectomy and irradiation of the internal mammary chain in node-negative breast cancer patients. It mentions that the local recurrence sites were the operative scar and chest wall. However, it does not provide information on the outcomes of patients who underwent chest wall irradiation following mastectomy, or compare outcomes between patients who received this additional treatment and those who did not. Therefore, it is not possible to make an evidence-based recommendation on whether chest wall irradiation should be included after mastectomy in these patients based on the provided context.
+""",
+            "answer": """The context provides some information on local failure rates following mastectomy and irradiation of the internal mammary chain in node-negative breast cancer patients. It mentions that the local recurrence sites were the operative scar and chest wall. However, it does not provide information on the outcomes of patients who underwent chest wall irradiation following mastectomy, or compare outcomes between patients who received this additional treatment and those who did not. Therefore, it is not possible to make an evidence-based recommendation on whether chest wall irradiation should be included after mastectomy in these patients based on the provided context.
 
 ## Answer
-B"""
-}, {"question": """Context: Sulfasalazine is a widely used anti-inflammatory agent in the treatment of inflammatory bowel disease and several rheumatological disorders. Although as many as 20% of treated patients may experience reversible, dose-dependent side effects, less frequent but potentially severe, systemic reactions have also been reported.
+B""",
+        },
+        {
+            "question": """Context: Sulfasalazine is a widely used anti-inflammatory agent in the treatment of inflammatory bowel disease and several rheumatological disorders. Although as many as 20% of treated patients may experience reversible, dose-dependent side effects, less frequent but potentially severe, systemic reactions have also been reported.
 Context: A severe systemic reaction to sulfasalazine developed in a 21-year old female with rheumatoid arthritis characterized by eosinophilia, granulomatous enteritis and myelotoxicity, cholestatic hepatitis, and seizures. The clinical course and management of this patient are presented as well as a review of the incidence and outcome of severe systemic reactions to sulfasalazine.
 Is it Crohn's disease?
 
 A. The context gives enough information to answer the question.
 B. The context does not give enough information to answer the question.
-""", "answer": """The context mentions that the patient developed a severe systemic reaction to sulfasalazine, which was being used to treat rheumatoid arthritis. The side effects include eosinophilia, granulomatous enteritis and myelotoxicity, cholestatic hepatitis, and seizures. These are potential side effects of the drug, but are not specific symptoms of Crohn's disease.
+""",
+            "answer": """The context mentions that the patient developed a severe systemic reaction to sulfasalazine, which was being used to treat rheumatoid arthritis. The side effects include eosinophilia, granulomatous enteritis and myelotoxicity, cholestatic hepatitis, and seizures. These are potential side effects of the drug, but are not specific symptoms of Crohn's disease.
 
 ## Answer
-B"""
-}, {"question": """Context: Tacrolimus is a potent immunosuppressive drug used in organ transplantation. Because of its substantial toxic effects, narrow therapeutic index, and interindividual pharmacokinetic variability, therapeutic drug monitoring of whole-blood tacrolimus concentrations has been recommended. We investigated the comparability of the results of 2 immunoassay systems, affinity column-mediated immunoassay (ACMIA) and microparticle enzyme immunoassay (MEIA), comparing differences in the tacrolimus concentrations measured by the 2 methods in relation to the hematologic and biochemical values of hepatic and renal functions.
+B""",
+        },
+        {
+            "question": """Context: Tacrolimus is a potent immunosuppressive drug used in organ transplantation. Because of its substantial toxic effects, narrow therapeutic index, and interindividual pharmacokinetic variability, therapeutic drug monitoring of whole-blood tacrolimus concentrations has been recommended. We investigated the comparability of the results of 2 immunoassay systems, affinity column-mediated immunoassay (ACMIA) and microparticle enzyme immunoassay (MEIA), comparing differences in the tacrolimus concentrations measured by the 2 methods in relation to the hematologic and biochemical values of hepatic and renal functions.
 Context: A total of 154 samples from kidney or liver transplant recipients were subjected to Dimension RxL HM with a tacrolimus Flex reagent cartilage for the ACMIA method and IMx tacrolimus II for the MEIA method.
 Context: Tacrolimus concentrations measured by the ACMIA method (n = 154) closely correlated with those measured by the MEIA method (r = 0.84). The Bland-Altman plot using concentration differences between the 2 methods and the average of the 2 methods showed no specific trends. The tacrolimus levels determined by both the MEIA method and the ACMIA method were not influenced by hematocrit levels, but the difference between the 2 methods (ACMIA - MEIA) tended to be larger in low hematocrit samples (P<.001).
 Is the affinity column-mediated immunoassay method suitable as an alternative to the microparticle enzyme immunoassay method as a blood tacrolimus assay?
 
 A. The context gives enough information to answer the question.
 B. The context does not give enough information to answer the question.
-""", "answer": """The context states that the tacrolimus concentrations measured by the affinity column-mediated immunoassay (ACMIA) method closely correlated with those measured by the microparticle enzyme immunoassay (MEIA) method (r = 0.84). Additionally, the Bland-Altman plot did not show any specific trends between the two methods. This suggests that the ACMIA method may be suitable as an alternative to the MEIA method for blood tacrolimus assays. However, one notable difference is that the discrepancy between the two methods tends to be larger in low hematocrit samples.
+""",
+            "answer": """The context states that the tacrolimus concentrations measured by the affinity column-mediated immunoassay (ACMIA) method closely correlated with those measured by the microparticle enzyme immunoassay (MEIA) method (r = 0.84). Additionally, the Bland-Altman plot did not show any specific trends between the two methods. This suggests that the ACMIA method may be suitable as an alternative to the MEIA method for blood tacrolimus assays. However, one notable difference is that the discrepancy between the two methods tends to be larger in low hematocrit samples.
 
 ## Answer
-A"""
-}, {"question": """Context: Tacrolimus is a potent immunosuppressive drug used in organ transplantation. Because of its substantial toxic effects, narrow therapeutic index, and interindividual pharmacokinetic variability, therapeutic drug monitoring of whole-blood tacrolimus concentrations has been recommended. We investigated the comparability of the results of 2 immunoassay systems, affinity column-mediated immunoassay (ACMIA) and microparticle enzyme immunoassay (MEIA), comparing differences in the tacrolimus concentrations measured by the 2 methods in relation to the hematologic and biochemical values of hepatic and renal functions.
+A""",
+        },
+        {
+            "question": """Context: Tacrolimus is a potent immunosuppressive drug used in organ transplantation. Because of its substantial toxic effects, narrow therapeutic index, and interindividual pharmacokinetic variability, therapeutic drug monitoring of whole-blood tacrolimus concentrations has been recommended. We investigated the comparability of the results of 2 immunoassay systems, affinity column-mediated immunoassay (ACMIA) and microparticle enzyme immunoassay (MEIA), comparing differences in the tacrolimus concentrations measured by the 2 methods in relation to the hematologic and biochemical values of hepatic and renal functions.
 Context: A total of 154 samples from kidney or liver transplant recipients were subjected to Dimension RxL HM with a tacrolimus Flex reagent cartilage for the ACMIA method and IMx tacrolimus II for the MEIA method.
 Context: Tacrolimus concentrations measured by the ACMIA method (n = 154) closely correlated with those measured by the MEIA method (r = 0.84). The Bland-Altman plot using concentration differences between the 2 methods and the average of the 2 methods showed no specific trends. The tacrolimus levels determined by both the MEIA method and the ACMIA method were not influenced by hematocrit levels, but the difference between the 2 methods (ACMIA - MEIA) tended to be larger in low hematocrit samples (P<.001).
 Is the affinity column-mediated immunoassay method suitable as an alternative to the microparticle enzyme immunoassay method as a blood tacrolimus assay?
 
 A. The context gives enough information to answer the question.
 B. The context does not give enough information to answer the question.
-""", "answer": """The context states that the tacrolimus concentrations measured by the affinity column-mediated immunoassay (ACMIA) method closely correlated with those measured by the microparticle enzyme immunoassay (MEIA) method (r = 0.84). Additionally, the Bland-Altman plot did not show any specific trends between the two methods. This suggests that the ACMIA method may be suitable as an alternative to the MEIA method for blood tacrolimus assays. However, one notable difference is that the discrepancy between the two methods tends to be larger in low hematocrit samples.
+""",
+            "answer": """The context states that the tacrolimus concentrations measured by the affinity column-mediated immunoassay (ACMIA) method closely correlated with those measured by the microparticle enzyme immunoassay (MEIA) method (r = 0.84). Additionally, the Bland-Altman plot did not show any specific trends between the two methods. This suggests that the ACMIA method may be suitable as an alternative to the MEIA method for blood tacrolimus assays. However, one notable difference is that the discrepancy between the two methods tends to be larger in low hematocrit samples.
 
 ## Answer
-A"""
-}, {"question": """Context: Treatment of obstructive hydrocephalus in children with tuberculous meningitis (TBM) depends on the level of the cerebrospinal fluid (CSF) block. Air-encephalography is regarded as the gold standard for differentiating communicating and non-communicating hydrocephalus. Since air-encephalography involves a lumbar puncture, it carries the risk of cerebral herniation. AIM. The aim of this study was to determine whether communicating and non-communicating hydrocephalus in TBM can be differentiated by means of cranial computerised tomography (CT).
+A""",
+        },
+        {
+            "question": """Context: Treatment of obstructive hydrocephalus in children with tuberculous meningitis (TBM) depends on the level of the cerebrospinal fluid (CSF) block. Air-encephalography is regarded as the gold standard for differentiating communicating and non-communicating hydrocephalus. Since air-encephalography involves a lumbar puncture, it carries the risk of cerebral herniation. AIM. The aim of this study was to determine whether communicating and non-communicating hydrocephalus in TBM can be differentiated by means of cranial computerised tomography (CT).
 Context: A number of CT indices were measured in 50 children with communicating and 34 children with non-communicating hydrocephalus according to air-encephalographic findings.
 Context: The only CT finding that correlated with the type of hydrocephalus was the shape of the third ventricle. Significantly more children with non-communicating hydrocephalus had a rounded third ventricle than those with communicating hydrocephalus.
 Can CT predict the level of CSF block in tuberculous hydrocephalus?
 
 A. The context gives enough information to answer the question.
 B. The context does not give enough information to answer the question.
-""", "answer": """The context mentioned that the shape of the third ventricle on a CT scan correlated with the type of hydrocephalus. Specifically, a rounded third ventricle was found significantly more often in children with non-communicating hydrocephalus than in those with communicating hydrocephalus. Therefore, this suggests that CT scans could potentially be used to predict the level of CSF block in tuberculous hydrocephalus.
+""",
+            "answer": """The context mentioned that the shape of the third ventricle on a CT scan correlated with the type of hydrocephalus. Specifically, a rounded third ventricle was found significantly more often in children with non-communicating hydrocephalus than in those with communicating hydrocephalus. Therefore, this suggests that CT scans could potentially be used to predict the level of CSF block in tuberculous hydrocephalus.
 
 ## Answer
-A"""
-}, {"question": """Context: The study was carried on 2096 school children (1043 male, 1053 female) in Ankara. Their mean age was 9.03 years. Demographic properties of the study group and their families were determined and the serum lipid levels of the subjects were obtained. The relation between these demographic properties and lipid levels were investigated.
+A""",
+        },
+        {
+            "question": """Context: The study was carried on 2096 school children (1043 male, 1053 female) in Ankara. Their mean age was 9.03 years. Demographic properties of the study group and their families were determined and the serum lipid levels of the subjects were obtained. The relation between these demographic properties and lipid levels were investigated.
 Context: In 135 of the subjects' serum cholesterol level was>or=200 mg/dL and in 83 subjects serum LDL-cholesterol level was>or=130 mg/dL. Despite 64.4% of the subjects reported a family history of hyperlipidemia, no relations between family history and serum lipid levels were found.
 Cholesterol screening in school children: is family history reliable to choose the ones to screen?
 
 A. The context gives enough information to answer the question.
 B. The context does not give enough information to answer the question.
-""", "answer": """The context states that despite 64.4% of the subjects reporting a family history of hyperlipidemia, there was no observed relationship between family history and serum lipid levels. This suggests that family history may not be a reliable factor in determining which school children should be screened for cholesterol.
+""",
+            "answer": """The context states that despite 64.4% of the subjects reporting a family history of hyperlipidemia, there was no observed relationship between family history and serum lipid levels. This suggests that family history may not be a reliable factor in determining which school children should be screened for cholesterol.
 
 ## Answer
-A"""
-}, {"question": """Context: Using polymerase chain reaction techniques, we evaluated the presence of HPV infection in human breast milk collected from 21 HPV-positive and 11 HPV-negative mothers.
+A""",
+        },
+        {
+            "question": """Context: Using polymerase chain reaction techniques, we evaluated the presence of HPV infection in human breast milk collected from 21 HPV-positive and 11 HPV-negative mothers.
 Context: Of the 32 studied human milk specimens, no 'high-risk' HPV 16, 18, 31, 33, 35, 39, 45, 51, 52, 56, 58 or 58 DNA was detected.
 Can 'high-risk' human papillomaviruses (HPVs) be detected in human breast milk?
 
 A. The context gives enough information to answer the question.
 B. The context does not give enough information to answer the question.
-""", "answer": """The context states that none of the studied human milk specimens (from both HPV-positive and HPV-negative mothers) were found to contain any 'high-risk' HPV types. Therefore, it provides enough information to suggest that 'high-risk' HPVs were not detected in human breast milk in this particular study.
+""",
+            "answer": """The context states that none of the studied human milk specimens (from both HPV-positive and HPV-negative mothers) were found to contain any 'high-risk' HPV types. Therefore, it provides enough information to suggest that 'high-risk' HPVs were not detected in human breast milk in this particular study.
 
 ## Answer
-A"""
-}]
+A""",
+        },
+    ],
 }
 
 logprobs_5shots_enough_or_not = {
     "prompt_name": "logprobs_5shots_enough_or_not",
     "response_type": "logprobs",
-    "prompt": Template("""{% for item in examples %}## Question
+    "prompt": Template(
+        """{% for item in examples %}## Question
 {{ item.question }}
 ## Answer
 {{ item.answer }}
@@ -946,75 +1120,102 @@ logprobs_5shots_enough_or_not = {
 {% endfor %}## Question
 {{ question }}
 ## Answer
-"""),
-    "examples": [{"question": """Context: Lymphedema may be identified by simpler circumference changes as compared with changes in limb volume.
+"""
+    ),
+    "examples": [
+        {
+            "question": """Context: Lymphedema may be identified by simpler circumference changes as compared with changes in limb volume.
 Context: Ninety breast cancer patients were prospectively enrolled in an academic trial, and seven upper extremity circumferences were measured quarterly for 3 years. A 10% volume increase or greater than 1 cm increase in arm circumference identified lymphedema with verification by a lymphedema specialist. Sensitivity and specificity of several different criteria for detecting lymphedema were compared using the academic trial as the standard.
 Context: Thirty-nine cases of lymphedema were identified by the academic trial. Using a 10% increase in circumference at two sites as the criterion, half the lymphedema cases were detected (sensitivity 37%). When using a 10% increase in circumference at any site, 74.4% of cases were detected (sensitivity 49%). Detection by a 5% increase in circumference at any site was 91% sensitive.
 Can a practicing surgeon detect early lymphedema reliably?
 
 A. The context gives enough information to answer the question.
 B. The context does not give enough information to answer the question.
-""", "answer": """B"""
-}, {"question": """Context: This study aims to evaluate local failure patterns in node negative breast cancer patients treated with post-mastectomy radiotherapy including internal mammary chain only.
+""",
+            "answer": """B""",
+        },
+        {
+            "question": """Context: This study aims to evaluate local failure patterns in node negative breast cancer patients treated with post-mastectomy radiotherapy including internal mammary chain only.
 Context: Retrospective analysis of 92 internal or central-breast node-negative tumours with mastectomy and external irradiation of the internal mammary chain at the dose of 50 Gy, from 1994 to 1998.
 Context: Local recurrence rate was 5 % (five cases). Recurrence sites were the operative scare and chest wall. Factors associated with increased risk of local failure were age<or = 40 years and tumour size greater than 20mm, without statistical significance.
 Should chest wall irradiation be included after mastectomy and negative node breast cancer?
 
 A. The context gives enough information to answer the question.
 B. The context does not give enough information to answer the question.
-""", "answer": """B"""
-}, {"question": """Context: Sulfasalazine is a widely used anti-inflammatory agent in the treatment of inflammatory bowel disease and several rheumatological disorders. Although as many as 20% of treated patients may experience reversible, dose-dependent side effects, less frequent but potentially severe, systemic reactions have also been reported.
+""",
+            "answer": """B""",
+        },
+        {
+            "question": """Context: Sulfasalazine is a widely used anti-inflammatory agent in the treatment of inflammatory bowel disease and several rheumatological disorders. Although as many as 20% of treated patients may experience reversible, dose-dependent side effects, less frequent but potentially severe, systemic reactions have also been reported.
 Context: A severe systemic reaction to sulfasalazine developed in a 21-year old female with rheumatoid arthritis characterized by eosinophilia, granulomatous enteritis and myelotoxicity, cholestatic hepatitis, and seizures. The clinical course and management of this patient are presented as well as a review of the incidence and outcome of severe systemic reactions to sulfasalazine.
 Is it Crohn's disease?
 
 A. The context gives enough information to answer the question.
 B. The context does not give enough information to answer the question.
-""", "answer": """B"""
-}, {"question": """Context: Tacrolimus is a potent immunosuppressive drug used in organ transplantation. Because of its substantial toxic effects, narrow therapeutic index, and interindividual pharmacokinetic variability, therapeutic drug monitoring of whole-blood tacrolimus concentrations has been recommended. We investigated the comparability of the results of 2 immunoassay systems, affinity column-mediated immunoassay (ACMIA) and microparticle enzyme immunoassay (MEIA), comparing differences in the tacrolimus concentrations measured by the 2 methods in relation to the hematologic and biochemical values of hepatic and renal functions.
+""",
+            "answer": """B""",
+        },
+        {
+            "question": """Context: Tacrolimus is a potent immunosuppressive drug used in organ transplantation. Because of its substantial toxic effects, narrow therapeutic index, and interindividual pharmacokinetic variability, therapeutic drug monitoring of whole-blood tacrolimus concentrations has been recommended. We investigated the comparability of the results of 2 immunoassay systems, affinity column-mediated immunoassay (ACMIA) and microparticle enzyme immunoassay (MEIA), comparing differences in the tacrolimus concentrations measured by the 2 methods in relation to the hematologic and biochemical values of hepatic and renal functions.
 Context: A total of 154 samples from kidney or liver transplant recipients were subjected to Dimension RxL HM with a tacrolimus Flex reagent cartilage for the ACMIA method and IMx tacrolimus II for the MEIA method.
 Context: Tacrolimus concentrations measured by the ACMIA method (n = 154) closely correlated with those measured by the MEIA method (r = 0.84). The Bland-Altman plot using concentration differences between the 2 methods and the average of the 2 methods showed no specific trends. The tacrolimus levels determined by both the MEIA method and the ACMIA method were not influenced by hematocrit levels, but the difference between the 2 methods (ACMIA - MEIA) tended to be larger in low hematocrit samples (P<.001).
 Is the affinity column-mediated immunoassay method suitable as an alternative to the microparticle enzyme immunoassay method as a blood tacrolimus assay?
 
 A. The context gives enough information to answer the question.
 B. The context does not give enough information to answer the question.
-""", "answer": """A"""
-}, {"question": """Context: Tacrolimus is a potent immunosuppressive drug used in organ transplantation. Because of its substantial toxic effects, narrow therapeutic index, and interindividual pharmacokinetic variability, therapeutic drug monitoring of whole-blood tacrolimus concentrations has been recommended. We investigated the comparability of the results of 2 immunoassay systems, affinity column-mediated immunoassay (ACMIA) and microparticle enzyme immunoassay (MEIA), comparing differences in the tacrolimus concentrations measured by the 2 methods in relation to the hematologic and biochemical values of hepatic and renal functions.
+""",
+            "answer": """A""",
+        },
+        {
+            "question": """Context: Tacrolimus is a potent immunosuppressive drug used in organ transplantation. Because of its substantial toxic effects, narrow therapeutic index, and interindividual pharmacokinetic variability, therapeutic drug monitoring of whole-blood tacrolimus concentrations has been recommended. We investigated the comparability of the results of 2 immunoassay systems, affinity column-mediated immunoassay (ACMIA) and microparticle enzyme immunoassay (MEIA), comparing differences in the tacrolimus concentrations measured by the 2 methods in relation to the hematologic and biochemical values of hepatic and renal functions.
 Context: A total of 154 samples from kidney or liver transplant recipients were subjected to Dimension RxL HM with a tacrolimus Flex reagent cartilage for the ACMIA method and IMx tacrolimus II for the MEIA method.
 Context: Tacrolimus concentrations measured by the ACMIA method (n = 154) closely correlated with those measured by the MEIA method (r = 0.84). The Bland-Altman plot using concentration differences between the 2 methods and the average of the 2 methods showed no specific trends. The tacrolimus levels determined by both the MEIA method and the ACMIA method were not influenced by hematocrit levels, but the difference between the 2 methods (ACMIA - MEIA) tended to be larger in low hematocrit samples (P<.001).
 Is the affinity column-mediated immunoassay method suitable as an alternative to the microparticle enzyme immunoassay method as a blood tacrolimus assay?
 
 A. The context gives enough information to answer the question.
 B. The context does not give enough information to answer the question.
-""", "answer": """A"""
-}, {"question": """Context: Treatment of obstructive hydrocephalus in children with tuberculous meningitis (TBM) depends on the level of the cerebrospinal fluid (CSF) block. Air-encephalography is regarded as the gold standard for differentiating communicating and non-communicating hydrocephalus. Since air-encephalography involves a lumbar puncture, it carries the risk of cerebral herniation. AIM. The aim of this study was to determine whether communicating and non-communicating hydrocephalus in TBM can be differentiated by means of cranial computerised tomography (CT).
+""",
+            "answer": """A""",
+        },
+        {
+            "question": """Context: Treatment of obstructive hydrocephalus in children with tuberculous meningitis (TBM) depends on the level of the cerebrospinal fluid (CSF) block. Air-encephalography is regarded as the gold standard for differentiating communicating and non-communicating hydrocephalus. Since air-encephalography involves a lumbar puncture, it carries the risk of cerebral herniation. AIM. The aim of this study was to determine whether communicating and non-communicating hydrocephalus in TBM can be differentiated by means of cranial computerised tomography (CT).
 Context: A number of CT indices were measured in 50 children with communicating and 34 children with non-communicating hydrocephalus according to air-encephalographic findings.
 Context: The only CT finding that correlated with the type of hydrocephalus was the shape of the third ventricle. Significantly more children with non-communicating hydrocephalus had a rounded third ventricle than those with communicating hydrocephalus.
 Can CT predict the level of CSF block in tuberculous hydrocephalus?
 
 A. The context gives enough information to answer the question.
 B. The context does not give enough information to answer the question.
-""", "answer": """A"""
-}, {"question": """Context: The study was carried on 2096 school children (1043 male, 1053 female) in Ankara. Their mean age was 9.03 years. Demographic properties of the study group and their families were determined and the serum lipid levels of the subjects were obtained. The relation between these demographic properties and lipid levels were investigated.
+""",
+            "answer": """A""",
+        },
+        {
+            "question": """Context: The study was carried on 2096 school children (1043 male, 1053 female) in Ankara. Their mean age was 9.03 years. Demographic properties of the study group and their families were determined and the serum lipid levels of the subjects were obtained. The relation between these demographic properties and lipid levels were investigated.
 Context: In 135 of the subjects' serum cholesterol level was>or=200 mg/dL and in 83 subjects serum LDL-cholesterol level was>or=130 mg/dL. Despite 64.4% of the subjects reported a family history of hyperlipidemia, no relations between family history and serum lipid levels were found.
 Cholesterol screening in school children: is family history reliable to choose the ones to screen?
 
 A. The context gives enough information to answer the question.
 B. The context does not give enough information to answer the question.
-""", "answer": """A"""
-}, {"question": """Context: Using polymerase chain reaction techniques, we evaluated the presence of HPV infection in human breast milk collected from 21 HPV-positive and 11 HPV-negative mothers.
+""",
+            "answer": """A""",
+        },
+        {
+            "question": """Context: Using polymerase chain reaction techniques, we evaluated the presence of HPV infection in human breast milk collected from 21 HPV-positive and 11 HPV-negative mothers.
 Context: Of the 32 studied human milk specimens, no 'high-risk' HPV 16, 18, 31, 33, 35, 39, 45, 51, 52, 56, 58 or 58 DNA was detected.
 Can 'high-risk' human papillomaviruses (HPVs) be detected in human breast milk?
 
 A. The context gives enough information to answer the question.
 B. The context does not give enough information to answer the question.
-""", "answer": """A"""
-}]
+""",
+            "answer": """A""",
+        },
+    ],
 }
 
 logprobs_5shots_yes_or_not = {
     "prompt_name": "logprobs_5shots_enough_or_not",
     "response_type": "logprobs",
-    "prompt": Template("""{% for item in examples %}## Question
+    "prompt": Template(
+        """{% for item in examples %}## Question
 {{ item.question }}
 ## Answer
 {{ item.answer }}
@@ -1022,45 +1223,60 @@ logprobs_5shots_yes_or_not = {
 {% endfor %}## Question
 {{ question }}
 ## Answer
-"""),
-    "examples": [{"question": """Context: Tacrolimus is a potent immunosuppressive drug used in organ transplantation. Because of its substantial toxic effects, narrow therapeutic index, and interindividual pharmacokinetic variability, therapeutic drug monitoring of whole-blood tacrolimus concentrations has been recommended. We investigated the comparability of the results of 2 immunoassay systems, affinity column-mediated immunoassay (ACMIA) and microparticle enzyme immunoassay (MEIA), comparing differences in the tacrolimus concentrations measured by the 2 methods in relation to the hematologic and biochemical values of hepatic and renal functions.
+"""
+    ),
+    "examples": [
+        {
+            "question": """Context: Tacrolimus is a potent immunosuppressive drug used in organ transplantation. Because of its substantial toxic effects, narrow therapeutic index, and interindividual pharmacokinetic variability, therapeutic drug monitoring of whole-blood tacrolimus concentrations has been recommended. We investigated the comparability of the results of 2 immunoassay systems, affinity column-mediated immunoassay (ACMIA) and microparticle enzyme immunoassay (MEIA), comparing differences in the tacrolimus concentrations measured by the 2 methods in relation to the hematologic and biochemical values of hepatic and renal functions.
 Context: A total of 154 samples from kidney or liver transplant recipients were subjected to Dimension RxL HM with a tacrolimus Flex reagent cartilage for the ACMIA method and IMx tacrolimus II for the MEIA method.
 Context: Tacrolimus concentrations measured by the ACMIA method (n = 154) closely correlated with those measured by the MEIA method (r = 0.84). The Bland-Altman plot using concentration differences between the 2 methods and the average of the 2 methods showed no specific trends. The tacrolimus levels determined by both the MEIA method and the ACMIA method were not influenced by hematocrit levels, but the difference between the 2 methods (ACMIA - MEIA) tended to be larger in low hematocrit samples (P<.001).
 Is the affinity column-mediated immunoassay method suitable as an alternative to the microparticle enzyme immunoassay method as a blood tacrolimus assay?
 
 A. yes
 B. no
-""", "answer": """A"""
-}, {"question": """Context: Treatment of obstructive hydrocephalus in children with tuberculous meningitis (TBM) depends on the level of the cerebrospinal fluid (CSF) block. Air-encephalography is regarded as the gold standard for differentiating communicating and non-communicating hydrocephalus. Since air-encephalography involves a lumbar puncture, it carries the risk of cerebral herniation. AIM. The aim of this study was to determine whether communicating and non-communicating hydrocephalus in TBM can be differentiated by means of cranial computerised tomography (CT).
+""",
+            "answer": """A""",
+        },
+        {
+            "question": """Context: Treatment of obstructive hydrocephalus in children with tuberculous meningitis (TBM) depends on the level of the cerebrospinal fluid (CSF) block. Air-encephalography is regarded as the gold standard for differentiating communicating and non-communicating hydrocephalus. Since air-encephalography involves a lumbar puncture, it carries the risk of cerebral herniation. AIM. The aim of this study was to determine whether communicating and non-communicating hydrocephalus in TBM can be differentiated by means of cranial computerised tomography (CT).
 Context: A number of CT indices were measured in 50 children with communicating and 34 children with non-communicating hydrocephalus according to air-encephalographic findings.
 Context: The only CT finding that correlated with the type of hydrocephalus was the shape of the third ventricle. Significantly more children with non-communicating hydrocephalus had a rounded third ventricle than those with communicating hydrocephalus.
 Can CT predict the level of CSF block in tuberculous hydrocephalus?
 
 A. yes
 B. no
-""", "answer": """A"""
-}, {"question": """Context: The study was carried on 2096 school children (1043 male, 1053 female) in Ankara. Their mean age was 9.03 years. Demographic properties of the study group and their families were determined and the serum lipid levels of the subjects were obtained. The relation between these demographic properties and lipid levels were investigated.
+""",
+            "answer": """A""",
+        },
+        {
+            "question": """Context: The study was carried on 2096 school children (1043 male, 1053 female) in Ankara. Their mean age was 9.03 years. Demographic properties of the study group and their families were determined and the serum lipid levels of the subjects were obtained. The relation between these demographic properties and lipid levels were investigated.
 Context: In 135 of the subjects' serum cholesterol level was>or=200 mg/dL and in 83 subjects serum LDL-cholesterol level was>or=130 mg/dL. Despite 64.4% of the subjects reported a family history of hyperlipidemia, no relations between family history and serum lipid levels were found.
 Cholesterol screening in school children: is family history reliable to choose the ones to screen?
 
 A. yes
 B. no
-""", "answer": """B"""
-}, {"question": """Context: Using polymerase chain reaction techniques, we evaluated the presence of HPV infection in human breast milk collected from 21 HPV-positive and 11 HPV-negative mothers.
+""",
+            "answer": """B""",
+        },
+        {
+            "question": """Context: Using polymerase chain reaction techniques, we evaluated the presence of HPV infection in human breast milk collected from 21 HPV-positive and 11 HPV-negative mothers.
 Context: Of the 32 studied human milk specimens, no 'high-risk' HPV 16, 18, 31, 33, 35, 39, 45, 51, 52, 56, 58 or 58 DNA was detected.
 Can 'high-risk' human papillomaviruses (HPVs) be detected in human breast milk?
 
 A. yes
 B. no
-""", "answer": """B"""
-}]
+""",
+            "answer": """B""",
+        },
+    ],
 }
 
 
 cot_yes_or_not = {
     "prompt_name": "cot_yes_or_not",
     "response_type": "answer_letter",
-    "prompt": Template("""{% for item in examples %}## Question
+    "prompt": Template(
+        """{% for item in examples %}## Question
 {{ item.question }}
 ## Answer
 {{ item.answer }}
@@ -1068,45 +1284,59 @@ cot_yes_or_not = {
 {% endfor %}## Question
 {{ question }}
 ## Answer
-"""),
-    "examples": [{"question": """Context: Tacrolimus is a potent immunosuppressive drug used in organ transplantation. Because of its substantial toxic effects, narrow therapeutic index, and interindividual pharmacokinetic variability, therapeutic drug monitoring of whole-blood tacrolimus concentrations has been recommended. We investigated the comparability of the results of 2 immunoassay systems, affinity column-mediated immunoassay (ACMIA) and microparticle enzyme immunoassay (MEIA), comparing differences in the tacrolimus concentrations measured by the 2 methods in relation to the hematologic and biochemical values of hepatic and renal functions.
+"""
+    ),
+    "examples": [
+        {
+            "question": """Context: Tacrolimus is a potent immunosuppressive drug used in organ transplantation. Because of its substantial toxic effects, narrow therapeutic index, and interindividual pharmacokinetic variability, therapeutic drug monitoring of whole-blood tacrolimus concentrations has been recommended. We investigated the comparability of the results of 2 immunoassay systems, affinity column-mediated immunoassay (ACMIA) and microparticle enzyme immunoassay (MEIA), comparing differences in the tacrolimus concentrations measured by the 2 methods in relation to the hematologic and biochemical values of hepatic and renal functions.
 Context: A total of 154 samples from kidney or liver transplant recipients were subjected to Dimension RxL HM with a tacrolimus Flex reagent cartilage for the ACMIA method and IMx tacrolimus II for the MEIA method.
 Context: Tacrolimus concentrations measured by the ACMIA method (n = 154) closely correlated with those measured by the MEIA method (r = 0.84). The Bland-Altman plot using concentration differences between the 2 methods and the average of the 2 methods showed no specific trends. The tacrolimus levels determined by both the MEIA method and the ACMIA method were not influenced by hematocrit levels, but the difference between the 2 methods (ACMIA - MEIA) tended to be larger in low hematocrit samples (P<.001).
 Is the affinity column-mediated immunoassay method suitable as an alternative to the microparticle enzyme immunoassay method as a blood tacrolimus assay?
 
 A. yes
 B. no
-""", "answer": """Based on the provided study results, it would appear that the Affinity Column-Mediated Immunoassay (ACMIA) method could serve as an alternative to the Microparticle Enzyme Immunoassay (MEIA) method for blood tacrolimus assays. The high correlation (r = 0.84) between the results from the two methods indicates a strong relationship. Furthermore, the Bland-Altman plot showed no specific trends, implying that the differences between the two methods were not systematic and could be random. While the study did note a larger difference between the two methods in samples with low hematocrit levels, this does not necessarily mean that one method is less accurate than the other. However, before concluding, it would be crucial to conduct additional studies to confirm these findings and evaluate potential impacts on clinical decision-making. For instance, research should investigate whether the larger difference at low hematocrit levels could affect patient outcomes. Hence, the most accurate answer at this moment would be
+""",
+            "answer": """Based on the provided study results, it would appear that the Affinity Column-Mediated Immunoassay (ACMIA) method could serve as an alternative to the Microparticle Enzyme Immunoassay (MEIA) method for blood tacrolimus assays. The high correlation (r = 0.84) between the results from the two methods indicates a strong relationship. Furthermore, the Bland-Altman plot showed no specific trends, implying that the differences between the two methods were not systematic and could be random. While the study did note a larger difference between the two methods in samples with low hematocrit levels, this does not necessarily mean that one method is less accurate than the other. However, before concluding, it would be crucial to conduct additional studies to confirm these findings and evaluate potential impacts on clinical decision-making. For instance, research should investigate whether the larger difference at low hematocrit levels could affect patient outcomes. Hence, the most accurate answer at this moment would be
 
-Answer: A"""
-}, {"question": """Context: Treatment of obstructive hydrocephalus in children with tuberculous meningitis (TBM) depends on the level of the cerebrospinal fluid (CSF) block. Air-encephalography is regarded as the gold standard for differentiating communicating and non-communicating hydrocephalus. Since air-encephalography involves a lumbar puncture, it carries the risk of cerebral herniation. AIM. The aim of this study was to determine whether communicating and non-communicating hydrocephalus in TBM can be differentiated by means of cranial computerised tomography (CT).
+Answer: A""",
+        },
+        {
+            "question": """Context: Treatment of obstructive hydrocephalus in children with tuberculous meningitis (TBM) depends on the level of the cerebrospinal fluid (CSF) block. Air-encephalography is regarded as the gold standard for differentiating communicating and non-communicating hydrocephalus. Since air-encephalography involves a lumbar puncture, it carries the risk of cerebral herniation. AIM. The aim of this study was to determine whether communicating and non-communicating hydrocephalus in TBM can be differentiated by means of cranial computerised tomography (CT).
 Context: A number of CT indices were measured in 50 children with communicating and 34 children with non-communicating hydrocephalus according to air-encephalographic findings.
 Context: The only CT finding that correlated with the type of hydrocephalus was the shape of the third ventricle. Significantly more children with non-communicating hydrocephalus had a rounded third ventricle than those with communicating hydrocephalus.
 Can CT predict the level of CSF block in tuberculous hydrocephalus?
 
 A. yes
 B. no
-""", "answer": """Based on the information provided, it seems that cranial computed tomography (CT) could help in differentiating the type of hydrocephalus in patients with tuberculous meningitis (TBM). The shape of the third ventricle was found to be significantly different between patients with communicating and non-communicating hydrocephalus. Therefore, a CT could potentially be used to predict the level of cerebrospinal fluid (CSF) block, thereby indicating the type of hydrocephalus. However, it's worth noting that the data presented only mentions one CT finding that correlated with the type of hydrocephalus. To ensure the accuracy of these results and to explore the full potential of CT as a diagnostic tool in this context, further studies with larger sample sizes and more varied parameters are needed.
+""",
+            "answer": """Based on the information provided, it seems that cranial computed tomography (CT) could help in differentiating the type of hydrocephalus in patients with tuberculous meningitis (TBM). The shape of the third ventricle was found to be significantly different between patients with communicating and non-communicating hydrocephalus. Therefore, a CT could potentially be used to predict the level of cerebrospinal fluid (CSF) block, thereby indicating the type of hydrocephalus. However, it's worth noting that the data presented only mentions one CT finding that correlated with the type of hydrocephalus. To ensure the accuracy of these results and to explore the full potential of CT as a diagnostic tool in this context, further studies with larger sample sizes and more varied parameters are needed.
 
-Answer: A"""
-}, {"question": """Context: The study was carried on 2096 school children (1043 male, 1053 female) in Ankara. Their mean age was 9.03 years. Demographic properties of the study group and their families were determined and the serum lipid levels of the subjects were obtained. The relation between these demographic properties and lipid levels were investigated.
+Answer: A""",
+        },
+        {
+            "question": """Context: The study was carried on 2096 school children (1043 male, 1053 female) in Ankara. Their mean age was 9.03 years. Demographic properties of the study group and their families were determined and the serum lipid levels of the subjects were obtained. The relation between these demographic properties and lipid levels were investigated.
 Context: In 135 of the subjects' serum cholesterol level was>or=200 mg/dL and in 83 subjects serum LDL-cholesterol level was>or=130 mg/dL. Despite 64.4% of the subjects reported a family history of hyperlipidemia, no relations between family history and serum lipid levels were found.
 Cholesterol screening in school children: is family history reliable to choose the ones to screen?
 
 A. yes
 B. no
-""", "answer": """
+""",
+            "answer": """
 Based on the data provided in the study, family history did not show any correlation with serum lipid levels among the school children studied. Despite a significant proportion (64.4%) of the subjects reporting a family history of hyperlipidemia, no relationship was found between this family history and the actual serum lipid levels of the subjects. Therefore, relying on family history alone may not be a reliable method for choosing which children to screen for high cholesterol. Further criteria may need to be considered for a more accurate selection process.
 
-Answer: B"""
-}, {"question": """Context: Using polymerase chain reaction techniques, we evaluated the presence of HPV infection in human breast milk collected from 21 HPV-positive and 11 HPV-negative mothers.
+Answer: B""",
+        },
+        {
+            "question": """Context: Using polymerase chain reaction techniques, we evaluated the presence of HPV infection in human breast milk collected from 21 HPV-positive and 11 HPV-negative mothers.
 Context: Of the 32 studied human milk specimens, no 'high-risk' HPV 16, 18, 31, 33, 35, 39, 45, 51, 52, 56, 58 or 58 DNA was detected.
 Can 'high-risk' human papillomaviruses (HPVs) be detected in human breast milk?
 
 A. yes
 B. no
-""", "answer": """According to the study provided, none of the 'high-risk' HPV types, including HPV 16, 18, 31, 33, 35, 39, 45, 51, 52, 56, 58, or 58, were detected in any of the 32 human milk samples collected from the 21 HPV-positive and 11 HPV-negative mothers. Therefore, based on the results of this specific study, 'high-risk' HPVs cannot be detected in human breast milk.
+""",
+            "answer": """According to the study provided, none of the 'high-risk' HPV types, including HPV 16, 18, 31, 33, 35, 39, 45, 51, 52, 56, 58, or 58, were detected in any of the 32 human milk samples collected from the 21 HPV-positive and 11 HPV-negative mothers. Therefore, based on the results of this specific study, 'high-risk' HPVs cannot be detected in human breast milk.
 
-Answer: B"""
-}]
+Answer: B""",
+        },
+    ],
 }
