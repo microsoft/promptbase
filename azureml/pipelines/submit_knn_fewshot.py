@@ -71,7 +71,7 @@ def create_embedding_for_split_pipeline(
     return sub_pipeline.outputs.output_dataset
 
 
-def create_knn_fewshot_pipeline(
+def create_knn_fewshot_pipeline_mmlu(
     ml_client: MLClient, run_config: KNNFewshotConfig, version_string: str
 ):
     components = get_component_collector(ml_client, version_string)
@@ -97,15 +97,15 @@ def create_knn_fewshot_pipeline(
             input=run_config.test_split, example=run_config.example_split
         ).items():
             get_split_job = components.uri_folder_to_file(
-                input_dataset=mmlu_fetch_job.outputs.outputdataset,
+                input_dataset=mmlu_fetch_job.outputs.output_dataset,
                 filename_pattern=f"{v}.jsonl",
             )
             get_split_job.name = f"extract_split_{k}"
             split_outputs[k] = get_split_job.outputs.output_dataset
 
-        create_knn_fewshot_pipeline(
-            components,
-            embedding_config=run_config.embedding_config,
+        answer_ds = create_knn_fewshot_pipeline(
+            components=components,
+            embedding_config=run_config.aoai_embedding_config,
             inference_config=run_config.aoai_config,
             input_dataset=split_outputs["input"],
             example_dataset=split_outputs["example"],
@@ -114,7 +114,7 @@ def create_knn_fewshot_pipeline(
         )
 
         score_job = components.jsonl_score_multiplechoice(
-            input_dataset=create_knn_fewshot_pipeline.outputs.output_dataset,
+            input_dataset=answer_ds,
             correct_key="correct_answer",  # Set when MMLU fetching
             response_key="fewshot_choice",
         )
@@ -152,7 +152,7 @@ def main(config: PipelineConfig):
         logging_enable=False,
     )
 
-    pipeline = create_knn_fewshot_pipeline(
+    pipeline = create_knn_fewshot_pipeline_mmlu(
         ws_client, config.knn_fewshot_config, version_string
     )
     _logger.info("Submitting pipeline")
