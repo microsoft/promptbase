@@ -1,0 +1,76 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+
+name: jsonl_schema_check
+display_name: 'JSONL Schema Check'
+type: command
+description: |
+  Checks lines in a JSONL against a schema, removing those which do not match
+is_deterministic: true
+
+inputs:
+  input_dataset:
+    type: uri_file
+    optional: false
+    description: Dataset containing JSONL input
+  input_encoding:
+    type: string
+    optional: false
+    default: utf-8-sig
+    description: Encoding format of the input dataset
+  schema_dataset:
+    type: uri_file
+    optional: false
+    description: Dataset containing a JSON schema file
+  schema_encoding:
+    type: string
+    optional: false
+    default: utf-8-sig
+    description: Encoding format of the schema dataset
+  forbidden_keys:
+    type: string
+    optional: false
+    default: "[]"
+    description: Stringified JSON list of keys which must not appear in the input
+  max_errors:
+    type: integer
+    optional: false
+    default: 10
+    description: Maximum number of schema errors to tolerate
+  output_encoding:
+    type: string
+    optional: false
+    default: utf-8-sig
+    description: Encoding format of the output dataset
+  error_encoding:
+    type: string
+    optional: false
+    default: utf-8-sig
+    description: Encoding format of the error dataset
+
+
+outputs:
+  output_dataset:
+    type: uri_file
+    description: Dataset containing JSONL filtered keys
+  error_dataset:
+    type: uri_file
+    description: JSONL file containing failed lines
+
+code: ./src
+
+command: >-
+  python ./jsonl_schema_check.py
+  --input_dataset ${{ inputs.input_dataset }}
+  --input_encoding ${{ inputs.input_encoding }}
+  --schema_dataset ${{ inputs.schema_dataset }}
+  --schema_encoding ${{ inputs.schema_encoding }}
+  --forbidden_keys '${{ inputs.forbidden_keys }}'
+  --output_dataset ${{ outputs.output_dataset }}
+  --output_encoding ${{ inputs.output_encoding }}
+  --error_dataset ${{ outputs.error_dataset }}
+  --error_encoding ${{ inputs.error_encoding }}
+  --max_errors ${{ inputs.max_errors }}
+
+environment:
+  # Will be updated when component uploads
+  image: azureml:promptbase_aml@latest

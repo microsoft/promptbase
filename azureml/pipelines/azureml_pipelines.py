@@ -7,9 +7,12 @@ from azure.ai.ml.entities import Pipeline
 
 from azureml_utils import ComponentCollector
 from configs import AOAIConfig
+from constants import SCHEMA_DIR
 
 _logger = logging.getLogger(__file__)
 _logger.setLevel(logging.INFO)
+
+MULTIPLE_CHOICE_SCHEMA_FILE = "multichoice_schema.json"
 
 
 def create_knn_fewshot_pipeline(
@@ -28,6 +31,12 @@ def create_knn_fewshot_pipeline(
     embedding_key = "embedding"
     fewshot_examples_key = "fewshot_examples"
 
+    multichoice_schema_input = Input(
+        type="uri_file",
+        path=SCHEMA_DIR / MULTIPLE_CHOICE_SCHEMA_FILE,
+        model="download",
+    )
+
     @dsl.pipeline(
         name=f"knn_pipeline",
         display_name=f"Answer with kNN Fewshots",
@@ -35,8 +44,18 @@ def create_knn_fewshot_pipeline(
     def knn_fewshot(guidance_prog: Input, input_ds: Input, example_ds: Input):
         embedding_outputs = dict()
         for k, v in dict(input=input_ds, example=example_ds).items():
-            embedding_job = components.jsonl_embeddings(
+            schema_job = components.jsonl_schema_checker(
                 input_dataset=v,
+                schema_dataset=multichoice_schema_input,
+                max_errors=embedding_config.max_errors,
+                forbidden_keys=json.dumps(
+                    [embedding_key, fewshot_examples_key, "fewshot_choice"]
+                ),
+            )
+            schema_job.name = f"check_schema_{k}"
+
+            embedding_job = components.jsonl_embeddings(
+                input_dataset=schema_job.outputs.output_dataset,
                 source_key=question_key,
                 destination_key=embedding_key,
                 workers=embedding_config.workers,

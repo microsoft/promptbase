@@ -18,6 +18,7 @@ ALL_COMPONENTS = dict(
     jsonl_key_filter="jsonl_key_filter_component.yaml",
     jsonl_knn_cosine_similarity="jsonl_knn_cosine_similarity_component.yaml",
     jsonl_mmlu_fetch="jsonl_mmlu_fetch_component.yaml",
+    jsonl_schema_checker="jsonl_schema_checker_component.yaml",
     jsonl_score_multiplechoice="jsonl_score_multiplechoice_component.yaml",
     jsonl_to_json="jsonl_to_json_component.yaml",
     uri_folder_to_file="uri_folder_to_file_component.yaml",
