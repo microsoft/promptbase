@@ -15,6 +15,7 @@ _logger.setLevel(logging.INFO)
 ALL_COMPONENTS = dict(
     jsonl_embeddings="jsonl_embeddings_aoai_component.yaml",
     jsonl_guidance="jsonl_guidance_component.yaml",
+    jsonl_key_filter="jsonl_key_filter_component.yaml",
     jsonl_knn_cosine_similarity="jsonl_knn_cosine_similarity_component.yaml",
     jsonl_mmlu_fetch="jsonl_mmlu_fetch_component.yaml",
     jsonl_score_multiplechoice="jsonl_score_multiplechoice_component.yaml",

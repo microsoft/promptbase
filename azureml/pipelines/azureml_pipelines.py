@@ -1,3 +1,4 @@
+import json
 import logging
 
 
@@ -67,7 +68,13 @@ def create_knn_fewshot_pipeline(
         guidance_job.name = f"guidance_fewshot"
         guidance_job.compute = inference_config.compute_target
 
-        return {"output_dataset": guidance_job.outputs.output_dataset}
+        filter_job = components.jsonl_key_filter(
+            input_dataset=guidance_job.outputs.output_dataset,
+            drop_keys=json.dumps([fewshot_examples_key]),
+        )
+        filter_job.name = f"remove_intermediate_keys"
+
+        return {"output_dataset": filter_job.outputs.output_dataset}
 
     sub_pipeline = knn_fewshot(guidance_program, input_dataset, example_dataset)
 
