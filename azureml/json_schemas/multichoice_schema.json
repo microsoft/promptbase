@@ -1,0 +1,32 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "promptbase.multiplechoice",
+    "title": "Multiple Choice Question",
+    "description": "A sample multiple choice question",
+    "type": "object",
+    "properties": {
+        "question": {
+            "description": "The question being asked",
+            "type": "string"
+        },
+        "choices": {
+            "description": "A list of possible answers to the question",
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "minItems": 2,
+            "uniqueItems": true
+        },
+        "correct_answer": {
+            "description": "The index of the correct answer within the 'choices' array",
+            "type": "integer",
+            "minimum": 0
+        }
+    },
+    "required": [
+        "question",
+        "choices",
+        "correct_answer"
+    ]
+}
