@@ -8,11 +8,11 @@ from hydra.core.config_store import ConfigStore
 import omegaconf
 
 from azure.identity import DefaultAzureCredential
-from azure.ai.ml import MLClient
 
 from azure.ai.ml import dsl, MLClient, Input
 from azure.ai.ml.entities import Pipeline
 
+from azureml_pipelines import create_knn_fewshot_pipeline
 from azureml_utils import get_component_collector, ComponentCollector
 from configs import AMLConfig, KNNFewshotConfig, AOAIConfig
 from constants import GUIDANCE_PROGRAMS_DIR
@@ -79,64 +79,48 @@ def create_knn_fewshot_pipeline(
     embeddings_key = "question_embedding"
     fewshot_examples_key = "fewshot_examples"
 
-    fewshow_program_input = Input(
+    fewshot_program_input = Input(
         type="uri_file",
         path=GUIDANCE_PROGRAMS_DIR / run_config.guidance_program,
         model="download",
     )
 
     @dsl.pipeline()
-    def basic_pipeline(guidance_program: Input) -> Pipeline:
+    def basic_pipeline() -> Pipeline:
         mmlu_fetch_job = components.jsonl_mmlu_fetch(
             mmlu_dataset=run_config.mmlu_dataset
         )
         mmlu_fetch_job.name = f"fetch_mmlu_{run_config.mmlu_dataset}"
 
-        test_with_embeddings = create_embedding_for_split_pipeline(
+        split_outputs = dict()
+        for k, v in dict(
+            input=run_config.test_split, example=run_config.example_split
+        ).items():
+            get_split_job = components.uri_folder_to_file(
+                input_dataset=mmlu_fetch_job.outputs.outputdataset,
+                filename_pattern=f"{v}.jsonl",
+            )
+            get_split_job.name = f"extract_split_{k}"
+            split_outputs[k] = get_split_job.outputs.output_dataset
+
+        create_knn_fewshot_pipeline(
             components,
-            mmlu_fetch_job.outputs.output_dataset,
-            target_split=run_config.test_split,
-            embedding_output_key=embeddings_key,
-            aoai_embedding_config=run_config.aoai_embedding_config,
+            embedding_config=run_config.embedding_config,
+            inference_config=run_config.aoai_config,
+            input_dataset=split_outputs["input"],
+            example_dataset=split_outputs["example"],
+            guidance_program=fewshot_program_input,
+            num_examples=run_config.knn_config.k_nearest,
         )
-
-        examples_with_embeddings = create_embedding_for_split_pipeline(
-            components,
-            mmlu_fetch_job.outputs.output_dataset,
-            target_split=run_config.example_split,
-            embedding_output_key=embeddings_key,
-            aoai_embedding_config=run_config.aoai_embedding_config,
-        )
-
-        knn_job = components.jsonl_knn_cosine_similarity(
-            input_dataset=test_with_embeddings,
-            example_dataset=examples_with_embeddings,
-            input_vector_key=embeddings_key,
-            example_vector_key=embeddings_key,
-            output_key=fewshot_examples_key,
-            k_nearest=run_config.knn_config.k_nearest,
-        )
-        knn_job.name = f"select_knn_cosine_similarity"
-
-        guidance_job = components.jsonl_guidance(
-            guidance_program=guidance_program,
-            guidance_workers=run_config.aoai_config.workers,
-            max_errors=run_config.aoai_config.max_errors,
-            input_dataset=knn_job.outputs.output_dataset,
-            azure_openai_endpoint=run_config.aoai_config.endpoint,
-            azure_openai_deployed_model=run_config.aoai_config.model,
-        )
-        guidance_job.name = f"guidance_fewshot"
-        guidance_job.compute = run_config.aoai_config.compute_target
 
         score_job = components.jsonl_score_multiplechoice(
-            input_dataset=guidance_job.outputs.output_dataset,
+            input_dataset=create_knn_fewshot_pipeline.outputs.output_dataset,
             correct_key="correct_answer",  # Set when MMLU fetching
             response_key="fewshot_choice",
         )
         score_job.name = f"score_fewshot"
 
-    pipeline = basic_pipeline(fewshow_program_input)
+    pipeline = basic_pipeline()
     pipeline.experiment_name = (
         f"{run_config.pipeline.base_experiment_name}_{run_config.mmlu_dataset}"
     )

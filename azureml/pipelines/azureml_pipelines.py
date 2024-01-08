@@ -4,8 +4,8 @@ import logging
 from azure.ai.ml import dsl, Input
 from azure.ai.ml.entities import Pipeline
 
-from .azureml_utils import ComponentCollector
-from .constants import AOAIConfig
+from azureml_utils import ComponentCollector
+from configs import AOAIConfig
 
 _logger = logging.getLogger(__file__)
 _logger.setLevel(logging.INFO)
