@@ -8,6 +8,7 @@ import random
 import sys
 import time
 import types
+from typing import Optional
 
 import requests
 from tqdm import tqdm
@@ -15,7 +16,8 @@ from tqdm import tqdm
 openai_configs = types.SimpleNamespace()
 
 openai_configs.models = {
-    "gpt-4-1106-preview": {"endpoint": "azure", "type": "chat"},
+    "gpt-4-1106-preview": {"endpoint": "azure_chat", "type": "chat"},
+    "gpt-4-1106-comp": {"endpoint": "azure_comp", "type": "completion"},
     "text-embedding-ada-002": {"endpoint": "openai-embeddings", "type": "embedding"},
 }
 
@@ -24,10 +26,14 @@ openai_configs.endpoints = {
         "headers": {"Authorization": os.getenv("AZURE_OPENAI_API_KEY")},
         "url": os.getenv("AZURE_OPENAI_EMBEDDINGS_URL"),
     },
-    "azure": {
+    "azure_chat": {
         "headers": {"api-key": f"{os.getenv('AZURE_OPENAI_CHAT_API_KEY')}"},
         "url": os.getenv("AZURE_OPENAI_CHAT_ENDPOINT_URL"),
     },
+    "azure_comp": {
+        "headers": {"api-key": f"{os.getenv('AZURE_OPENAI_COMPLETION_API_KEY')}"},
+        "url": os.getenv("AZURE_OPENAI_COMPLETION_ENDPOINT_URL"),
+    }
 }
 
 openai_configs.busy_message = [
@@ -55,6 +61,7 @@ def get_standard_logger_for_file(file_path: str) -> logging.Logger:
     _logger.addHandler(sh)
     return _logger
 
+_logger = get_standard_logger_for_file(__file__)
 
 def run_batch_jobs(run_task, tasks, max_thread):
     """
@@ -75,7 +82,7 @@ def run_batch_jobs(run_task, tasks, max_thread):
                 result = future.result()
                 results.append(result)
             except Exception as e:
-                logging.exception("Error occurred during run_batch_jobs.")
+                _logger.exception("Error occurred during run_batch_jobs.")
 
     return results
 
@@ -92,6 +99,7 @@ def text_completion_impl(
     presence_penalty=0.0,
     frequency_penalty=0.0,
     max_trial=100,
+    retry_wait=0.2,
     **kwargs,
 ):
     """
@@ -108,13 +116,14 @@ def text_completion_impl(
     model_config = openai_configs.models[model]
     endpoint = openai_configs.endpoints[model_config["endpoint"]]
     s = requests.Session()
-    if model_config["type"] == "chat":
+    api_type = model_config["type"]
+    if api_type == "chat":
         if type(prompt) is list and type(prompt[0]) is str:
             assert len(prompt) == 1  # chat model only support 1 prompt at a time
             prompt = prompt[0]
         if type(prompt) is str:
             prompt = [{"role": "user", "content": prompt}]
-    elif model_config["type"] == "completion":
+    elif api_type == "completion":
         if type(prompt) is list and type(prompt[0]) is dict:
             prompt = (
                 "".join(
@@ -129,7 +138,8 @@ def text_completion_impl(
     for retry in range(max_trial):
         last_status_code = 0
         try:
-            time.sleep(random.uniform(0, 0.2))
+            # Wait for expected value of wait time with randomness
+            time.sleep(random.uniform(0, retry_wait*2))
             payload = {
                 "model": model,
                 "prompt": prompt,
@@ -150,17 +160,17 @@ def text_completion_impl(
 
             url = endpoint["url"]
 
-            if model_config["type"] == "chat":
+            if api_type == "chat":
                 payload["messages"] = payload["prompt"]
                 del payload["prompt"], payload["logprobs"], payload["echo"]
 
-            logging.info("Request URL: " + url)
-            logging.info("Request payload: " + str(payload))
+            _logger.debug("Request URL: %s", url)
+            _logger.debug("Request payload: %s", str(payload))
             r = s.post(url, headers=headers, json=payload, timeout=200)
 
             last_response = r.text
             last_status_code = r.status_code
-            logging.info(f"{last_status_code} Response:\n" + last_response)
+            _logger.debug(f"%s Response:\n", last_response)
             if (
                 r.status_code == 400
                 and "The response was filtered due to the prompt triggering Azure OpenAI"
@@ -196,7 +206,7 @@ def text_completion_impl(
 
                 return {"response": response, "text": text, "success": True}
         except Exception as e:
-            logging.exception("Error occurred during HTTP calls in text_completion.")
+            _logger.exception("Error occurred during HTTP calls in text_completion.")
 
         filtered_warning = False
         for msg in openai_configs.busy_message:
@@ -204,7 +214,9 @@ def text_completion_impl(
                 filtered_warning = True
 
         if not filtered_warning and last_status_code != 429:
-            logging.warning(f"{last_status_code} Response:\n" + last_response)
+            _logger.warning(f"{last_status_code} Response:\n" + last_response)
+        if last_status_code == 429:
+            _logger.debug("Rate limited")
 
         if last_status_code not in [429, 500, 502, 503, 424]:
             break
