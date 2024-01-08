@@ -31,11 +31,13 @@ class Scorer:
         result["metrics"] = dict()
         result["metrics"]["n_total"] = len(self.y_true)
         result["metrics"]["accuracy"] = skm.accuracy_score(self.y_true, self.y_pred)
+        result["metrics"]["n_correct"] = int(
+            skm.accuracy_score(self.y_true, self.y_pred, normalize=False)
+        )
         result["figures"] = dict()
         cm_display = skm.ConfusionMatrixDisplay.from_predictions(
             self.y_true, self.y_pred
         )
-        _logger.info(f"cm_display: {dir(cm_display)}")
         result["figures"]["confusion_matrix"] = cm_display.figure_
         return result
 
