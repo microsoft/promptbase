@@ -1,8 +1,12 @@
 import argparse
 import functools
+import json
 import pathlib
 
 from typing import Any, Dict, List
+
+from jsonschema.protocols import Validator
+from jsonschema.validators import Draft202012Validator
 
 from shared.argparse_utils import json_loads_fixer
 from shared.jsonl_utils import line_map
@@ -35,9 +39,13 @@ def parse_args():
     return args
 
 
-def process_item(item: Dict[str, Any], *, forbidden_keys=list[str]) -> Dict[str, Any]:
+def process_item(
+    item: Dict[str, Any], *, json_validator: Validator, forbidden_keys=list[str]
+) -> Dict[str, Any]:
     for k in forbidden_keys:
         assert k not in item, f"Key {k} not allowed"
+
+    json_validator.validate(item)
 
     return item
 
@@ -45,7 +53,19 @@ def process_item(item: Dict[str, Any], *, forbidden_keys=list[str]) -> Dict[str,
 def main():
     args = parse_args()
 
-    processor = functools.partial(process_item, forbidden_keys=args.forbidden_keys)
+    # Load in the JSON schema
+    with open(args.schema_dataset, "r", encoding=args.schema_encoding) as sf:
+        json_schema = json.load(sf)
+
+    # Check the schema
+    Draft202012Validator.check_schema(json_schema)
+
+    # Create the validator object
+    validator = Draft202012Validator(schema=json_schema)
+
+    processor = functools.partial(
+        process_item, json_validator=validator, forbidden_keys=args.forbidden_keys
+    )
 
     line_map(
         map_func=processor,

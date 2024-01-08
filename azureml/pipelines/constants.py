@@ -9,7 +9,7 @@ GUIDANCE_PROGRAMS_DIR = (
 ).absolute()
 
 
-SCHEMA_DIR = (Path(__file__).parent.parent / "schemas").absolute()
+SCHEMA_DIR = (Path(__file__).parent.parent / "json_schemas").absolute()
 
 ENVIRONMENT_FILE = ENVIRONMENTS_DIR / "promptbase-env.yaml"
 

@@ -31,9 +31,11 @@ def create_knn_fewshot_pipeline(
     embedding_key = "embedding"
     fewshot_examples_key = "fewshot_examples"
 
+    json_schema_file = SCHEMA_DIR / MULTIPLE_CHOICE_SCHEMA_FILE
+    assert (json_schema_file).exists(), f"Failed to find {json_schema_file}"
     multichoice_schema_input = Input(
         type="uri_file",
-        path=SCHEMA_DIR / MULTIPLE_CHOICE_SCHEMA_FILE,
+        path=json_schema_file,
         model="download",
     )
 
