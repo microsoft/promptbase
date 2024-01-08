@@ -15,5 +15,6 @@ knn_fewshot_config:
   guidance_program: fewshot.py
   knn_config:
     k_nearest: 5
+  answer_key: fewshot_answer
   aoai_config: ${ default_aoai_config }
   aoai_embedding_config: ${ default_aoai_embedding_config }

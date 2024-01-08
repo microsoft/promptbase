@@ -1,0 +1,61 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+
+name: jsonl_key_rename
+display_name: 'JSONL Key Rename'
+type: command
+description: |
+  Renames keys in JSONL file.
+  For example, if the `rename_keys` parameter is set to:
+  ```json
+  { "a": "a_new" }
+  ```
+  then the file:
+  ```
+  { "a": 1, "b": 2 }
+  { "a": 2, "b": 3 }
+  ```
+  will become:
+  ```
+  { "a_new": 1, "b": 2 }
+  { "a_new": 2, "b": 3 }
+  ```
+is_deterministic: true
+
+inputs:
+  input_dataset:
+    type: uri_file
+    optional: false
+    description: Dataset containing JSONL input
+  input_encoding:
+    type: string
+    optional: false
+    default: utf-8-sig
+    description: Encoding format of the input dataset
+  rename_keys:
+    type: string
+    optional: false
+    description: Stringified JSON dictionary of keys to rename
+  output_encoding:
+    type: string
+    optional: false
+    default: utf-8-sig
+    description: Encoding format of the output dataset
+
+outputs:
+  output_dataset:
+    type: uri_file
+    description: Dataset containing JSONL with renamed keys
+
+code: ./src
+
+command: >-
+  python jsonl_key_rename.py
+  --input_dataset ${{ inputs.input_dataset }}
+  --input_encoding ${{ inputs.input_encoding }}
+  --rename_keys '${{ inputs.rename_keys }}'
+  --output_dataset ${{ outputs.output_dataset }}
+  --output_encoding ${{ inputs.output_encoding }}
+
+environment:
+  # Will be updated when component uploads
+  image: azureml:promptbase_aml@latest

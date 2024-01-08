@@ -70,12 +70,13 @@ def create_knn_fewshot_pipeline_mmlu(
             example_dataset=split_outputs["example"],
             guidance_program=fewshot_program_input,
             num_examples=run_config.knn_config.k_nearest,
+            output_key=run_config.answer_key,
         )
 
         score_job = components.jsonl_score_multiplechoice(
             input_dataset=answer_ds,
             correct_key="correct_answer",  # Set when MMLU fetching
-            response_key="fewshot_choice",
+            response_key=run_config.answer_key,
         )
         score_job.name = f"score_fewshot"
 

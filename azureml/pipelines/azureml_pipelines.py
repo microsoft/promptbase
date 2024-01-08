@@ -24,12 +24,14 @@ def create_knn_fewshot_pipeline(
     example_dataset: Input,
     guidance_program: Input,
     num_examples: int,
+    output_key: str,
 ) -> Pipeline:
     _logger.info(f"Starting create_knn_pipeline")
 
     question_key = "question"
     embedding_key = "embedding"
     fewshot_examples_key = "fewshot_examples"
+    fewshot_answer_key = "fewshot_choice"
 
     json_schema_file = SCHEMA_DIR / MULTIPLE_CHOICE_SCHEMA_FILE
     assert (json_schema_file).exists(), f"Failed to find {json_schema_file}"
@@ -51,7 +53,7 @@ def create_knn_fewshot_pipeline(
                 schema_dataset=multichoice_schema_input,
                 max_errors=embedding_config.max_errors,
                 forbidden_keys=json.dumps(
-                    [embedding_key, fewshot_examples_key, "fewshot_choice"]
+                    [embedding_key, fewshot_examples_key, fewshot_answer_key]
                 ),
             )
             schema_job.name = f"check_schema_{k}"
@@ -89,8 +91,14 @@ def create_knn_fewshot_pipeline(
         guidance_job.name = f"guidance_fewshot"
         guidance_job.compute = inference_config.compute_target
 
-        filter_job = components.jsonl_key_filter(
+        rename_job = components.jsonl_key_rename(
             input_dataset=guidance_job.outputs.output_dataset,
+            rename_keys=json.dumps({fewshot_answer_key: output_key}),
+        )
+        rename_job.name = f"rename_output_key"
+
+        filter_job = components.jsonl_key_filter(
+            input_dataset=rename_job.outputs.output_dataset,
             drop_keys=json.dumps([fewshot_examples_key]),
         )
         filter_job.name = f"remove_intermediate_keys"
