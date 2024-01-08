@@ -6,6 +6,7 @@ from collections import Counter
 with open("summary.json") as f:
     data = json.load(f)
 
+
 def calculate_result(rows):
     best_weight = 0
     best_acc = 0
@@ -13,19 +14,20 @@ def calculate_result(rows):
         n_correct = 0
         n_cnt = 0
         for row in rows:
-            x = copy.deepcopy(row['cot'])
-            for k in row['logprob']:
-                x[k] = x.get(k, 0) + weight * row['logprob'][k]
-            
+            x = copy.deepcopy(row["cot"])
+            for k in row["logprob"]:
+                x[k] = x.get(k, 0) + weight * row["logprob"][k]
+
             selected_answer = max(x, key=x.get)
             n_cnt += 1
-            if row['answer'] == selected_answer:
-                n_correct +=1
+            if row["answer"] == selected_answer:
+                n_correct += 1
         acc = n_correct / len(rows)
         if acc > best_acc:
             best_acc = acc
             best_weight = weight
     return best_acc, best_weight
+
 
 # 89.93
 subject_weight = 0.5
@@ -39,17 +41,17 @@ if 1:
         rows = data[subject]
 
         # use best threshold to process each row
-        for (i, row) in tqdm(enumerate(rows)):
+        for i, row in tqdm(enumerate(rows)):
             rows_i = [item for index, item in enumerate(rows) if index != i]
             acc, weight = calculate_result(rows_i)
-            x = row['cot']
-            
-            for k in row['logprob']:
-                x[k] = x.get(k, 0) + weight * row['logprob'][k]
+            x = row["cot"]
+
+            for k in row["logprob"]:
+                x[k] = x.get(k, 0) + weight * row["logprob"][k]
             selected_answer = max(x, key=x.get)
             total_count += 1
-            if row['answer'] == selected_answer:
-                total_correct +=1
+            if row["answer"] == selected_answer:
+                total_correct += 1
 
 if 0:
     for subject in tqdm(data):
@@ -62,14 +64,14 @@ if 0:
             weight = non_subject_weight
 
         # use best threshold to process each row
-        for (i, row) in enumerate(rows):
-            x = row['cot']
-            for k in row['logprob']:
-                x[k] = x.get(k, 0) + weight * row['logprob'][k]
+        for i, row in enumerate(rows):
+            x = row["cot"]
+            for k in row["logprob"]:
+                x[k] = x.get(k, 0) + weight * row["logprob"][k]
             selected_answer = max(x, key=x.get)
             total_count += 1
-            if row['answer'] == selected_answer:
-                total_correct +=1
+            if row["answer"] == selected_answer:
+                total_correct += 1
 
 print(f"total_correct: {total_correct}")
 print(f"total_count: {total_count}")
