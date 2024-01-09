@@ -31,7 +31,7 @@ class ZeroShotRunConfig:
     pipeline: PipelineConfig = field(default_factory=PipelineConfig)
     mmlu_dataset: str = str()
     mmlu_split: str = str()
-    guidance_program: str = str()
+    guidance_programs: list[str] = field(default_factory=list)
     aoai_config: AOAIConfig = field(default_factory=AOAIConfig)
 
 
