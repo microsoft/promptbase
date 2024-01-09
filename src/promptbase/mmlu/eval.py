@@ -6,6 +6,9 @@ import os
 
 from collections import defaultdict
 
+
+from .mmlu_paths import mmlu_data_dir, mmlu_generations_dir
+
 API_DATA_KEYS = ["api_calls", "tokens_used_prompt", "tokens_used_completion"]
 
 
@@ -70,6 +73,24 @@ def evaluate(user_answers, reference_answers):
 
     print(f"All results: {json.dumps(results, indent=4)}")
     return results
+
+
+def evaluate_all(dataset_name: str):
+    dev_problem = f"mmlu_{dataset_name}_val"
+    test_problem = f"mmlu_{dataset_name}_test"
+
+    print(f"Starting evaluation of {dataset_name}")
+
+    # Load the questions (?)
+    reference_answers = load_questions(mmlu_data_dir / f"{test_problem}.json")
+
+    # Load the answers (?)
+    # Note that output we have in the directory appears to be a gzip
+    user_answers = load_questions(
+        mmlu_generations_dir / "expt" / test_problem / "cot" / "result.json"
+    )
+
+    results = evaluate(user_answers, reference_answers)
 
 
 if __name__ == "__main__":
