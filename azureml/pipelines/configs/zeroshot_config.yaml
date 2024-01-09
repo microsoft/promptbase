@@ -13,4 +13,5 @@ zeroshot_config:
   guidance_programs:
     - zero_or_few_shot.py
     - zero_or_few_shot_fortran.py
+    - zero_or_few_shot_alpha.py
   aoai_config: ${ default_aoai_config }

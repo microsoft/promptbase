@@ -68,6 +68,7 @@ def create_mmlu_zeroshot_pipeline(
 
         for progname, prog_input in guidance_inputs.items():
             answer_ds = create_zeroshot_pipeline(
+                pipeline_name=f"{progname}_zeroshot",
                 components=components,
                 inference_config=run_config.aoai_config,
                 input_dataset=get_split_job.outputs.output_dataset,

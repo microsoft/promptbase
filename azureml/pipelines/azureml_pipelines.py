@@ -17,6 +17,7 @@ MULTIPLE_CHOICE_SCHEMA_FILE = "multichoice_schema.json"
 
 def create_zeroshot_pipeline(
     *,
+    pipeline_name: str,
     components: ComponentCollector,
     inference_config: AOAIConfig,
     input_dataset: Input,
@@ -68,6 +69,7 @@ def create_zeroshot_pipeline(
         return {"output_dataset": rename_job.outputs.output_dataset}
 
     sub_pipeline = zeroshot(guidance_program, input_dataset)
+    sub_pipeline.name = pipeline_name
 
     return sub_pipeline
 
