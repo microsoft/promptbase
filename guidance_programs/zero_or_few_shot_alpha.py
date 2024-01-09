@@ -52,7 +52,9 @@ Response with the number corresponding to the best answer.
         lm += "Correct Answer: "
 
     with assistant():
-        lm += select([chr(i + ASCII_OFFSET) for i in range(len(choices))], name="string_choice")
+        lm += select(
+            [chr(i + ASCII_OFFSET) for i in range(len(choices))], name="string_choice"
+        )
 
     return lm
 
