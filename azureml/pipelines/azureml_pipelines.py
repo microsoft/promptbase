@@ -25,7 +25,7 @@ def create_zeroshot_pipeline(
 ) -> Pipeline:
     _logger.info(f"Starting create_zeroshot_pipeline")
 
-    zeroshot_answer_key = "selected_answer"
+    zeroshot_answer_key = "zero_or_few_shot_choice"
 
     json_schema_file = SCHEMA_DIR / MULTIPLE_CHOICE_SCHEMA_FILE
     assert (json_schema_file).exists(), f"Failed to find {json_schema_file}"

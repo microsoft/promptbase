@@ -32,8 +32,6 @@ class ZeroShotRunConfig:
     mmlu_dataset: str = str()
     mmlu_split: str = str()
     guidance_program: str = str()
-    guidance_workers: int = 4
-    max_errors: int = 5
     aoai_config: AOAIConfig = field(default_factory=AOAIConfig)
 
 
