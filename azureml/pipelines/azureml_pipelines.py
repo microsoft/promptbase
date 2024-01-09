@@ -15,6 +15,64 @@ _logger.setLevel(logging.INFO)
 MULTIPLE_CHOICE_SCHEMA_FILE = "multichoice_schema.json"
 
 
+def create_zeroshot_pipeline(
+    *,
+    components: ComponentCollector,
+    embedding_config: AOAIConfig,
+    inference_config: AOAIConfig,
+    input_dataset: Input,
+    guidance_program: Input,
+    output_key: str,
+) -> Pipeline:
+    _logger.info(f"Starting create_zeroshot_pipeline")
+
+    zeroshot_answer_key = "zeroshot_selected_answer"
+
+    json_schema_file = SCHEMA_DIR / MULTIPLE_CHOICE_SCHEMA_FILE
+    assert (json_schema_file).exists(), f"Failed to find {json_schema_file}"
+    multichoice_schema_input = Input(
+        type="uri_file",
+        path=json_schema_file,
+        model="download",
+    )
+
+    @dsl.pipeline(
+        name=f"zershot_pipeline",
+        display_name=f"Zero Shot Answers",
+    )
+    def knn_fewshot(guidance_prog: Input, input_ds: Input):
+        schema_job = components.jsonl_schema_checker(
+            input_dataset=input_ds,
+            schema_dataset=multichoice_schema_input,
+            max_errors=embedding_config.max_errors,
+            forbidden_keys=json.dumps([zeroshot_answer_key]),
+        )
+        schema_job.name = f"check_schema"
+
+        guidance_job = components.jsonl_guidance(
+            guidance_program=guidance_prog,
+            guidance_workers=inference_config.workers,
+            max_errors=inference_config.max_errors,
+            input_dataset=schema_job.outputs.output_dataset,
+            azure_openai_endpoint=inference_config.endpoint,
+            azure_openai_deployed_model=inference_config.model,
+        )
+        guidance_job.name = f"guidance_zeroshot"
+        guidance_job.compute = inference_config.compute_target
+
+        rename_job = components.jsonl_key_rename(
+            input_dataset=guidance_job.outputs.output_dataset,
+            rename_keys=json.dumps({zeroshot_answer_key: output_key}),
+        )
+        rename_job.name = f"rename_output_key"
+
+        return {"output_dataset": rename_job.outputs.output_dataset}
+
+    sub_pipeline = knn_fewshot(guidance_program, input_dataset)
+
+    return sub_pipeline
+
+
 def create_knn_fewshot_pipeline(
     *,
     components: ComponentCollector,
