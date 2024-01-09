@@ -75,8 +75,8 @@ def main():
     elif args.dataset == "mmlu":
         # Note that to run the MMLU tests, you will need to download the
         # data, and then use the 'format_mmlu.py' script
-        mmlu.generate(args.subject)
-        pass
+        #mmlu.generate(args.subject)
+        mmlu.evaluate_all(args.subject)
     else:
         raise ValueError(f"Bad dataset: {args.dataset}")
 
