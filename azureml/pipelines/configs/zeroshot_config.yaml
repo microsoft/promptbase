@@ -14,4 +14,5 @@ zeroshot_config:
     - zero_or_few_shot.py
     - zero_or_few_shot_fortran.py
     - zero_or_few_shot_alpha.py
+    - zero_or_few_shot_expert.py
   aoai_config: ${ default_aoai_config }
