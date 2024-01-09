@@ -1,0 +1,53 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+
+name: jsonl_key_filter
+display_name: 'JSONL Key Filter'
+type: command
+description: |
+  Filters keys in JSONL file. Either keeps keys from a specified list, or
+  drops keys from a specified list
+is_deterministic: true
+
+inputs:
+  input_dataset:
+    type: uri_file
+    optional: false
+    description: Dataset containing JSONL input
+  input_encoding:
+    type: string
+    optional: false
+    default: utf-8-sig
+    description: Encoding format of the input dataset
+  keep_keys:
+    type: string
+    optional: true
+    description: Stringified JSON list of keys to keep. Mutually exclusive with drop_keys
+  drop_keys:
+    type: string
+    optional: true
+    description: Stringified JSON list of keys to drop. Mutually exclusive with keep_keys
+  output_encoding:
+    type: string
+    optional: false
+    default: utf-8-sig
+    description: Encoding format of the output dataset
+
+outputs:
+  output_dataset:
+    type: uri_file
+    description: Dataset containing JSONL filtered keys
+
+code: ./src
+
+command: >-
+  python ./jsonl_key_filter.py
+  --input_dataset ${{ inputs.input_dataset }}
+  --input_encoding ${{ inputs.input_encoding }}
+  $[[--keep_keys '${{ inputs.keep_keys }}']]
+  $[[--drop_keys '${{ inputs.drop_keys }}']]
+  --output_dataset ${{ outputs.output_dataset }}
+  --output_encoding ${{ inputs.output_encoding }}
+
+environment:
+  # Will be updated when component uploads
+  image: azureml:promptbase_aml@latest

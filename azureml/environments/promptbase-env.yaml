@@ -18,6 +18,7 @@ conda_file:
       - datasets
       - guidance>0.1.5
       - joblib
+      - jsonschema
       - mlflow
       - numpy
       - openai>=1

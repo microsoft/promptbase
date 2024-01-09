@@ -8,12 +8,12 @@ from hydra.core.config_store import ConfigStore
 import omegaconf
 
 from azure.identity import DefaultAzureCredential
-from azure.ai.ml import MLClient
 
 from azure.ai.ml import dsl, MLClient, Input
 from azure.ai.ml.entities import Pipeline
 
-from azureml_utils import get_component_collector, ComponentCollector
+from azureml_pipelines import create_knn_fewshot_pipeline
+from azureml_utils import get_component_collector
 from configs import AMLConfig, KNNFewshotConfig, AOAIConfig
 from constants import GUIDANCE_PROGRAMS_DIR
 from logging_utils import get_standard_logger_for_file
@@ -33,110 +33,54 @@ cs = ConfigStore.instance()
 cs.store(name="config", node=PipelineConfig)
 
 
-def create_embedding_for_split_pipeline(
-    components: ComponentCollector,
-    mmlu_folder: Input,
-    target_split: str,
-    embedding_output_key: str,
-    aoai_embedding_config: AOAIConfig,
-):
-    question_key = "question"
-
-    @dsl.pipeline(
-        name=f"extract_embeddings_{target_split}",
-        display_name=f"extract_embeddings_{target_split}",
-    )
-    def extract_embeddings(mmlu_dir: Input):
-        get_split_job = components.uri_folder_to_file(
-            input_dataset=mmlu_dir,
-            filename_pattern=f"{target_split}.jsonl",
-        )
-        get_split_job.name = f"extract_split_{target_split}"
-
-        embedding_job = components.jsonl_embeddings(
-            input_dataset=get_split_job.outputs.output_dataset,
-            source_key=question_key,
-            destination_key=embedding_output_key,
-            workers=aoai_embedding_config.workers,
-            max_errors=aoai_embedding_config.max_errors,
-            azure_openai_endpoint=aoai_embedding_config.endpoint,
-        )
-        embedding_job.compute = aoai_embedding_config.compute_target
-        embedding_job.name = f"add_embeddings_{target_split}"
-
-        return {"output_dataset": embedding_job.outputs.output_dataset}
-
-    sub_pipeline = extract_embeddings(mmlu_folder)
-
-    return sub_pipeline.outputs.output_dataset
-
-
-def create_knn_fewshot_pipeline(
+def create_knn_fewshot_pipeline_mmlu(
     ml_client: MLClient, run_config: KNNFewshotConfig, version_string: str
 ):
     components = get_component_collector(ml_client, version_string)
 
-    embeddings_key = "question_embedding"
-    fewshot_examples_key = "fewshot_examples"
-
-    fewshow_program_input = Input(
+    fewshot_program_input = Input(
         type="uri_file",
         path=GUIDANCE_PROGRAMS_DIR / run_config.guidance_program,
         model="download",
     )
 
     @dsl.pipeline()
-    def basic_pipeline(guidance_program: Input) -> Pipeline:
+    def basic_pipeline() -> Pipeline:
         mmlu_fetch_job = components.jsonl_mmlu_fetch(
             mmlu_dataset=run_config.mmlu_dataset
         )
         mmlu_fetch_job.name = f"fetch_mmlu_{run_config.mmlu_dataset}"
 
-        test_with_embeddings = create_embedding_for_split_pipeline(
-            components,
-            mmlu_fetch_job.outputs.output_dataset,
-            target_split=run_config.test_split,
-            embedding_output_key=embeddings_key,
-            aoai_embedding_config=run_config.aoai_embedding_config,
-        )
+        split_outputs = dict()
+        for k, v in dict(
+            input=run_config.test_split, example=run_config.example_split
+        ).items():
+            get_split_job = components.uri_folder_to_file(
+                input_dataset=mmlu_fetch_job.outputs.output_dataset,
+                filename_pattern=f"{v}.jsonl",
+            )
+            get_split_job.name = f"extract_split_{k}"
+            split_outputs[k] = get_split_job.outputs.output_dataset
 
-        examples_with_embeddings = create_embedding_for_split_pipeline(
-            components,
-            mmlu_fetch_job.outputs.output_dataset,
-            target_split=run_config.example_split,
-            embedding_output_key=embeddings_key,
-            aoai_embedding_config=run_config.aoai_embedding_config,
+        answer_ds = create_knn_fewshot_pipeline(
+            components=components,
+            embedding_config=run_config.aoai_embedding_config,
+            inference_config=run_config.aoai_config,
+            input_dataset=split_outputs["input"],
+            example_dataset=split_outputs["example"],
+            guidance_program=fewshot_program_input,
+            num_examples=run_config.knn_config.k_nearest,
+            output_key=run_config.answer_key,
         )
-
-        knn_job = components.jsonl_knn_cosine_similarity(
-            input_dataset=test_with_embeddings,
-            example_dataset=examples_with_embeddings,
-            input_vector_key=embeddings_key,
-            example_vector_key=embeddings_key,
-            output_key=fewshot_examples_key,
-            k_nearest=run_config.knn_config.k_nearest,
-        )
-        knn_job.name = f"select_knn_cosine_similarity"
-
-        guidance_job = components.jsonl_guidance(
-            guidance_program=guidance_program,
-            guidance_workers=run_config.aoai_config.workers,
-            max_errors=run_config.aoai_config.max_errors,
-            input_dataset=knn_job.outputs.output_dataset,
-            azure_openai_endpoint=run_config.aoai_config.endpoint,
-            azure_openai_deployed_model=run_config.aoai_config.model,
-        )
-        guidance_job.name = f"guidance_fewshot"
-        guidance_job.compute = run_config.aoai_config.compute_target
 
         score_job = components.jsonl_score_multiplechoice(
-            input_dataset=guidance_job.outputs.output_dataset,
+            input_dataset=answer_ds,
             correct_key="correct_answer",  # Set when MMLU fetching
-            response_key="fewshot_choice",
+            response_key=run_config.answer_key,
         )
         score_job.name = f"score_fewshot"
 
-    pipeline = basic_pipeline(fewshow_program_input)
+    pipeline = basic_pipeline()
     pipeline.experiment_name = (
         f"{run_config.pipeline.base_experiment_name}_{run_config.mmlu_dataset}"
     )
@@ -168,7 +112,7 @@ def main(config: PipelineConfig):
         logging_enable=False,
     )
 
-    pipeline = create_knn_fewshot_pipeline(
+    pipeline = create_knn_fewshot_pipeline_mmlu(
         ws_client, config.knn_fewshot_config, version_string
     )
     _logger.info("Submitting pipeline")
