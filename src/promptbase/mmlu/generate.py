@@ -45,11 +45,13 @@ def generate(dataset_name: str):
         max_thread=50,
         model=model_name,
     )
-    MMLU.run_logprobs(
-        test_problem,
-        run_name=f"{test_problem}/logprobs5",
-        num_examples=5,
-        num_repeat=10,
-        max_thread=50,
-        model=model_name,
-    )
+    if False:
+        # Logprobs not currently available in OpenAI API
+        MMLU.run_logprobs(
+            test_problem,
+            run_name=f"{test_problem}/logprobs5",
+            num_examples=5,
+            num_repeat=10,
+            max_thread=50,
+            model=model_name,
+        )
