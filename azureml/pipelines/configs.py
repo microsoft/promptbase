@@ -75,3 +75,21 @@ class KNNFewshotConfig:
     knn_config: KNNConfig = field(default_factory=KNNConfig)
     aoai_config: AOAIConfig = field(default_factory=AOAIConfig)
     aoai_embedding_config: AOAIConfig = field(default_factory=AOAIConfig)
+
+
+@dataclass
+class RandomExamplesConfig:
+    num_examples: int = int()
+    random_seed: int = int()
+
+
+@dataclass
+class RandomFewshotPipelineConfig:
+    pipeline: PipelineConfig = field(default_factory=PipelineConfig)
+    mmlu_dataset: str = str()
+    test_split: str = str()
+    example_split: str = str()
+    guidance_program: str = str()
+    answer_key: str = str()
+    random_examples: RandomExamplesConfig = field(default_factory=RandomExamplesConfig)
+    aoai_config: AOAIConfig = field(default_factory=AOAIConfig)

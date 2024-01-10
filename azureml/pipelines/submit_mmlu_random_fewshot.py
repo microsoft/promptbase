@@ -17,7 +17,7 @@ from azure.ai.ml import dsl, Input, MLClient
 from azure.ai.ml.entities import Pipeline
 
 from azureml_utils import get_component_collector
-from configs import AMLConfig, FewShotConfig
+from configs import AMLConfig, RandomFewshotPipelineConfig
 from constants import GUIDANCE_PROGRAMS_DIR
 from logging_utils import get_standard_logger_for_file
 
@@ -26,7 +26,7 @@ _logger = get_standard_logger_for_file(__file__)
 
 @dataclass
 class PipelineConfig:
-    fewshot_config: FewShotConfig = omegaconf.MISSING
+    random_fewshot_config: RandomFewshotPipelineConfig = omegaconf.MISSING
     azureml_config: AMLConfig = omegaconf.MISSING
 
 
