@@ -17,6 +17,10 @@ _logger.setLevel(logging.INFO)
 _logger.addHandler(logging.StreamHandler(stream=sys.stdout))
 
 
+ANSWER_KEY = "string_choice"
+COT_KEY = "explanation"
+
+
 @guidance
 def zero_shot_cot_multiple_choice(
     lm: guidance.models.Chat, question: str, choices: list[str]
@@ -38,14 +42,14 @@ def zero_shot_cot_multiple_choice(
         lm += "**Explanation**"
 
     with assistant():
-        lm += gen(name=f"explanation")
+        lm += gen(name=COT_KEY)
 
     response_choices = [str(i) for i in range(len(choices))]
     with user():
         lm += f"**Final Answer**"
 
     with assistant():
-        lm += select(response_choices, name="string_choice")
+        lm += select(response_choices, name=ANSWER_KEY)
 
     return lm
 
@@ -60,5 +64,5 @@ def guidance_generation(
         question=input["question"], choices=input["choices"]
     )
 
-    result = dict(zeroshot_choice=int(result["string_choice"]))
+    result = dict(zeroshot_cot_choice=int(result[ANSWER_KEY]), cot=result[COT_KEY])
     return result
