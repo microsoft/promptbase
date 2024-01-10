@@ -35,7 +35,7 @@ cs = ConfigStore.instance()
 cs.store(name="config", node=PipelineConfig)
 
 
-def create_mmlu_zeroshot__cot_pipeline(
+def create_mmlu_zeroshot_cot_pipeline(
     ml_client: MLClient, run_config: ZeroShotRunConfig, version_string: str
 ):
     components = get_component_collector(ml_client, version_string)
@@ -118,7 +118,7 @@ def main(config: PipelineConfig):
         logging_enable=False,
     )
 
-    pipeline = create_mmlu_zeroshot__cot_pipeline(
+    pipeline = create_mmlu_zeroshot_cot_pipeline(
         ws_client, config.zeroshot_config, version_string
     )
     _logger.info("Submitting pipeline")
