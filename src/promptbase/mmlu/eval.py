@@ -58,17 +58,22 @@ def eval_answers(all_questions) -> dict[str, any]:
 
 
 def evaluate_all(dataset_name: str):
+    dev_problem = f"mmlu_{dataset_name}_val"
     test_problem = f"mmlu_{dataset_name}_test"
 
     print(f"Starting evaluation of {dataset_name}")
 
-    variants = ["cot", "cot_knn", "cot_via_knn"]
+    variants = {
+        "cot": dev_problem,
+        "cot_knn": test_problem,
+        "cot_via_knn": test_problem,
+    }
 
-    for variant in variants:
-        print(f"Evaluating {variant}")
+    for k, v in variants.items():
+        print(f"Evaluating {v}")
         # Note that output we have in the directory appears to be a gzip
         all_generated_data = load_json_file(
-            mmlu_generations_dir / "expt" / test_problem / variant / "result.json"
+            mmlu_generations_dir / "expt" / v / k / "result.json"
         )
         stats = eval_answers(all_generated_data)
         print(f"{json.dumps(stats, indent=4)}")
