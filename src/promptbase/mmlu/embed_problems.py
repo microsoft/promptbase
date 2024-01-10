@@ -5,7 +5,7 @@ from .utils import *
 
 
 def embed_file(file_name):
-    ds = load_questions(file_name)
+    ds = load_json_file(file_name)
     questions = [row["question"] for row in ds]
     embeddings = embed_batch(questions)
     for row, embedding in tqdm(zip(ds, embeddings)):
