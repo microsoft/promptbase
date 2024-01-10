@@ -114,7 +114,7 @@ For example:
 To run evaluations, download these datasets and add them to /src/promptbase/datasets/
 
  - MMLU: https://github.com/hendrycks/test
-    - Downloaded the `data.tar` file from the above page
+    - Download the `data.tar` file from the above page
     - Extract the contents
     - Run `mkdir src/promptbase/datasets/mmlu`
     - Run `python ./src/promptbase/format/format_mmlu.py --mmlu_csv_dir /path/to/extracted/csv/files --output_path ./src/promptbase/datasets/mmlu`
