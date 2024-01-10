@@ -10,7 +10,6 @@ zeroshot_config:
     default_compute_target: isolatedcompute
   mmlu_dataset: clinical_knowledge
   mmlu_split: test
-  max_errors: 10
-  guidance_workers: 20
-  guidance_program: zero_shot_cot.py
+  guidance_programs:
+    - zero_shot_cot.py
   aoai_config: ${ default_aoai_config }

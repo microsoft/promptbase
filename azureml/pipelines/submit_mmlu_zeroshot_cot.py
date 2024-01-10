@@ -16,7 +16,7 @@ from azure.ai.ml import MLClient
 from azure.ai.ml import dsl, Input, MLClient
 from azure.ai.ml.entities import Pipeline
 
-from azureml_pipelines import create_zeroshot_pipeline
+from azureml_pipelines import create_zeroshot_cot_pipeline
 from azureml_utils import get_component_collector
 from configs import AMLConfig, ZeroShotRunConfig
 from constants import GUIDANCE_PROGRAMS_DIR
@@ -35,7 +35,7 @@ cs = ConfigStore.instance()
 cs.store(name="config", node=PipelineConfig)
 
 
-def create_mmlu_zeroshot_pipeline(
+def create_mmlu_zeroshot_cot_pipeline(
     ml_client: MLClient, run_config: ZeroShotRunConfig, version_string: str
 ):
     components = get_component_collector(ml_client, version_string)
@@ -51,7 +51,8 @@ def create_mmlu_zeroshot_pipeline(
         guidance_inputs[k] = v
     _logger.info(f"Found {len(guidance_inputs)} guidance programs")
 
-    answer_key = "zeroshot_answer"
+    answer_key = "zeroshot_cot_answer"
+    cot_key = "zeroshot_chain_of_thought"
 
     @dsl.pipeline()
     def basic_pipeline() -> Pipeline:
@@ -67,14 +68,15 @@ def create_mmlu_zeroshot_pipeline(
         get_split_job.name = f"extract_split_{run_config.mmlu_split}"
 
         for progname, prog_input in guidance_inputs.items():
-            answer_ds = create_zeroshot_pipeline(
-                pipeline_name=f"{progname}_zeroshot",
-                pipeline_display_name=f"Zero Shot {progname}",
+            answer_ds = create_zeroshot_cot_pipeline(
+                pipeline_name=f"{progname}_zeroshot_cot",
+                pipeline_display_name=f"Zero Shot CoT {progname}",
                 components=components,
                 inference_config=run_config.aoai_config,
                 input_dataset=get_split_job.outputs.output_dataset,
                 guidance_program=prog_input,
                 output_key=answer_key,
+                cot_key=cot_key,
             )
 
             score_job = components.jsonl_score_multiplechoice(
@@ -82,7 +84,7 @@ def create_mmlu_zeroshot_pipeline(
                 correct_key="correct_answer",  # Set when MMLU fetching
                 response_key=answer_key,
             )
-            score_job.name = f"zeroshot_score_{progname}"
+            score_job.name = f"zeroshot_cot_score_{progname}"
 
     pipeline = basic_pipeline()
     pipeline.experiment_name = (
@@ -116,7 +118,7 @@ def main(config: PipelineConfig):
         logging_enable=False,
     )
 
-    pipeline = create_mmlu_zeroshot_pipeline(
+    pipeline = create_mmlu_zeroshot_cot_pipeline(
         ws_client, config.zeroshot_config, version_string
     )
     _logger.info("Submitting pipeline")
