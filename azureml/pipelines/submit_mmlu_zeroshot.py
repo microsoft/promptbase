@@ -16,6 +16,7 @@ from azure.ai.ml import MLClient
 from azure.ai.ml import dsl, Input, MLClient
 from azure.ai.ml.entities import Pipeline
 
+from azureml_pipelines import create_zeroshot_pipeline
 from azureml_utils import get_component_collector
 from configs import AMLConfig, ZeroShotRunConfig
 from constants import GUIDANCE_PROGRAMS_DIR
@@ -34,16 +35,23 @@ cs = ConfigStore.instance()
 cs.store(name="config", node=PipelineConfig)
 
 
-def create_zeroshot_pipeline(
+def create_mmlu_zeroshot_pipeline(
     ml_client: MLClient, run_config: ZeroShotRunConfig, version_string: str
 ):
     components = get_component_collector(ml_client, version_string)
 
-    zeroshot_program_input = Input(
-        type="uri_file",
-        path=GUIDANCE_PROGRAMS_DIR / run_config.guidance_program,
-        model="download",
-    )
+    guidance_inputs = dict()
+    for prog_filename in run_config.guidance_programs:
+        k = prog_filename[0:-3]
+        v = Input(
+            type="uri_file",
+            path=GUIDANCE_PROGRAMS_DIR / prog_filename,
+            model="download",
+        )
+        guidance_inputs[k] = v
+    _logger.info(f"Found {len(guidance_inputs)} guidance programs")
+
+    answer_key = "zeroshot_answer"
 
     @dsl.pipeline()
     def basic_pipeline() -> Pipeline:
@@ -58,23 +66,22 @@ def create_zeroshot_pipeline(
         )
         get_split_job.name = f"extract_split_{run_config.mmlu_split}"
 
-        zeroshot_guidance_job = components.jsonl_guidance(
-            guidance_program=zeroshot_program_input,
-            guidance_workers=run_config.guidance_workers,
-            max_errors=run_config.max_errors,
-            input_dataset=get_split_job.outputs.output_dataset,
-            azure_openai_endpoint=run_config.aoai_config.endpoint,
-            azure_openai_deployed_model=run_config.aoai_config.model,
-        )
-        zeroshot_guidance_job.name = f"zeroshot_guidance"
-        zeroshot_guidance_job.compute = run_config.aoai_config.compute_target
+        for progname, prog_input in guidance_inputs.items():
+            answer_ds = create_zeroshot_pipeline(
+                pipeline_name=f"{progname}_zeroshot",
+                components=components,
+                inference_config=run_config.aoai_config,
+                input_dataset=get_split_job.outputs.output_dataset,
+                guidance_program=prog_input,
+                output_key=answer_key,
+            )
 
-        score_job = components.jsonl_score_multiplechoice(
-            input_dataset=zeroshot_guidance_job.outputs.output_dataset,
-            correct_key="correct_answer",  # Set when MMLU fetching
-            response_key="zero_or_few_shot_choice",
-        )
-        score_job.name = f"zeroshot_score"
+            score_job = components.jsonl_score_multiplechoice(
+                input_dataset=answer_ds,
+                correct_key="correct_answer",  # Set when MMLU fetching
+                response_key=answer_key,
+            )
+            score_job.name = f"zeroshot_score_{progname}"
 
     pipeline = basic_pipeline()
     pipeline.experiment_name = (
@@ -108,7 +115,7 @@ def main(config: PipelineConfig):
         logging_enable=False,
     )
 
-    pipeline = create_zeroshot_pipeline(
+    pipeline = create_mmlu_zeroshot_pipeline(
         ws_client, config.zeroshot_config, version_string
     )
     _logger.info("Submitting pipeline")
