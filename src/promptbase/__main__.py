@@ -22,16 +22,21 @@ def parse_arguments():
     )
     p.add_argument("--subject", type=str, help="Specify the subject for the dataset")
     p.add_argument(
-        "--subject", type=str, help="Specify the subject for the dataset"
+        "--mode",
+        type=str,
+        default="chat",
+        choices=["chat", "completion"],
+        help="Prompting mode for the model (chat or completion)",
     )
     p.add_argument(
-        "--mode", type=str, default="chat", choices=["chat", "completion"], help="Prompting mode for the model (chat or completion)"
+        "--list_subjects",
+        action="store_true",
+        help="Lists the subjects available for the dataset",
     )
     p.add_argument(
-        "--list_subjects", action='store_true', help="Lists the subjects available for the dataset"
-    )
-    p.add_argument(
-        "--overwrite", action='store_true', help="Overwrites the results of a previous run"
+        "--overwrite",
+        action="store_true",
+        help="Overwrites the results of a previous run",
     )
     return p.parse_args()
 
@@ -71,7 +76,7 @@ def main():
         # Note that to run the MMLU tests, you will need to download the
         # data, and then use the 'format_mmlu.py' script
         mmlu.generate(args.subject)
-        pass
+        mmlu.evaluate_all(args.subject)
     else:
         raise ValueError(f"Bad dataset: {args.dataset}")
 

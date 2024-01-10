@@ -51,7 +51,7 @@ def load_problems(file_name):
     else:
         file_name = str(mmlu_data_dir / file_name)
 
-    return load_questions(file_name + ".json")
+    return load_json_file(file_name + ".json")
 
 
 def save_problems(file_name, problems):
