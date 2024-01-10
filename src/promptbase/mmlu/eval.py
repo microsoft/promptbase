@@ -50,6 +50,7 @@ def eval_answers(all_questions) -> dict[str, any]:
         y_pred.append(best_answer)
 
     result = dict()
+    result["count"] = len(y_true)
     result["accuracy"] = skm.accuracy_score(y_true, y_pred)
     result["skipped"] = skipped
     result["mean_different_answers"] = sum(answer_counts) / len(answer_counts)

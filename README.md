@@ -118,6 +118,11 @@ To run evaluations, download these datasets and add them to /src/promptbase/data
     - Extract the contents
     - Run `mkdir src/promptbase/datasets/mmlu`
     - Run `python ./src/promptbase/format/format_mmlu.py --mmlu_csv_dir /path/to/extracted/csv/files --output_path ./src/promptbase/datasets/mmlu`
+    - You will also need to set the following environment variables:
+      - `AZURE_OPENAI_API_KEY`
+      - `AZURE_OPENAI_CHAT_API_KEY`
+      - `AZURE_OPENAI_CHAT_ENDPOINT_URL`
+      - `AZURE_OPENAI_EMBEDDINGS_URL`
  - HumanEval: https://huggingface.co/datasets/openai_humaneval
  - DROP: https://allenai.org/data/drop
  - GSM8K: https://github.com/openai/grade-school-math
