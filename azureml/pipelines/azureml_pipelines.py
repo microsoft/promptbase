@@ -121,6 +121,7 @@ def create_zeroshot_cot_pipeline(
 
     sub_pipeline = _generic_zeroshot_pipeline(
         pipeline_name=pipeline_name,
+        pipeline_display_name=pipeline_display_name,
         components=components,
         inference_config=inference_config,
         input_dataset=input_dataset,

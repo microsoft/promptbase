@@ -5,7 +5,7 @@ defaults:
 
 zeroshot_config:
   pipeline:
-    base_experiment_name: zeroshot
+    base_experiment_name: zeroshot_cot
     tags:
     default_compute_target: isolatedcompute
   mmlu_dataset: clinical_knowledge
