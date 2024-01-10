@@ -3,7 +3,7 @@ defaults:
   - aml_config
   - aoai_config
 
-random_fewshot_config
+random_fewshot_config:
   pipeline:
     base_experiment_name: fewshot_random
     tags:

@@ -38,7 +38,7 @@ inputs:
     type: string
     optional: false
     description: Key in which to store the list of examples
-  n_examples:
+  num_examples:
     type: integer
     optional: false
     description: How many examples to select
@@ -65,7 +65,7 @@ command: >-
   --output_dataset ${{ outputs.output_dataset }}
   --output_encoding ${{ inputs.output_encoding }}
   --output_key ${{ inputs.output_key }}
-  --n_examples ${{ inputs.n_examples }}
+  --num_examples ${{ inputs.num_examples }}
   --random_seed ${{ inputs.random_seed }}
 
 
