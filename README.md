@@ -114,6 +114,10 @@ For example:
 To run evaluations, download these datasets and add them to /src/promptbase/datasets/
 
  - MMLU: https://github.com/hendrycks/test
+    - Downloaded the `data.tar` file from the above page
+    - Extract the contents
+    - Run `mkdir src/promptbase/datasets/mmlu`
+    - Run `python ./src/promptbase/format/format_mmlu.py --mmlu_csv_dir /path/to/extracted/csv/files --output_path ./src/promptbase/datasets/mmlu`
  - HumanEval: https://huggingface.co/datasets/openai_humaneval
  - DROP: https://allenai.org/data/drop
  - GSM8K: https://github.com/openai/grade-school-math
