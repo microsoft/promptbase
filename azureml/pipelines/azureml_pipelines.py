@@ -15,18 +15,17 @@ _logger.setLevel(logging.INFO)
 MULTIPLE_CHOICE_SCHEMA_FILE = "multichoice_schema.json"
 
 
-def create_zeroshot_pipeline(
+def _generic_zeroshot_pipeline(
     *,
     pipeline_name: str,
     components: ComponentCollector,
     inference_config: AOAIConfig,
     input_dataset: Input,
     guidance_program: Input,
-    output_key: str,
+    forbidden_keys: list[str],
+    output_key_mapping: dict[str, str],
 ) -> Pipeline:
-    _logger.info(f"Starting create_zeroshot_pipeline")
-
-    zeroshot_answer_key = "zero_or_few_shot_choice"
+    _logger.info("Starting _generic_zeroshot_pipeline")
 
     json_schema_file = SCHEMA_DIR / MULTIPLE_CHOICE_SCHEMA_FILE
     assert (json_schema_file).exists(), f"Failed to find {json_schema_file}"
@@ -37,15 +36,15 @@ def create_zeroshot_pipeline(
     )
 
     @dsl.pipeline(
-        name=f"zeroshot_pipeline",
-        display_name=f"Zero Shot Answers",
+        name=pipeline_name,
+        display_name=f"Zero Shot",
     )
     def zeroshot(guidance_prog: Input, input_ds: Input):
         schema_job = components.jsonl_schema_checker(
             input_dataset=input_ds,
             schema_dataset=multichoice_schema_input,
             max_errors=inference_config.max_errors,
-            forbidden_keys=json.dumps([zeroshot_answer_key]),
+            forbidden_keys=json.dumps(forbidden_keys),
         )
         schema_job.name = f"check_schema"
 
@@ -62,14 +61,40 @@ def create_zeroshot_pipeline(
 
         rename_job = components.jsonl_key_rename(
             input_dataset=guidance_job.outputs.output_dataset,
-            rename_keys=json.dumps({zeroshot_answer_key: output_key}),
+            rename_keys=json.dumps(output_key_mapping),
         )
         rename_job.name = f"rename_output_key"
 
         return {"output_dataset": rename_job.outputs.output_dataset}
 
     sub_pipeline = zeroshot(guidance_program, input_dataset)
-    sub_pipeline.name = pipeline_name
+
+    return sub_pipeline
+
+
+def create_zeroshot_pipeline(
+    *,
+    pipeline_name: str,
+    components: ComponentCollector,
+    inference_config: AOAIConfig,
+    input_dataset: Input,
+    guidance_program: Input,
+    output_key: str,
+) -> Pipeline:
+    _logger.info(f"Starting create_zeroshot_pipeline")
+
+    forbidden_keys = ["zero_or_few_shot_choice"]  # This comes from the guidance program
+    output_key_mapping = {forbidden_keys[0]: output_key}
+
+    sub_pipeline = _generic_zeroshot_pipeline(
+        pipeline_name=pipeline_name,
+        components=components,
+        inference_config=inference_config,
+        input_dataset=input_dataset,
+        guidance_program=guidance_program,
+        forbidden_keys=forbidden_keys,
+        output_key_mapping=output_key_mapping,
+    )
 
     return sub_pipeline
 
