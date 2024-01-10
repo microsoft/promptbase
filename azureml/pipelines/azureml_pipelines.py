@@ -18,6 +18,7 @@ MULTIPLE_CHOICE_SCHEMA_FILE = "multichoice_schema.json"
 def _generic_zeroshot_pipeline(
     *,
     pipeline_name: str,
+    pipeline_display_name: str,
     components: ComponentCollector,
     inference_config: AOAIConfig,
     input_dataset: Input,
@@ -37,7 +38,7 @@ def _generic_zeroshot_pipeline(
 
     @dsl.pipeline(
         name=pipeline_name,
-        display_name=f"Zero Shot",
+        display_name=pipeline_display_name,
     )
     def zeroshot(guidance_prog: Input, input_ds: Input):
         schema_job = components.jsonl_schema_checker(
@@ -75,6 +76,7 @@ def _generic_zeroshot_pipeline(
 def create_zeroshot_pipeline(
     *,
     pipeline_name: str,
+    pipeline_display_name: str,
     components: ComponentCollector,
     inference_config: AOAIConfig,
     input_dataset: Input,
@@ -85,6 +87,37 @@ def create_zeroshot_pipeline(
 
     forbidden_keys = ["zero_or_few_shot_choice"]  # This comes from the guidance program
     output_key_mapping = {forbidden_keys[0]: output_key}
+
+    sub_pipeline = _generic_zeroshot_pipeline(
+        pipeline_name=pipeline_name,
+        pipeline_display_name=pipeline_display_name,
+        components=components,
+        inference_config=inference_config,
+        input_dataset=input_dataset,
+        guidance_program=guidance_program,
+        forbidden_keys=forbidden_keys,
+        output_key_mapping=output_key_mapping,
+    )
+
+    return sub_pipeline
+
+
+def create_zeroshot_cot_pipeline(
+    *,
+    pipeline_name: str,
+    pipeline_display_name: str,
+    components: ComponentCollector,
+    inference_config: AOAIConfig,
+    input_dataset: Input,
+    guidance_program: Input,
+    output_key: str,
+    cot_key: str,
+) -> Pipeline:
+    _logger.info(f"Starting create_zeroshot_pipeline")
+
+    # Forbidden keys come from the guidance program
+    forbidden_keys = ["zeroshot_cot_choice", "zeroshot_cot"]
+    output_key_mapping = {forbidden_keys[0]: output_key, forbidden_keys[1]: cot_key}
 
     sub_pipeline = _generic_zeroshot_pipeline(
         pipeline_name=pipeline_name,
