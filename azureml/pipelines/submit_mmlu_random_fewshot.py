@@ -1,5 +1,5 @@
 # Submit a run using:
-# python .\submit_mmlu_zeroshot.py -cn zeroshot_config
+# python .\submit_mmlu_random_fewshot.py -cn fewshot_random_config
 
 import time
 
