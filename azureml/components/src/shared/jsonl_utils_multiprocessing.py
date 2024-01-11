@@ -1,10 +1,9 @@
 import dataclasses
-import json
 import multiprocessing
 import pathlib
 import queue
-import tempfile
 import time
+import traceback
 
 from typing import Any, Callable
 
@@ -190,7 +189,7 @@ def _queue_worker(
                 success_count += 1
             except Exception as e:
                 stop_time = time.time()
-                logger.warn(f"Item failed: {e}\n{e.__traceback__}")
+                logger.warn(f"Item failed: {e}\n{traceback.format_exception(e)}")
                 error_queue.put(nxt_item)
                 failure_count += 1
             worker_time_queue.put(stop_time - start_time)
