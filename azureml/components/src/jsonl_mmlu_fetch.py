@@ -5,7 +5,7 @@ from typing import Any
 
 import datasets
 
-from shared.jsonl_file_utils import save_jsonl
+from shared.jsonl_file_utils import save_jsonl, JSONLWriter
 from shared.logging_utils import get_standard_logger_for_file
 
 _logger = get_standard_logger_for_file(__file__)
@@ -55,16 +55,40 @@ def main():
     args = parse_args()
     _logger.info(f"Fetching {args.mmlu_dataset}")
 
-    # Note that tasksource skips the huge 'train' file
-    hf_data = datasets.load_dataset("tasksource/mmlu", args.mmlu_dataset)
+    if args.mmlu_dataset == "all_medicine_datasets":
+        target_datasets = [
+            "anatomy",
+            "clinical_knowledge",
+            "college_biology",
+            "college_medicine",
+            "medical_genetics",
+            "professional_medicine",
+        ]
+    else:
+        target_datasets = [args.mmlu_dataset]
 
+    jsonl_writers: dict[str, JSONLWriter] = dict()
     for split in SPLITS:
-        _logger.info(f"Extracting split {split}")
-        extracted_data = process_data_split(hf_data[split])
-        _logger.info(f"Saving split {split}")
-        save_jsonl(
-            args.output_dataset / f"{split}.jsonl", extracted_data, args.output_encoding
+        nxt_writer = JSONLWriter(
+            args.output_dataset / f"{split.jsonl}", args.output_encoding
         )
+        jsonl_writers[split] = nxt_writer
+
+    for nxt_ds in target_datasets:
+        _logger.info(f"Processing dataset {nxt_ds}")
+        # Note that tasksource skips the huge 'train' file
+        hf_data = datasets.load_dataset("tasksource/mmlu", nxt_ds)
+
+        for split in SPLITS:
+            _logger.info(f"Extracting split {split}")
+            extracted_data = process_data_split(hf_data[split])
+            _logger.info(f"Saving split {split}")
+            for line in extracted_data:
+                jsonl_writers[split].write_line(line)
+
+    _logger.info("Closing JSONL files")
+    for v in jsonl_writers.values():
+        v.__exit__()
 
     _logger.info("Complete")
 
