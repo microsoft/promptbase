@@ -14,6 +14,7 @@ knn_fewshot_config:
   example_split: validation
   guidance_programs:
     - fewshot.py
+    - fewshot_as_conversation.py
   knn_config:
     k_nearest: 5
   answer_key: fewshot_answer
