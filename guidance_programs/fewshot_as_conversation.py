@@ -28,16 +28,16 @@ def few_shot_multiple_choice(
             Response with the number corresponding to the best answer.
             """
         )
-    
+
     for example in fewshot_examples:
         with user():
             lm += example["question"] + "\n"
             for i, choice in enumerate(example["choices"]):
                 lm += f"{i} : {choice}\n"
             lm += f"Correct Answer: "
-            
+
         with assistant():
-            lm += example['correct_answer']
+            lm += str(example["correct_answer"])
 
     with user():
         lm += question + "\n"
