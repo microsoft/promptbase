@@ -69,6 +69,9 @@ MMLU_DATASETS = [
     "virology",
     "world_religions",
 ]
+
+DATASET_OPTIONS = [*MMLU_DATASETS, "all_medicine_datasets", "all_mmlu_datasets"]
+
 SPLITS = ["test", "validation", "dev"]
 
 
@@ -81,7 +84,7 @@ def parse_args():
     ports_group.add_argument("--output_encoding", type=str, required=True)
 
     parser.add_argument(
-        "--mmlu_dataset", type=str, choices=MMLU_DATASETS, required=True
+        "--mmlu_dataset", type=str, choices=DATASET_OPTIONS, required=True
     )
 
     args = parser.parse_args()
@@ -114,13 +117,15 @@ def main():
             "medical_genetics",
             "professional_medicine",
         ]
+    elif args.mmlu_dataset == "all_mmlu_datasets":
+        target_datasets = MMLU_DATASETS
     else:
         target_datasets = [args.mmlu_dataset]
 
     jsonl_writers: dict[str, JSONLWriter] = dict()
     for split in SPLITS:
         nxt_writer = JSONLWriter(
-            args.output_dataset / f"{split.jsonl}", args.output_encoding
+            args.output_dataset / f"{split}.jsonl", args.output_encoding
         )
         jsonl_writers[split] = nxt_writer
 
