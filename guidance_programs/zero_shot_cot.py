@@ -64,5 +64,7 @@ def guidance_generation(
         question=input["question"], choices=input["choices"]
     )
 
-    result = dict(zeroshot_cot_choice=int(result[ANSWER_KEY]), zeroshot_cot=result[COT_KEY])
+    result = dict(
+        zeroshot_cot_choice=int(result[ANSWER_KEY]), zeroshot_cot=result[COT_KEY]
+    )
     return result
