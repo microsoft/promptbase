@@ -5,7 +5,7 @@ from typing import Any
 
 import datasets
 
-from shared.jsonl_file_utils import save_jsonl, JSONLWriter
+from shared.jsonl_file_utils import JSONLWriter
 from shared.logging_utils import get_standard_logger_for_file
 
 _logger = get_standard_logger_for_file(__file__)
