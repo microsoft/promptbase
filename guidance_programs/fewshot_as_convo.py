@@ -28,17 +28,16 @@ def few_shot_multiple_choice(
             Response with the number corresponding to the best answer.
             """
         )
-
-        _logger.info("Adding few shot examples")
-        lm += "\nHere are some examples to help you:\n\n"
-        for i, example in enumerate(fewshot_examples):
-            lm += f"Example {i}\n"
+    
+    for example in fewshot_examples:
+        with user():
             lm += example["question"] + "\n"
-            for j, choice in enumerate(example["choices"]):
-                lm += f"{j} : {choice}\n"
-            lm += f"Correct Answer: {example['correct_answer']}\n\n"
-
-        lm += "The question you need to answer will be shown next.\n\n"
+            for i, choice in enumerate(example["choices"]):
+                lm += f"{i} : {choice}\n"
+            lm += f"Correct Answer: "
+            
+        with assistant():
+            lm += example['correct_answer']
 
     with user():
         lm += question + "\n"
