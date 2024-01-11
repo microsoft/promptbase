@@ -11,7 +11,9 @@ random_fewshot_config:
   mmlu_dataset: clinical_knowledge
   test_split: test
   example_split: validation
-  guidance_program: fewshot.py
+  guidance_programs:
+    - fewshot.py
+    - fewshot_as_conversation.py
   random_examples:
     num_examples: 5
     random_seed: 1234987
