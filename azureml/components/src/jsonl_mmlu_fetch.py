@@ -127,6 +127,7 @@ def main():
         nxt_writer = JSONLWriter(
             args.output_dataset / f"{split}.jsonl", args.output_encoding
         )
+        nxt_writer.__enter__()
         jsonl_writers[split] = nxt_writer
 
     for nxt_ds in target_datasets:
