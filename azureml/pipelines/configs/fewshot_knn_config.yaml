@@ -9,7 +9,7 @@ knn_fewshot_config:
     base_experiment_name: fewshot_knn
     tags:
     default_compute_target: isolatedcompute
-  mmlu_dataset: all_medicine_datasets
+  mmlu_dataset: all_mmlu_datasets
   test_split: test
   example_split: validation
   guidance_programs:

@@ -8,7 +8,7 @@ random_fewshot_config:
     base_experiment_name: fewshot_random
     tags:
     default_compute_target: isolatedcompute
-  mmlu_dataset: clinical_knowledge
+  mmlu_dataset: all_mmlu_datasets
   test_split: test
   example_split: validation
   guidance_programs:
