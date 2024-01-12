@@ -79,6 +79,13 @@ def create_mmlu_fewshot_random_cot_pipeline(
             cot_key=cot_key,
         )
 
+        filter_correct_job = components.jsonl_filter_correct_multiplechoice(
+            input_dataset=example_cot_ds,
+            response_key=answer_key,
+            correct_key="correct_answer",
+        )
+        filter_correct_job.name=f"select_correct_responses"
+
     pipeline = basic_pipeline()
     pipeline.experiment_name = (
         f"{run_config.pipeline.base_experiment_name}_{run_config.mmlu_dataset}"
