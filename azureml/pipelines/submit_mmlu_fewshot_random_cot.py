@@ -46,6 +46,9 @@ def create_mmlu_fewshot_random_cot_pipeline(
         model="download",
     )
 
+    answer_key = "multiple_choice_answer"
+    cot_key = "chain_of_thought"
+
     @dsl.pipeline()
     def basic_pipeline() -> Pipeline:
         mmlu_fetch_job = components.jsonl_mmlu_fetch(
@@ -53,11 +56,28 @@ def create_mmlu_fewshot_random_cot_pipeline(
         )
         mmlu_fetch_job.name = f"fetch_mmlu_{run_config.mmlu_dataset}"
 
-        get_split_job = components.uri_folder_to_file(
-            input_dataset=mmlu_fetch_job.outputs.output_dataset,
-            filename_pattern=f"{run_config.mmlu_split}.jsonl",
+        split_outputs = dict()
+        for k, v in dict(
+            input=run_config.test_split, example=run_config.example_split
+        ).items():
+            get_split_job = components.uri_folder_to_file(
+                input_dataset=mmlu_fetch_job.outputs.output_dataset,
+                filename_pattern=f"{v}.jsonl",
+            )
+            get_split_job.name = f"extract_split_{k}"
+            split_outputs[k] = get_split_job.outputs.output_dataset
+
+        # Now, get zero-shot CoTs for the examples
+        example_cot_ds = create_zeroshot_cot_pipeline(
+            pipeline_name=f"zeroshot_cot",
+            pipeline_display_name=f"Zero Shot CoT",
+            components=components,
+            inference_config=run_config.aoai_config,
+            input_dataset=split_outputs["example"],
+            guidance_program=zeroshot_cot_guidance_program,
+            output_key=answer_key,
+            cot_key=cot_key,
         )
-        get_split_job.name = f"extract_split_{run_config.mmlu_split}"
 
     pipeline = basic_pipeline()
     pipeline.experiment_name = (
@@ -95,7 +115,7 @@ def main(config: PipelineConfig):
     )
 
     pipeline = create_mmlu_fewshot_random_cot_pipeline(
-        ws_client, config.zeroshot_config, version_string
+        ws_client, config.random_fewshot_cot_config, version_string
     )
     _logger.info("Submitting pipeline")
     submitted_job = ws_client.jobs.create_or_update(pipeline)
