@@ -67,7 +67,7 @@ def get_model(
     endpoint: str,
     model: str,
 ) -> guidance.models.Model:
-    _logger.info("Attempting to create model object")
+    _logger.debug("Attempting to create model object")
     token_provider = get_bearer_token_provider(
         DefaultAzureCredential(), "https://cognitiveservices.azure.com/.default"
     )
