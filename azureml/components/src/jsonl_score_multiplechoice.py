@@ -32,6 +32,9 @@ class Scorer:
         if "dataset" in line:
             self.dataset.append(line["dataset"])
             self.subject.append(line["subject"])
+        else:
+            self.dataset.append("No dataset")
+            self.subject.append("No subject")
 
     def generate_summary(self) -> dict[str, Any]:
         metrics = {
