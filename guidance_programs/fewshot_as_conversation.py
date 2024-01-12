@@ -56,7 +56,7 @@ def guidance_generation(
     input: Dict[str, Any],
     common: list[dict[str, Any]] | None = None,
 ) -> Dict[str, Any]:
-    _logger.info("Starting guidance_generation")
+    _logger.debug("Starting guidance_generation")
     assert common is None, "Unexpected common data"
     result = lm + few_shot_multiple_choice(
         question=input["question"],
@@ -64,7 +64,7 @@ def guidance_generation(
         fewshot_examples=input["fewshot_examples"],
     )
 
-    _logger.info(f"Result: {result}")
+    _logger.debug(f"Result: {result}")
 
     result = dict(fewshot_choice=int(result["string_choice"]))
     return result

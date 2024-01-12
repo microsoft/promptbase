@@ -29,7 +29,7 @@ def few_shot_multiple_choice(
             """
         )
 
-        _logger.info("Adding few shot examples")
+        _logger.debug("Adding few shot examples")
         lm += "\nHere are some examples to help you:\n\n"
         for i, example in enumerate(fewshot_examples):
             lm += f"Example {i}\n"
