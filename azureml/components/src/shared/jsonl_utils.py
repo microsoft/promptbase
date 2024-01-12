@@ -28,6 +28,7 @@ def line_map(
     assert source_file.exists()
 
     successful_lines = 0
+    skipped_lines = 0
     error_lines = 0
     with JSONLReader(source_file, source_encoding) as in_file:
         with JSONLWriter(dest_file, dest_encoding) as out_file:
@@ -40,10 +41,13 @@ def line_map(
                         if nxt_output is not None:
                             out_file.write_line(nxt_output)
                         else:
+                            skipped_lines += 1
                             _logger.debug(f"Skipping because map_func returned 'None'")
                         successful_lines += 1
                     except Exception as e:
-                        _logger.warn(f"Caught exception: {e}\n{traceback.format_exception(e)}")
+                        _logger.warn(
+                            f"Caught exception: {e}\n{traceback.format_exception(e)}"
+                        )
                         err_file.write_line(nxt)
                         error_lines += 1
                     current_line += 1
@@ -51,7 +55,7 @@ def line_map(
                     if max_errors > 0 and error_lines > max_errors:
                         raise ValueError(f"Terminating after {error_lines} errors")
     _logger.info(
-        f"line_map complete ({successful_lines} successes, {error_lines} failures)"
+        f"line_map complete ({successful_lines} successes (of which {skipped_lines} skipped), {error_lines} failures)"
     )
     return successful_lines, error_lines
 
