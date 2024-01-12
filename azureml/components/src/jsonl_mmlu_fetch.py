@@ -91,10 +91,12 @@ def parse_args():
     return args
 
 
-def process_data_split(data) -> list[dict[str, Any]]:
+def process_data_split(data, subject: str) -> list[dict[str, Any]]:
     all_questions = []
     for line in data:
         nxt = dict(
+            dataset="mmlu",
+            subject=subject,
             question=line["question"],
             choices=line["choices"],
             correct_answer=line["answer"],
@@ -137,7 +139,7 @@ def main():
 
         for split in SPLITS:
             _logger.info(f"Extracting split {split}")
-            extracted_data = process_data_split(hf_data[split])
+            extracted_data = process_data_split(hf_data[split], subject=nxt_ds)
             _logger.info(f"Saving split {split}")
             for line in extracted_data:
                 jsonl_writers[split].write_line(line)
