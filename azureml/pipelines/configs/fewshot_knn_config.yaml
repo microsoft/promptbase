@@ -9,10 +9,12 @@ knn_fewshot_config:
     base_experiment_name: fewshot_knn
     tags:
     default_compute_target: isolatedcompute
-  mmlu_dataset: clinical_knowledge
+  mmlu_dataset: all_mmlu_datasets
   test_split: test
   example_split: validation
-  guidance_program: fewshot.py
+  guidance_programs:
+    - fewshot.py
+    - fewshot_as_conversation.py
   knn_config:
     k_nearest: 5
   answer_key: fewshot_answer

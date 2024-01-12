@@ -1,5 +1,5 @@
 # Submit a run using:
-# python .\submit_mmlu_zeroshot.py -cn zeroshot_config
+# python .\submit_mmlu_zeroshot_cot.py -cn zeroshot_cot_config
 
 import time
 

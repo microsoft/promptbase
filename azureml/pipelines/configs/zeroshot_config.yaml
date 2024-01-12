@@ -8,7 +8,7 @@ zeroshot_config:
     base_experiment_name: zeroshot
     tags:
     default_compute_target: isolatedcompute
-  mmlu_dataset: clinical_knowledge
+  mmlu_dataset: all_mmlu_datasets
   mmlu_split: test
   guidance_programs:
     - zero_or_few_shot.py

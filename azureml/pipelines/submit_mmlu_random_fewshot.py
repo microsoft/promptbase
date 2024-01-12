@@ -1,5 +1,5 @@
 # Submit a run using:
-# python .\submit_mmlu_zeroshot.py -cn zeroshot_config
+# python .\submit_mmlu_random_fewshot.py -cn fewshot_random_config
 
 import time
 
@@ -40,11 +40,16 @@ def create_fewshot_pipeline(
 ):
     components = get_component_collector(ml_client, version_string)
 
-    fewshot_program_input = Input(
-        type="uri_file",
-        path=GUIDANCE_PROGRAMS_DIR / run_config.guidance_program,
-        model="download",
-    )
+    guidance_inputs = dict()
+    for prog_filename in run_config.guidance_programs:
+        k = prog_filename[0:-3]
+        v = Input(
+            type="uri_file",
+            path=GUIDANCE_PROGRAMS_DIR / prog_filename,
+            model="download",
+        )
+        guidance_inputs[k] = v
+    _logger.info(f"Found {len(guidance_inputs)} guidance programs")
 
     @dsl.pipeline()
     def basic_pipeline() -> Pipeline:
@@ -64,22 +69,23 @@ def create_fewshot_pipeline(
             get_split_job.name = f"extract_split_{k}"
             split_outputs[k] = get_split_job.outputs.output_dataset
 
-        answer_ds = create_random_fewshot_pipeline(
-            components=components,
-            inference_config=run_config.aoai_config,
-            input_dataset=split_outputs["input"],
-            example_dataset=split_outputs["example"],
-            guidance_program=fewshot_program_input,
-            random_examples=run_config.random_examples,
-            output_key=run_config.answer_key,
-        )
+        for progname, prog_input in guidance_inputs.items():
+            answer_ds = create_random_fewshot_pipeline(
+                components=components,
+                inference_config=run_config.aoai_config,
+                input_dataset=split_outputs["input"],
+                example_dataset=split_outputs["example"],
+                guidance_program=prog_input,
+                random_examples=run_config.random_examples,
+                output_key=run_config.answer_key,
+            )
 
-        score_job = components.jsonl_score_multiplechoice(
-            input_dataset=answer_ds,
-            correct_key="correct_answer",  # Set when MMLU fetching
-            response_key=run_config.answer_key,
-        )
-        score_job.name = f"score_fewshot"
+            score_job = components.jsonl_score_multiplechoice(
+                input_dataset=answer_ds,
+                correct_key="correct_answer",  # Set when MMLU fetching
+                response_key=run_config.answer_key,
+            )
+            score_job.name = f"score_fewshot_{progname}"
 
     pipeline = basic_pipeline()
     pipeline.experiment_name = (

@@ -15,6 +15,7 @@ conda_file:
       - azure-identity
       - azure-keyvault-secrets
       - azureml-mlflow
+      - fairlearn
       - datasets
       - guidance>0.1.5
       - joblib

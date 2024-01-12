@@ -48,14 +48,14 @@ def compute_knn(
     output_key: str,
     k_nearest: int,
 ) -> dict[str, any]:
-    # _logger.info(f"process_item: {item}")
+    _logger.debug(f"process_item: {item}")
 
     item_embedding = np.asarray(item[input_vector_key])
-    _logger.info(f"Item embedding {item_embedding.dtype} {item_embedding.shape}")
+    _logger.debug(f"Item embedding {item_embedding.dtype} {item_embedding.shape}")
 
     similarities = np.matmul(example_embedding_matrix, item_embedding)
     top_k = np.argsort(similarities)[0:k_nearest].tolist()
-    _logger.info(f"k nearest: {top_k}")
+    _logger.debug(f"k nearest: {top_k}")
     k_examples = []
     for k in top_k:
         k_examples.append(examples[k])

@@ -48,18 +48,6 @@ class FewShotConfig:
 
 
 @dataclass
-class EmbeddingConfig:
-    pipeline: PipelineConfig = field(default_factory=PipelineConfig)
-    mmlu_dataset: str = str()
-    mmlu_split: str = str()
-    source_key: str = str()
-    destination_key: str = str()
-    workers: int = 4
-    max_errors: int = 2
-    aoai_embedding_config: AOAIConfig = field(default_factory=AOAIConfig)
-
-
-@dataclass
 class KNNConfig:
     k_nearest: int = int()
 
@@ -70,7 +58,7 @@ class KNNFewshotConfig:
     mmlu_dataset: str = str()
     test_split: str = str()
     example_split: str = str()
-    guidance_program: str = str()
+    guidance_programs: list[str] = field(default_factory=list)
     answer_key: str = str()
     knn_config: KNNConfig = field(default_factory=KNNConfig)
     aoai_config: AOAIConfig = field(default_factory=AOAIConfig)
@@ -89,7 +77,7 @@ class RandomFewshotPipelineConfig:
     mmlu_dataset: str = str()
     test_split: str = str()
     example_split: str = str()
-    guidance_program: str = str()
+    guidance_programs: list[str] = field(default_factory=list)
     answer_key: str = str()
     random_examples: RandomExamplesConfig = field(default_factory=RandomExamplesConfig)
     aoai_config: AOAIConfig = field(default_factory=AOAIConfig)
