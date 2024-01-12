@@ -3,12 +3,12 @@ defaults:
   - aml_config
   - aoai_config
 
-random_fewshot_config:
+random_fewshot_cot_config:
   pipeline:
     base_experiment_name: fewshot_random_cot
     tags:
     default_compute_target: isolatedcompute
-  mmlu_dataset: college_biology
+  mmlu_dataset: college_chemistry
   test_split: test
   example_split: validation
   zeroshot_cot_guidance_program: zero_shot_cot.py
