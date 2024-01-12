@@ -3,9 +3,11 @@ import pathlib
 import sys
 
 
-def get_standard_logger_for_file(file_path: str) -> logging.Logger:
+def get_standard_logger_for_file(
+    file_path: str, logging_level=logging.INFO
+) -> logging.Logger:
     _logger = logging.getLogger(pathlib.Path(file_path).name)
-    _logger.setLevel(logging.INFO)
+    _logger.setLevel(logging_level)
     sh = logging.StreamHandler(stream=sys.stdout)
     sh.setFormatter(
         logging.Formatter(
@@ -17,9 +19,11 @@ def get_standard_logger_for_file(file_path: str) -> logging.Logger:
     return _logger
 
 
-def get_logger_for_process(file_path: str, process_name: str) -> logging.Logger:
+def get_logger_for_process(
+    file_path: str, process_name: str, logging_level=logging.INFO
+) -> logging.Logger:
     logger = logging.getLogger(f"{pathlib.Path(file_path).name}-{process_name}")
-    logger.setLevel(logging.INFO)
+    logger.setLevel(logging_level)
     sh = logging.StreamHandler(stream=sys.stdout)
     sh.setFormatter(
         logging.Formatter(
