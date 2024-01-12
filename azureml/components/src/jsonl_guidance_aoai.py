@@ -53,7 +53,7 @@ def parse_args():
 def get_guidance_function(
     program_path: pathlib.Path,
 ) -> Callable[[Dict[str, Any]], Dict[str, Any]]:
-    _logger.info("Importing guidance file")
+    _logger.debug("Importing guidance file")
     spec = importlib.util.spec_from_file_location(USER_MODULE, program_path)
     module_definition = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module_definition)
@@ -91,16 +91,16 @@ def process_item(
     model: str,
     common_data: Any | None,
 ) -> Dict[str, Any]:
-    _logger.info(f"process_item: {item}")
+    _logger.debug(f"process_item: {item}")
 
     guidance_function = get_guidance_function(program_path)
     language_model = get_model(endpoint, model)
     result = guidance_function(language_model, item, common=common_data)
-    _logger.info(f"Checking keys")
+    _logger.debug(f"Checking keys")
     for k in result.keys():
         assert k not in item, f"Duplicate key: {k}"
 
-    _logger.info(f"Updating item")
+    _logger.debug(f"Updating item")
     item.update(**result)
 
     return item

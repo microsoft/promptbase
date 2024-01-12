@@ -69,13 +69,13 @@ def process_item(
     dst_key: str,
     azure_aoai_endpoint: str,
 ) -> dict[str, any]:
-    _logger.info(f"process_item: {item}")
+    _logger.debug(f"process_item: {item}")
 
     client = get_aoai_client(azure_aoai_endpoint)
 
     parsed_url = urlparse(azure_aoai_endpoint)
     deployment_name = parsed_url.path.split("/")[3]
-    _logger.info(f"Got Deployment: {deployment_name}")
+    _logger.debug(f"Got Deployment: {deployment_name}")
 
     embeddings = (
         client.embeddings.create(input=[item[src_key]], model=deployment_name)
@@ -83,7 +83,7 @@ def process_item(
         .embedding
     )
 
-    _logger.info(f"Updating item")
+    _logger.debug(f"Updating item")
     item[dst_key] = embeddings
 
     return item
