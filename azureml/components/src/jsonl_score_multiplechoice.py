@@ -31,10 +31,12 @@ class Scorer:
         self.y_pred.append(response_answer)
         if "dataset" in line:
             self.dataset.append(line["dataset"])
-            self.subject.append(line["subject"])
         else:
             self.dataset.append("No dataset")
-            self.subject.append("No subject")
+        if "subject" in line:
+            self.dataset.append(line["subject"])
+        else:
+            self.dataset.append("No subject")
 
     def generate_summary(self) -> dict[str, Any]:
         metrics = {
@@ -99,6 +101,8 @@ def main():
     _logger.info("Writing output file")
 
     by_group_dict = dict()
+    # Due to how MetricFrame does its indexing, we have to unpack the
+    # key into another level of nesting
     for k, v in summary["metrics"].by_group.to_dict(orient="index").items():
         if k[0] not in by_group_dict:
             by_group_dict[k[0]] = dict()
@@ -108,7 +112,7 @@ def main():
         overall=summary["metrics"].overall.to_dict(),
         details=by_group_dict,
     )
-    print(f"output_dict:\n {output_dict}")
+    print(f"output_dict:\n {json.dumps(output_dict,indent=4)}")
     with open(args.output_dataset, encoding=args.output_encoding, mode="w") as jf:
         json.dump(output_dict, jf, indent=4)
 
