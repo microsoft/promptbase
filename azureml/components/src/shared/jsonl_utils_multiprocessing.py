@@ -37,11 +37,12 @@ def _enqueue_from_jsonl_worker(
     n_complete_markers: int,
 ):
     logger = get_logger_for_process(__file__, "enqueue")
+    logger.info("Starting")
 
     lines_read = 0
     with JSONLReader(source_file, source_encoding) as in_file:
         for nxt in in_file:
-            logger.info(f"Reading line {lines_read}")
+            logger.debug(f"Reading line {lines_read}")
             target_queue.put(nxt)
             lines_read += 1
 
@@ -60,6 +61,7 @@ def _dequeue_to_jsonl_worker(
     n_complete_markers_expected: int,
 ):
     logger = get_logger_for_process(__file__, f"output")
+    logger.info("Starting")
 
     n_complete_markers_seen = 0
 
@@ -70,7 +72,7 @@ def _dequeue_to_jsonl_worker(
                 logger.info(f"Got WorkCompleteMarker '{nxt_item.message}'")
                 n_complete_markers_seen += 1
             else:
-                logger.info(f"Writing item")
+                logger.debug(f"Writing item")
                 out_file.write_line(nxt_item)
 
 
@@ -83,6 +85,8 @@ def _error_to_jsonl_worker(
     n_errors_max: int,
 ):
     logger = get_logger_for_process(__file__, f"error")
+    logger.info("Starting")
+
     n_complete_markers_seen = 0
     n_errors_seen = 0
 
@@ -166,6 +170,7 @@ def _queue_worker(
     id: int,
 ):
     logger = get_logger_for_process(__file__, f"worker{id:02}")
+    logger.info("Starting")
 
     done = False
     success_count = 0
@@ -177,7 +182,7 @@ def _queue_worker(
             logger.info(f"Got WorkCompleteMarker '{nxt_item.message}'")
             done = True
         else:
-            logger.info("Processing item")
+            logger.debug("Processing item")
             start_time = time.time()
             try:
                 nxt_result = map_func(nxt_item)
@@ -185,7 +190,7 @@ def _queue_worker(
                 if nxt_result is not None:
                     dest_queue.put(nxt_result)
                 else:
-                    logger.info("map_func returned None")
+                    logger.debug("map_func returned None")
                 success_count += 1
             except Exception as e:
                 stop_time = time.time()

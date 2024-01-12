@@ -57,7 +57,7 @@ def zero_shot_cot_multiple_choice(
 def guidance_generation(
     lm: guidance.models.Chat, input: Dict[str, Any], common: Any = None
 ) -> Dict[str, Any]:
-    _logger.info("Starting guidance_generation")
+    _logger.debug("Starting guidance_generation")
     if common is not None:
         _logger.warn("Got unexpected 'common' argument")
     result = lm + zero_shot_cot_multiple_choice(

@@ -3,6 +3,7 @@
 import json
 import pathlib
 import tempfile
+import traceback
 
 from typing import Any, Callable, Tuple
 
@@ -33,16 +34,16 @@ def line_map(
             with JSONLWriter(error_file, error_encoding) as err_file:
                 current_line = 0
                 for nxt in in_file:
-                    _logger.info(f"Processing line: {current_line}")
+                    _logger.debug(f"Processing line: {current_line}")
                     try:
                         nxt_output = map_func(nxt)
                         if nxt_output is not None:
                             out_file.write_line(nxt_output)
                         else:
-                            _logger.info(f"Skipping because map_func returned 'None'")
+                            _logger.debug(f"Skipping because map_func returned 'None'")
                         successful_lines += 1
                     except Exception as e:
-                        _logger.warn(f"Caught exception: {e}")
+                        _logger.warn(f"Caught exception: {e}\n{traceback.format_exception(e)}")
                         err_file.write_line(nxt)
                         error_lines += 1
                     current_line += 1
@@ -66,8 +67,8 @@ def line_reduce(
     with JSONLReader(source_file, source_encoding) as in_file:
         current_line = 0
         for nxt in in_file:
-            _logger.info(f"Processing line: {current_line}")
+            _logger.debug(f"Processing line: {current_line}")
             current_line += 1
-            _logger.info(f"Calling reducer")
+            _logger.debug(f"Calling reducer")
             reducer(nxt)
     _logger.info(f"line_reduce complete")
