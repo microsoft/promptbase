@@ -67,7 +67,7 @@ def load_jsonl(file_path: pathlib.Path, source_encoding: str) -> list[dict[str, 
     with JSONLReader(file_path, source_encoding) as jlf:
         current_line = 0
         for l in jlf:
-            _logger.info(f"Processing line: {current_line}")
+            _logger.debug(f"Processing line: {current_line}")
             result.append(l)
             current_line += 1
     return result
@@ -79,5 +79,5 @@ def save_jsonl(
     _logger.info(f"Saving file {file_path}")
     with JSONLWriter(file_path, destination_encoding) as out_file:
         for i, d in enumerate(data):
-            _logger.info(f"Writing element {i}")
+            _logger.debug(f"Writing element {i}")
             out_file.write_line(d)
