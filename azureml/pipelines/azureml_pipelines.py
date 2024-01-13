@@ -14,6 +14,8 @@ _logger.setLevel(logging.INFO)
 
 MULTIPLE_CHOICE_SCHEMA_FILE = "multichoice_schema.json"
 
+MULTIPLE_CHOICE_COT_SCHEMA_FILE = "multiplechoice_cot_schema.json"
+
 
 def _generic_zeroshot_pipeline(
     *,
@@ -303,5 +305,99 @@ def create_knn_fewshot_pipeline(
         return {"output_dataset": filter_job.outputs.output_dataset}
 
     sub_pipeline = knn_fewshot(guidance_program, input_dataset, example_dataset)
+
+    return sub_pipeline
+
+
+def create_random_fewshot_cot_pipeline(
+    *,
+    components: ComponentCollector,
+    inference_config: AOAIConfig,
+    input_dataset: Input,
+    example_dataset: Input,
+    guidance_program: Input,
+    random_examples: RandomExamplesConfig,
+    output_key: str,
+    cot_key: str,
+) -> Pipeline:
+    _logger.info(f"Starting create_random_fewshot_cot_pipeline")
+
+    fewshot_examples_key = "fewshot_examples"
+    fewshot_cot_key = "fewshot_cot"
+    fewshot_answer_key = "fewshot_choice"
+
+    mc_schema_file = SCHEMA_DIR / MULTIPLE_CHOICE_SCHEMA_FILE
+    assert mc_schema_file.exists(), f"Failed to find {mc_schema_file}"
+    multichoice_schema_input = Input(
+        type="uri_file",
+        path=mc_schema_file,
+        model="download",
+    )
+
+    mc_cot_schema_file = SCHEMA_DIR / MULTIPLE_CHOICE_COT_SCHEMA_FILE
+    assert mc_cot_schema_file.exists(), f"Failed to find {mc_cot_schema_file}"
+    multichoice_cot_schema_input = Input(
+        type="uri_file",
+        path=mc_cot_schema_file,
+        model="download",
+    )
+
+    @dsl.pipeline(
+        name=f"random_fewshot__cot_pipeline",
+        display_name=f"Answer with random Fewshots and CoT",
+    )
+    def random_fewshot_cot(guidance_prog: Input, input_ds: Input, example_ds: Input):
+        input_schema_job = components.jsonl_schema_checker(
+            input_dataset=input_ds,
+            schema_dataset=multichoice_schema_input,
+            max_errors=inference_config.max_errors,
+            forbidden_keys=json.dumps([fewshot_examples_key, fewshot_answer_key]),
+        )
+        input_schema_job.name = f"check_schema_input"
+
+        example_schema_job = components.jsonl_schema_checker(
+            input_dataset=example_ds,
+            schema_dataset=multichoice_cot_schema_input,
+            max_errors=inference_config.max_errors,
+        )
+        example_schema_job.name = f"check_schema_example"
+
+        random_examples_job = components.jsonl_random_examples(
+            input_dataset=input_schema_job.outputs.output_dataset,
+            example_dataset=example_schema_job.outputs.output_dataset,
+            output_key=fewshot_examples_key,
+            num_examples=random_examples.num_examples,
+            random_seed=random_examples.random_seed,
+        )
+        random_examples_job.name = f"select_random_examples"
+
+        guidance_job = components.jsonl_guidance(
+            guidance_program=guidance_prog,
+            guidance_workers=inference_config.workers,
+            max_errors=inference_config.max_errors,
+            input_dataset=random_examples_job.outputs.output_dataset,
+            azure_openai_endpoint=inference_config.endpoint,
+            azure_openai_deployed_model=inference_config.model,
+        )
+        guidance_job.name = f"guidance_fewshot"
+        guidance_job.compute = inference_config.compute_target
+
+        rename_job = components.jsonl_key_rename(
+            input_dataset=guidance_job.outputs.output_dataset,
+            rename_keys=json.dumps(
+                {fewshot_answer_key: output_key, fewshot_cot_key: cot_key}
+            ),
+        )
+        rename_job.name = f"rename_output_key"
+
+        filter_job = components.jsonl_key_filter(
+            input_dataset=rename_job.outputs.output_dataset,
+            drop_keys=json.dumps([fewshot_examples_key]),
+        )
+        filter_job.name = f"remove_intermediate_keys"
+
+        return {"output_dataset": filter_job.outputs.output_dataset}
+
+    sub_pipeline = random_fewshot_cot(guidance_program, input_dataset, example_dataset)
 
     return sub_pipeline

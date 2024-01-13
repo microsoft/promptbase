@@ -90,6 +90,7 @@ class RandomFewshotCoTPipelineConfig:
     test_split: str = str()
     example_split: str = str()
     zeroshot_cot_guidance_program: str = str()
+    fewshot_cot_guidance_program: str = str()
     random_example_config: RandomExamplesConfig = field(
         default_factory=RandomExamplesConfig
     )

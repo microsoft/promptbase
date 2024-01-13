@@ -16,7 +16,10 @@ from azure.ai.ml import MLClient
 from azure.ai.ml import dsl, Input, MLClient
 from azure.ai.ml.entities import Pipeline
 
-from azureml_pipelines import create_zeroshot_cot_pipeline
+from azureml_pipelines import (
+    create_zeroshot_cot_pipeline,
+    create_random_fewshot_cot_pipeline,
+)
 from azureml_utils import get_component_collector
 from configs import AMLConfig, RandomFewshotCoTPipelineConfig
 from constants import GUIDANCE_PROGRAMS_DIR
@@ -43,6 +46,12 @@ def create_mmlu_fewshot_random_cot_pipeline(
     zeroshot_cot_guidance_program = Input(
         type="uri_file",
         path=GUIDANCE_PROGRAMS_DIR / run_config.zeroshot_cot_guidance_program,
+        model="download",
+    )
+
+    fewshot_cot_guidance_program = Input(
+        type="uri_file",
+        path=GUIDANCE_PROGRAMS_DIR / run_config.fewshot_cot_guidance_program,
         model="download",
     )
 
@@ -84,7 +93,25 @@ def create_mmlu_fewshot_random_cot_pipeline(
             response_key=answer_key,
             correct_key="correct_answer",
         )
-        filter_correct_job.name=f"select_correct_responses"
+        filter_correct_job.name = f"select_correct_responses"
+
+        answer_ds = create_random_fewshot_cot_pipeline(
+            components=components,
+            inference_config=run_config.aoai_config,
+            input_dataset=split_outputs["input"],
+            example_dataset=filter_correct_job.outputs.output_dataset,
+            guidance_program=fewshot_cot_guidance_program,
+            random_examples=run_config.random_example_config,
+            output_key=answer_key,
+            cot_key=cot_key,
+        )
+
+        score_job = components.jsonl_score_multiplechoice(
+            input_dataset=answer_ds,
+            correct_key="correct_answer",  # Set when MMLU fetching
+            response_key=answer_key,
+        )
+        score_job.name = f"fewshot_cot_score"
 
     pipeline = basic_pipeline()
     pipeline.experiment_name = (
@@ -95,7 +122,10 @@ def create_mmlu_fewshot_random_cot_pipeline(
     if run_config.pipeline.tags:
         pipeline.tags.update(run_config.tags)
     pipeline.tags.update(
-        {"zeroshot_cot_program": run_config.zeroshot_cot_guidance_program}
+        {
+            "zeroshot_cot_program": run_config.zeroshot_cot_guidance_program,
+            "fewshot_cot_program": run_config.fewshot_cot_guidance_program,
+        },
     )
     _logger.info("Pipeline created")
 
