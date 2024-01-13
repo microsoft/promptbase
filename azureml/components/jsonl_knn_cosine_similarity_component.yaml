@@ -66,8 +66,8 @@ command: >-
   python ./jsonl_knn_cosine_similarity.py
   --input_dataset ${{ inputs.input_dataset }}
   --input_encoding ${{ inputs.input_encoding }}
-  --example_dataset ${{ inputs.input_dataset }}
-  --example_encoding ${{ inputs.input_encoding }}
+  --example_dataset ${{ inputs.example_dataset }}
+  --example_encoding ${{ inputs.example_encoding }}
   --output_dataset ${{ outputs.output_dataset }}
   --output_encoding ${{ inputs.output_encoding }}
   --input_vector_key ${{ inputs.input_vector_key }}
