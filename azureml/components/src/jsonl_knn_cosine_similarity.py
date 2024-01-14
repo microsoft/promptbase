@@ -54,7 +54,7 @@ def compute_knn(
     _logger.debug(f"Item embedding {item_embedding.dtype} {item_embedding.shape}")
 
     similarities = np.matmul(example_embedding_matrix, item_embedding)
-    top_k = np.argsort(similarities)[0:k_nearest].tolist()
+    top_k = reversed(np.argsort(similarities).tolist())[0:k_nearest]
     _logger.debug(f"k nearest: {top_k}")
     k_examples = []
     for k in top_k:
