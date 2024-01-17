@@ -81,3 +81,17 @@ class RandomFewshotPipelineConfig:
     answer_key: str = str()
     random_examples: RandomExamplesConfig = field(default_factory=RandomExamplesConfig)
     aoai_config: AOAIConfig = field(default_factory=AOAIConfig)
+
+
+@dataclass
+class RandomFewshotCoTPipelineConfig:
+    pipeline: PipelineConfig = field(default_factory=PipelineConfig)
+    mmlu_dataset: str = str()
+    test_split: str = str()
+    example_split: str = str()
+    zeroshot_cot_guidance_program: str = str()
+    fewshot_cot_guidance_program: str = str()
+    random_example_config: RandomExamplesConfig = field(
+        default_factory=RandomExamplesConfig
+    )
+    aoai_config: AOAIConfig = field(default_factory=AOAIConfig)
