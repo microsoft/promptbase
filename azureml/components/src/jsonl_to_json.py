@@ -3,8 +3,8 @@ import json
 import pathlib
 
 
-from shared.jsonl_utils import line_reduce
-from shared.logging_utils import get_standard_logger_for_file
+from aether_utils.jsonl_utils import line_reduce
+from aether_utils.logging_utils import get_standard_logger_for_file
 
 _logger = get_standard_logger_for_file(__file__)
 

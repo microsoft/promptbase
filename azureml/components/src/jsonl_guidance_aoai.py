@@ -10,8 +10,8 @@ from azure.identity import DefaultAzureCredential, get_bearer_token_provider
 
 import guidance
 
-from shared.jsonl_utils_multiprocessing import line_map_mp
-from shared.logging_utils import get_standard_logger_for_file
+from aether_utils.jsonl_utils_multiprocessing import line_map_mp
+from aether_utils.logging_utils import get_standard_logger_for_file
 
 
 _logger = get_standard_logger_for_file(__file__)
@@ -137,7 +137,7 @@ def main():
         error_file=args.error_dataset,
         error_encoding=args.error_encoding,
         n_worker_tasks=args.guidance_workers,
-        n_errors_max=args.max_errors,
+        max_errors=args.max_errors,
     )
 
     _logger.info("Complete")
