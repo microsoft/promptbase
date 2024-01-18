@@ -2,6 +2,7 @@ defaults:
   - _self_
   - aml_config
   - aoai_config
+  - aoai_embedding_config
 
 knn_fewshot_cot_config:
   pipeline:

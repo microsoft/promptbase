@@ -1,5 +1,5 @@
 # Submit a run using:
-# python .\submit_mmlu_fewshot_knn_cot.py -cn random_knn_cot_config
+# python .\submit_mmlu_fewshot_knn_cot.py -cn knn_fewshot_cot_config
 
 import time
 
@@ -30,12 +30,13 @@ _logger = get_standard_logger_for_file(__file__)
 
 @dataclass
 class PipelineConfig:
-    random_fewshot_cot_config: KNNFewshotCoTPipelineConfig = omegaconf.MISSING
+    knn_fewshot_cot_config: KNNFewshotCoTPipelineConfig = omegaconf.MISSING
     azureml_config: AMLConfig = omegaconf.MISSING
 
 
 cs = ConfigStore.instance()
 cs.store(name="config", node=PipelineConfig)
+
 
 def create_mmlu_fewshot_knn_cot_pipeline(
     ml_client: MLClient, run_config: KNNFewshotCoTPipelineConfig, version_string: str
@@ -113,7 +114,6 @@ def create_mmlu_fewshot_knn_cot_pipeline(
         )
         score_job.name = f"fewshot_cot_score"
 
-    
     pipeline = basic_pipeline()
     pipeline.experiment_name = (
         f"{run_config.pipeline.base_experiment_name}_{run_config.mmlu_dataset}"
@@ -153,7 +153,7 @@ def main(config: PipelineConfig):
     )
 
     pipeline = create_mmlu_fewshot_knn_cot_pipeline(
-        ws_client, config.random_fewshot_cot_config, version_string
+        ws_client, config.knn_fewshot_cot_config, version_string
     )
     _logger.info("Submitting pipeline")
     submitted_job = ws_client.jobs.create_or_update(pipeline)

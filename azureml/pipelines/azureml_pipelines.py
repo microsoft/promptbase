@@ -403,7 +403,6 @@ def create_random_fewshot_cot_pipeline(
     return sub_pipeline
 
 
-
 def create_knn_fewshot_cot_pipeline(
     *,
     components: ComponentCollector,
@@ -441,7 +440,7 @@ def create_knn_fewshot_cot_pipeline(
     )
 
     @dsl.pipeline(
-        name=f"knn_fewshot__cot_pipeline",
+        name=f"knn_fewshot_cot_pipeline",
         display_name=f"Answer with kNN Fewshots and CoT",
     )
     def knn_fewshot_cot(guidance_prog: Input, input_ds: Input, example_ds: Input):
@@ -461,19 +460,12 @@ def create_knn_fewshot_cot_pipeline(
         example_schema_job.name = f"check_schema_example"
 
         embedding_outputs = dict()
-        for k, v in dict(input=input_ds, example=example_ds).items():
-            schema_job = components.jsonl_schema_checker(
-                input_dataset=v,
-                schema_dataset=multichoice_schema_input,
-                max_errors=embedding_config.max_errors,
-                forbidden_keys=json.dumps(
-                    [embedding_key, fewshot_examples_key, fewshot_answer_key]
-                ),
-            )
-            schema_job.name = f"check_schema_{k}"
-
+        for k, v in dict(
+            input=input_schema_job.outputs.output_dataset,
+            example=example_schema_job.outputs.output_dataset,
+        ).items():
             embedding_job = components.jsonl_embeddings(
-                input_dataset=schema_job.outputs.output_dataset,
+                input_dataset=v,
                 source_key=question_key,
                 destination_key=embedding_key,
                 workers=embedding_config.workers,
