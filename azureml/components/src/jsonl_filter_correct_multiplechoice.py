@@ -2,8 +2,8 @@ import argparse
 import functools
 import pathlib
 
-from shared.jsonl_utils import line_map
-from shared.logging_utils import get_standard_logger_for_file
+from aether_utils.jsonl_utils import line_map
+from aether_utils.logging_utils import get_standard_logger_for_file
 
 _logger = get_standard_logger_for_file(__file__)
 
