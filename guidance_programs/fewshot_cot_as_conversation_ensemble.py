@@ -9,7 +9,7 @@ from guidance import gen, select, system, user, assistant
 
 
 _logger = logging.getLogger(__file__)
-_logger.setLevel(logging.INFO)
+_logger.setLevel(logging.DEBUG)
 _logger.addHandler(logging.StreamHandler(stream=sys.stdout))
 
 
@@ -103,7 +103,7 @@ def few_shot_cot_multiple_choice(
     with user():
         lm += question + "\n"
         for i in range(len(choices)):
-            lm += f"{i}: {choices[permutation[i]]}"
+            lm += f"{i}: {choices[permutation[i]]}\n"
         lm += "**Explanation**"
 
     with assistant():
@@ -126,9 +126,11 @@ def guidance_generation(
     _logger.debug("Starting guidance_generation")
     assert common is None, "Unexpected common data"
 
-    votes = [0, 0, 0, 0]
+    num_choices = len(input["choices"])
+
+    votes = [0 for _ in range(num_choices)]
     cots = []
-    generator = plain_hunt_generator(list(range(len(input["choices"]))))
+    generator = plain_hunt_generator(list(range(num_choices)))
     for i in range(NUM_PERMUTATIONS):
         current_permutation = next(generator)
         result = lm + few_shot_cot_multiple_choice(
