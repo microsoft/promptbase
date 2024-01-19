@@ -11,7 +11,7 @@ knn_fewshot_cot_config:
     base_experiment_name: fewshot_knn_cot_ensemble
     tags:
     default_compute_target: isolatedcompute
-  mmlu_dataset: college_biology
+  mmlu_dataset: all_mmlu_datasets
   test_split: test
   example_split: validation
   zeroshot_cot_guidance_program: zero_shot_cot.py
