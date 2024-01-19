@@ -9,7 +9,7 @@ from guidance import gen, select, system, user, assistant
 
 
 _logger = logging.getLogger(__file__)
-_logger.setLevel(logging.DEBUG)
+_logger.setLevel(logging.INFO)
 _logger.addHandler(logging.StreamHandler(stream=sys.stdout))
 
 
