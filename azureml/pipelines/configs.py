@@ -95,3 +95,15 @@ class RandomFewshotCoTPipelineConfig:
         default_factory=RandomExamplesConfig
     )
     aoai_config: AOAIConfig = field(default_factory=AOAIConfig)
+
+@dataclass
+class KNNFewshotCoTPipelineConfig:
+    pipeline: PipelineConfig = field(default_factory=PipelineConfig)
+    mmlu_dataset: str = str()
+    test_split: str = str()
+    example_split: str = str()
+    zeroshot_cot_guidance_program: str = str()
+    fewshot_cot_guidance_program: str = str()
+    knn_config: KNNConfig = field(default_factory=KNNConfig)
+    aoai_config: AOAIConfig = field(default_factory=AOAIConfig)
+    aoai_embedding_config: AOAIConfig = field(default_factory=AOAIConfig)
