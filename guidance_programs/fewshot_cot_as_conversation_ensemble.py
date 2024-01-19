@@ -16,17 +16,49 @@ _logger.addHandler(logging.StreamHandler(stream=sys.stdout))
 ANSWER_KEY = "string_choice"
 COT_KEY = "explanation"
 
-# Ought to write a generator for this....
-PLAIN_HUNT = [
-    [0, 1, 2, 3],
-    [1, 0, 3, 2],
-    [1, 3, 0, 2],
-    [3, 1, 2, 0],
-    [3, 2, 1, 0],
-    [2, 3, 0, 1],
-    [2, 0, 3, 1],
-    [0, 2, 1, 3],
-]
+
+def validate_and_sort_swaps(swaps: list[int], line_len: int) -> list[int]:
+    swap_set = set(swaps)
+    assert len(swap_set) == len(swaps), f"Swaps not unique: {swaps}"
+    for s in swaps:
+        assert s - 1 not in swap_set, f"Swaps too close: {s} {swaps}"
+        assert s + 1 not in swap_set, f"Swaps too close: {s} {swaps}"
+        assert s >= 0, f"Negative swap: {s}"
+        assert s < (line_len - 1), f"Swap too large: {s}"
+    return list(sorted(swaps))
+
+
+def apply_swaps(line: list[any], swaps: list[int]) -> list[any]:
+    sorted_swaps = validate_and_sort_swaps(swaps, len(line))
+
+    i_swap = 0
+    result = []
+    for i in range(len(line)):
+        if i_swap < len(sorted_swaps) and i == sorted_swaps[i_swap]:
+            result.append(line[sorted_swaps[i_swap] + 1])
+        elif i_swap < len(sorted_swaps) and i == sorted_swaps[i_swap] + 1:
+            result.append(line[sorted_swaps[i_swap]])
+            i_swap += 1
+        else:
+            result.append(line[i])
+    return result
+
+
+def plain_hunt_generator(starting_line: list[any]):
+    first_element = starting_line[0]
+    swaps_A = list(range(0, len(starting_line), 2))
+    swaps_B = list(range(1, len(starting_line) - 1, 2))
+    all_swaps = [swaps_A, swaps_B]
+    current = [x for x in starting_line]
+    line_count = 0
+    yield current
+    while True:
+        current = apply_swaps(current, all_swaps[line_count % len(all_swaps)])
+        yield current
+        line_count += 1
+        if current[0] == first_element:
+            break
+
 
 NUM_PERMUTATIONS = 5
 
@@ -90,12 +122,12 @@ def guidance_generation(
 ) -> Dict[str, Any]:
     _logger.debug("Starting guidance_generation")
     assert common is None, "Unexpected common data"
-    assert len(input["choices"]) == 4
 
     votes = [0, 0, 0, 0]
     cots = []
+    generator = plain_hunt_generator(list(range(len(input["choices"]))))
     for i in range(NUM_PERMUTATIONS):
-        current_permutation = PLAIN_HUNT[i]
+        current_permutation = next(generator)
         result = lm + few_shot_cot_multiple_choice(
             question=input["question"],
             choices=input["choices"],
@@ -103,7 +135,7 @@ def guidance_generation(
             permutation=current_permutation,
         )
         _logger.debug(f"Result: {result}")
-        cots.append[result[COT_KEY]]
+        cots.append(result[COT_KEY])
         selected = int(result[ANSWER_KEY])
         actual = current_permutation[selected]
         votes[actual] += 1
