@@ -2,7 +2,7 @@ import logging
 import sys
 import textwrap
 
-from typing import Any, Dict
+from typing import Any, Dict, Iterator, TypeVar
 
 import guidance
 from guidance import gen, select, system, user, assistant
@@ -28,7 +28,10 @@ def validate_and_sort_swaps(swaps: list[int], line_len: int) -> list[int]:
     return list(sorted(swaps))
 
 
-def apply_swaps(line: list[any], swaps: list[int]) -> list[any]:
+T = TypeVar("T")
+
+
+def apply_swaps(line: list[T], swaps: list[int]) -> list[T]:
     sorted_swaps = validate_and_sort_swaps(swaps, len(line))
 
     i_swap = 0
@@ -44,7 +47,8 @@ def apply_swaps(line: list[any], swaps: list[int]) -> list[any]:
     return result
 
 
-def plain_hunt_generator(starting_line: list[any]):
+def plain_hunt_generator(starting_line: list[T]) -> Iterator[T]:
+    assert len(starting_line) % 2 == 0, "Must have even number of items"
     first_element = starting_line[0]
     swaps_A = list(range(0, len(starting_line), 2))
     swaps_B = list(range(1, len(starting_line) - 1, 2))
