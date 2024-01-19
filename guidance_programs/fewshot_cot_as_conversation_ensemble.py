@@ -48,9 +48,8 @@ def apply_swaps(line: list[T], swaps: list[int]) -> list[T]:
 
 
 def plain_hunt_generator(starting_line: list[T]) -> Iterator[T]:
-    assert len(starting_line) % 2 == 0, "Must have even number of items"
     first_element = starting_line[0]
-    swaps_A = list(range(0, len(starting_line), 2))
+    swaps_A = list(range(0, len(starting_line) - (len(starting_line) % 2), 2))
     swaps_B = list(range(1, len(starting_line) - 1, 2))
     all_swaps = [swaps_A, swaps_B]
     current = [x for x in starting_line]
