@@ -123,6 +123,8 @@ To run evaluations, download these datasets and add them to /src/promptbase/data
       - `AZURE_OPENAI_CHAT_API_KEY`
       - `AZURE_OPENAI_CHAT_ENDPOINT_URL`
       - `AZURE_OPENAI_EMBEDDINGS_URL`
+    - Run with `python -m promptbase mmlu --subject <SUBJECT>` where `<SUBJECT>` is one of the MMLU datasets (such as 'abstract_algebra')
+    - In addition to the individual subjects, the `format_mmlu.py` script prepares files which enables `all` to be passed as a subject, which will run on the entire dataset
  - HumanEval: https://huggingface.co/datasets/openai_humaneval
  - DROP: https://allenai.org/data/drop
  - GSM8K: https://github.com/openai/grade-school-math
