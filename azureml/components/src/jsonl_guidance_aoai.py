@@ -1,8 +1,8 @@
 import argparse
 import functools
 import importlib.util
+import json
 import pathlib
-import sys
 
 from typing import Any, Callable, Dict
 
@@ -10,8 +10,9 @@ from azure.identity import DefaultAzureCredential, get_bearer_token_provider
 
 import guidance
 
-from shared.jsonl_utils import line_map
-from shared.logging_utils import get_standard_logger_for_file
+from aether_utils.jsonl_utils_multiprocessing import line_map_mp
+from aether_utils.logging_utils import get_standard_logger_for_file
+
 
 _logger = get_standard_logger_for_file(__file__)
 
@@ -28,9 +29,17 @@ def parse_args():
     datasets_group.add_argument("--input_encoding", type=str, required=True)
     datasets_group.add_argument("--output_dataset", type=pathlib.Path, required=True)
     datasets_group.add_argument("--output_encoding", type=str, required=True)
+    datasets_group.add_argument("--error_dataset", type=pathlib.Path, required=True)
+    datasets_group.add_argument("--error_encoding", type=str, required=True)
+    datasets_group.add_argument(
+        "--common_dataset", type=pathlib.Path, required=False, default=None
+    )
+    datasets_group.add_argument("--common_encoding", type=str, required=False)
 
     # Information about the guidance program
     parser.add_argument("--guidance_program", type=pathlib.Path, required=True)
+    parser.add_argument("--guidance_workers", type=int, required=True)
+    parser.add_argument("--max_errors", type=int, required=True)
 
     # Information about the model
     model_group = parser.add_argument_group("Model Endpoint")
@@ -44,7 +53,7 @@ def parse_args():
 def get_guidance_function(
     program_path: pathlib.Path,
 ) -> Callable[[Dict[str, Any]], Dict[str, Any]]:
-    _logger.info("Importing guidance file")
+    _logger.debug("Importing guidance file")
     spec = importlib.util.spec_from_file_location(USER_MODULE, program_path)
     module_definition = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module_definition)
@@ -58,7 +67,7 @@ def get_model(
     endpoint: str,
     model: str,
 ) -> guidance.models.Model:
-    _logger.info("Attempting to create model object")
+    _logger.debug("Attempting to create model object")
     token_provider = get_bearer_token_provider(
         DefaultAzureCredential(), "https://cognitiveservices.azure.com/.default"
     )
@@ -77,17 +86,21 @@ def get_model(
 
 def process_item(
     item: Dict[str, Any],
-    guidance_function: Callable[[Any, Dict[str, Any]], Dict[str, Any]],
-    language_model: guidance.models.Model,
+    program_path: pathlib.Path,
+    endpoint: str,
+    model: str,
+    common_data: Any | None,
 ) -> Dict[str, Any]:
-    _logger.info(f"process_item: {item}")
+    _logger.debug(f"process_item: {item}")
 
-    result = guidance_function(language_model, item)
-    _logger.info(f"Checking keys")
+    guidance_function = get_guidance_function(program_path)
+    language_model = get_model(endpoint, model)
+    result = guidance_function(language_model, item, common=common_data)
+    _logger.debug(f"Checking keys")
     for k in result.keys():
         assert k not in item, f"Duplicate key: {k}"
 
-    _logger.info(f"Updating item")
+    _logger.debug(f"Updating item")
     item.update(**result)
 
     return item
@@ -96,26 +109,35 @@ def process_item(
 def main():
     args = parse_args()
 
-    # Get the function
-    guidance_func = get_guidance_function(args.guidance_program)
+    # Load the common data (if required)
+    common_data = None
+    if args.common_dataset is not None:
+        _logger.info("Loading common dataset")
+        with open(args.common_dataset, "r", encoding=args.common_encoding) as jf:
+            common_data = json.load(jf)
+    else:
+        _logger.info("No common dataset present")
 
-    # Get the language model
-    llm = get_model(
-        endpoint=args.azure_openai_endpoint, model=args.azure_openai_deployed_model
-    )
-
-    # Bind them together
+    # Bind arguments to the processor function
     processor = functools.partial(
-        process_item, guidance_function=guidance_func, language_model=llm
+        process_item,
+        program_path=args.guidance_program,
+        endpoint=args.azure_openai_endpoint,
+        model=args.azure_openai_deployed_model,
+        common_data=common_data,
     )
 
     # Run the processing
-    line_map(
+    line_map_mp(
         map_func=processor,
         source_file=args.input_dataset,
         dest_file=args.output_dataset,
         source_encoding=args.input_encoding,
         dest_encoding=args.output_encoding,
+        error_file=args.error_dataset,
+        error_encoding=args.error_encoding,
+        n_worker_tasks=args.guidance_workers,
+        max_errors=args.max_errors,
     )
 
     _logger.info("Complete")

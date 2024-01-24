@@ -1,0 +1,21 @@
+defaults:
+  - _self_
+  - aml_config
+  - aoai_config
+
+random_fewshot_config:
+  pipeline:
+    base_experiment_name: fewshot_random
+    tags:
+    default_compute_target: isolatedcompute
+  mmlu_dataset: all_mmlu_datasets
+  test_split: test
+  example_split: validation
+  guidance_programs:
+    - fewshot.py
+    - fewshot_as_conversation.py
+  random_examples:
+    num_examples: 5
+    random_seed: 1234987
+  answer_key: fewshot_answer
+  aoai_config: ${ default_aoai_config }

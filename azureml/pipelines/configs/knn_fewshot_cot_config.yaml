@@ -1,0 +1,20 @@
+defaults:
+  - _self_
+  - aml_config
+  - aoai_config
+  - aoai_embedding_config
+
+knn_fewshot_cot_config:
+  pipeline:
+    base_experiment_name: fewshot_knn_cot
+    tags:
+    default_compute_target: isolatedcompute
+  mmlu_dataset: all_mmlu_datasets
+  test_split: test
+  example_split: validation
+  zeroshot_cot_guidance_program: zero_shot_cot.py
+  fewshot_cot_guidance_program: fewshot_cot_as_conversation.py
+  knn_config:
+    k_nearest: 5
+  aoai_config: ${ default_aoai_config }
+  aoai_embedding_config: ${ default_aoai_embedding_config }

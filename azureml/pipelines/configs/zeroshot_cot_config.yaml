@@ -1,0 +1,15 @@
+defaults:
+  - _self_
+  - aml_config
+  - aoai_config
+
+zeroshot_config:
+  pipeline:
+    base_experiment_name: zeroshot_cot
+    tags:
+    default_compute_target: isolatedcompute
+  mmlu_dataset: all_mmlu_datasets
+  mmlu_split: test
+  guidance_programs:
+    - zero_shot_cot.py
+  aoai_config: ${ default_aoai_config }

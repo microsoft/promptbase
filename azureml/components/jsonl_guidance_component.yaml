@@ -12,6 +12,16 @@ inputs:
     type: uri_file
     optional: false
     description: Python file containing the guidance program
+  guidance_workers:
+    type: integer
+    optional: false
+    default: 4
+    description: Number of workers to use
+  max_errors:
+    type: integer
+    optional: false
+    default: 5
+    description: Maximum number of failed lines to tolerate
   input_dataset:
     type: uri_file
     optional: false
@@ -21,6 +31,15 @@ inputs:
     optional: false
     default: utf-8-sig
     description: Encoding format of the input dataset
+  common_dataset:
+    type: uri_file
+    optional: true
+    description: Dataset containing data to be shared with all rows in input
+  common_encoding:
+    type: string
+    optional: true
+    default: utf-8-sig
+    description: Encoding format of the common dataset
   azure_openai_endpoint:
     type: string
     optional: false
@@ -35,23 +54,37 @@ inputs:
     optional: false
     default: utf-8-sig
     description: Encoding format of the output dataset
+  error_encoding:
+    type: string
+    optional: false
+    default: utf-8-sig
+    description: Encoding format of the error dataset
 
 outputs:
   output_dataset:
     type: uri_file
     description: JSONL file
+  error_dataset:
+    type: uri_file
+    description: JSONL file containing failed lines
 
 code: ./src/
 
 command: >-
   python ./jsonl_guidance_aoai.py
   --guidance_program ${{ inputs.guidance_program }}
+  --guidance_workers ${{ inputs.guidance_workers }}
+  --max_errors ${{ inputs.max_errors }}
   --input_dataset ${{ inputs.input_dataset }}
   --input_encoding ${{ inputs.input_encoding }}
+  $[[--common_dataset ${{ inputs.common_dataset }} ]]
+  $[[--common_encoding ${{ inputs.common_encoding }} ]]
   --azure_openai_endpoint ${{ inputs.azure_openai_endpoint }}
   --azure_openai_deployed_model ${{ inputs.azure_openai_deployed_model }}
   --output_dataset ${{ outputs.output_dataset }}
   --output_encoding ${{ inputs.output_encoding }}
+  --error_dataset ${{ outputs.error_dataset }}
+  --error_encoding ${{ inputs.error_encoding }}
 
 environment:
   # Will be updated when component uploads

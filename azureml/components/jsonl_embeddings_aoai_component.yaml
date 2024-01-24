@@ -1,0 +1,80 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+
+name: jsonl_embeddings_aoai
+version: 0.0.1pre1
+display_name: JSONL Embeddings Azure OpenAI
+type: command
+description: Get the AOAI embeddings for a given key in a JSONL file
+is_deterministic: false
+
+inputs:
+  workers:
+    type: integer
+    optional: false
+    default: 4
+    description: Number of workers to use
+  max_errors:
+    type: integer
+    optional: false
+    default: 5
+    description: Maximum number of failed lines to tolerate
+  input_dataset:
+    type: uri_file
+    optional: false
+    description: Dataset containing JSONL input
+  input_encoding:
+    type: string
+    optional: false
+    default: utf-8-sig
+    description: Encoding format of the input dataset
+  azure_openai_endpoint:
+    type: string
+    optional: false
+    description: The AzureAI OpenaAI endpoitn to call
+  source_key:
+    type: string
+    optional: false
+    description: Generate embeddings for this key
+  destination_key:
+    type: string
+    optional: false
+    description: Store embeddings in this key
+
+  output_encoding:
+    type: string
+    optional: false
+    default: utf-8-sig
+    description: Encoding format of the output dataset
+  error_encoding:
+    type: string
+    optional: false
+    default: utf-8-sig
+    description: Encoding format of the error dataset
+
+outputs:
+  output_dataset:
+    type: uri_file
+    description: JSONL file
+  error_dataset:
+    type: uri_file
+    description: JSONL file containing failed lines
+
+code: ./src/
+
+command: >-
+  python ./jsonl_embeddings_aoai.py
+  --workers ${{ inputs.workers }}
+  --max_errors ${{ inputs.max_errors }}
+  --input_dataset ${{ inputs.input_dataset }}
+  --input_encoding ${{ inputs.input_encoding }}
+  --azure_openai_endpoint ${{ inputs.azure_openai_endpoint }}
+  --output_dataset ${{ outputs.output_dataset }}
+  --output_encoding ${{ inputs.output_encoding }}
+  --error_dataset ${{ outputs.error_dataset }}
+  --error_encoding ${{ inputs.error_encoding }}
+  --source_key ${{ inputs.source_key }}
+  --destination_key ${{ inputs.destination_key }}
+
+environment:
+  # Will be updated when component uploads
+  image: azureml:guidance_aml_env@latest

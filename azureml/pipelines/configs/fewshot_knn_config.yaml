@@ -1,0 +1,22 @@
+defaults:
+  - _self_
+  - aml_config
+  - aoai_config
+  - aoai_embedding_config
+
+knn_fewshot_config:
+  pipeline:
+    base_experiment_name: fewshot_knn
+    tags:
+    default_compute_target: isolatedcompute
+  mmlu_dataset: all_mmlu_datasets
+  test_split: test
+  example_split: validation
+  guidance_programs:
+    - fewshot.py
+    - fewshot_as_conversation.py
+  knn_config:
+    k_nearest: 5
+  answer_key: fewshot_answer
+  aoai_config: ${ default_aoai_config }
+  aoai_embedding_config: ${ default_aoai_embedding_config }

@@ -1,0 +1,18 @@
+defaults:
+  - _self_
+  - aml_config
+  - aoai_config
+
+zeroshot_config:
+  pipeline:
+    base_experiment_name: zeroshot
+    tags:
+    default_compute_target: isolatedcompute
+  mmlu_dataset: all_mmlu_datasets
+  mmlu_split: test
+  guidance_programs:
+    - zero_or_few_shot.py
+    - zero_or_few_shot_fortran.py
+    - zero_or_few_shot_alpha.py
+    - zero_or_few_shot_expert.py
+  aoai_config: ${ default_aoai_config }
