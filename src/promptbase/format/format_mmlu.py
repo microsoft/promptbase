@@ -6,6 +6,7 @@ import uuid
 
 
 ALL_QUESTIONS = "all_questions.json"
+ALL_FILENAME_FORMAT = "mmlu_all_{0}.json"
 
 
 def parse_arguments():
@@ -55,21 +56,33 @@ def main(mmlu_csv_dir: pathlib.Path, output_path: pathlib.Path):
         test=mmlu_csv_dir / "test",
         val=mmlu_csv_dir / "val",
     )
+    all_questions_split = dict(train=[], dev=[], test=[], val=[])
 
     for split_name, split_path in splits.items():
         for csv_file in split_path.iterdir():
             questions = process_csv_file(csv_file, split_name)
             print(json.dumps(questions[3], indent=4, ensure_ascii=False))
+            file_path = output_path / f"mmlu_{csv_file.stem}.json"
+            print(f"Writing {file_path}")
             with open(
-                output_path / f"mmlu_{csv_file.stem}.json",
+                file_path,
                 "w",
                 encoding="utf-8",
             ) as json_file:
                 json.dump(questions, json_file, ensure_ascii=False, indent=4)
             all_questions.extend(questions)
+            all_questions_split[split_name].extend(questions)
 
+    print("Writing all questions")
     with open(output_path / ALL_QUESTIONS, "w", encoding="utf-8") as json_file:
         json.dump(all_questions, json_file, ensure_ascii=False, indent=4)
+
+    print("Writing all question splits")
+    for split_name, split_questions in all_questions_split.items():
+        file_path = output_path / ALL_FILENAME_FORMAT.format(split_name)
+        print(f"Writing out all questions for split {split_name} to {file_path}")
+        with open(file_path, "w", encoding="utf-8") as json_file:
+            json.dump(split_questions, json_file, ensure_ascii=False, indent=4)
 
 
 if __name__ == "__main__":
