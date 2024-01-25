@@ -53,8 +53,6 @@ def parse_args():
     ports_group = parser.add_argument_group("Ports")
     ports_group.add_argument("--input_dataset", type=pathlib.Path, required=True)
     ports_group.add_argument("--input_encoding", type=str, required=True)
-    ports_group.add_argument("--output_dataset", type=pathlib.Path, required=True)
-    ports_group.add_argument("--output_encoding", type=str, required=True)
 
     # Information about the keys
     keys_group = parser.add_argument_group("Keys")
@@ -68,7 +66,7 @@ def parse_args():
 def main():
     args = parse_args()
 
-    scorer = Scorer(correct_key=args.correct_key, response_key=args.response_key)
+    scorer = Scorer(response_key=args.response_key)
     line_reduce(
         reducer=scorer,
         source_file=args.input_dataset,
@@ -77,7 +75,7 @@ def main():
     summary = scorer.generate_summary()
 
     _logger.info("Logging with mlflow")
-    mlflow.log_metrics(summary["metrics"].overall.to_dict())
+    mlflow.log_metrics(summary["metrics"])
 
 
 if __name__ == "__main__":
