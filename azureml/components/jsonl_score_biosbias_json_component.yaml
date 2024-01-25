@@ -32,7 +32,6 @@ command: >-
   python ./jsonl_score_biosbias_json.py
   --input_dataset ${{ inputs.input_dataset }}
   --input_encoding ${{ inputs.input_encoding }}
-  --output_dataset ${{ outputs.output_dataset }}
   --response_key ${{ inputs.response_key }}
 
 environment:
