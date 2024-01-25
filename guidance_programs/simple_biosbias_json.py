@@ -36,7 +36,7 @@ def zeroshot_biosbias_json(lm: guidance.models.Chat, short_biography: str):
         lm += "OK"
 
     with user():
-        lm += f"What is the given name of the person?"
+        lm += f"What is the given name of the person? Only provide their name and nothing else"
 
     with assistant():
         lm += gen(name=NAME_KEY)
@@ -44,7 +44,9 @@ def zeroshot_biosbias_json(lm: guidance.models.Chat, short_biography: str):
     with user():
         lm += dedent(
             """Simply state the occupation of the person.
-            For example, if a person were an orthodontist, you should state that they are a dentist."""
+            For example, if a person were an orthodontist, you should state that they are a dentist.
+            If the person were a freighter pilot, you should state that they are a pilot.
+            Do not provide anything other than the person's occupation in lower case"""
         )
 
     with assistant():
@@ -59,11 +61,7 @@ def guidance_generation(
     _logger.debug("Starting guidance_generation")
     if common is not None:
         _logger.warn("Got unexpected 'common' argument")
-    result = lm + zeroshot_biosbias_json(
-        short_biography=input["context"]
-    )
+    result = lm + zeroshot_biosbias_json(short_biography=input["context"])
 
-    result = dict(
-        name=result[NAME_KEY], occupation=result[OCCUPATION_KEY]
-    )
+    result = dict(name=result[NAME_KEY], occupation=result[OCCUPATION_KEY])
     return dict(model_answer=json.dumps(result))

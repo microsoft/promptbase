@@ -64,6 +64,12 @@ def create_biosbias_simple_json_pipeline(
         guidance_job.name = f"guidance_simple"
         guidance_job.compute = inference_config.compute_target
 
+        score_job = components.jsonl_score_biosbias_json(
+            input_dataset=guidance_job.outputs.output_dataset,
+            response_key="model_answer",
+        )
+        score_job.name = f"score_biosbias_json"
+
     pipeline = basic_pipeline()
     pipeline.experiment_name = (
         f"{run_config.pipeline.base_experiment_name}_{ds_parts[0]}_{ds_parts[1]}"
