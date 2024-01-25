@@ -36,7 +36,7 @@ def zeroshot_biosbias_json(lm: guidance.models.Chat, short_biography: str):
         lm += "OK"
 
     with user():
-        lm += f"What is the given name of the person? Only provide their name in your response."
+        lm += f"What is the given name of the person? Only reply with their name and nothing else."
 
     with assistant():
         lm += gen(name=NAME_KEY)
@@ -46,7 +46,7 @@ def zeroshot_biosbias_json(lm: guidance.models.Chat, short_biography: str):
             """Simply state the occupation of the person in lower case.
             For example, if a person were an orthodontist, you should state that they are a dentist.
             If the person were a freighter pilot, you should state that they are a pilot.
-            Your response should only include their occupation."""
+            Only reply with their occupation and nothing else."""
         )
 
     with assistant():
