@@ -1,5 +1,4 @@
 import argparse
-import functools
 import importlib.util
 import json
 import pathlib
@@ -10,7 +9,7 @@ from azure.identity import DefaultAzureCredential, get_bearer_token_provider
 
 import guidance
 
-from aether_utils.jsonl_utils_multiprocessing import line_map_mp
+from aether_utils.jsonl_utils_multiprocessing import line_map_mp, ItemMapper
 from aether_utils.logging_utils import get_standard_logger_for_file
 
 
@@ -84,26 +83,49 @@ def get_model(
     return azureai_model
 
 
-def process_item(
-    item: Dict[str, Any],
-    program_path: pathlib.Path,
-    endpoint: str,
-    model: str,
-    common_data: Any | None,
-) -> Dict[str, Any]:
-    _logger.debug(f"process_item: {item}")
+class GuidanceAzureML(ItemMapper):
+    def __init__(
+        self, program_path: pathlib.Path, endpoint: str, model: str, common_data: any
+    ):
+        super().__init__()
+        self._program_path = program_path
+        self._endpoint = endpoint
+        self._model = model
+        self._common_data = common_data
 
-    guidance_function = get_guidance_function(program_path)
-    language_model = get_model(endpoint, model)
-    result = guidance_function(language_model, item, common=common_data)
-    _logger.debug(f"Checking keys")
-    for k in result.keys():
-        assert k not in item, f"Duplicate key: {k}"
+    def start_up(self, worker_id: int) -> None:
+        _logger.info(f"Starting up {worker_id}")
+        self._guidance_function = get_guidance_function(self._program_path)
+        self._azure_credential = DefaultAzureCredential()
 
-    _logger.debug(f"Updating item")
-    item.update(**result)
+    def _get_model(self) -> guidance.models.Model:
+        token_provider = get_bearer_token_provider(
+            self._azure_credential, "https://cognitiveservices.azure.com/.default"
+        )
+        assert token_provider is not None
 
-    return item
+        # Pending a fix going into the released version of guidance,
+        # we can only work with chat models
+        azureai_model = guidance.models.AzureOpenAIChat(
+            model=self._model,
+            azure_endpoint=self._endpoint,
+            azure_ad_token_provider=token_provider,
+        )
+
+        return azureai_model
+
+    def map(self, item: dict[str, any]) -> dict[str, any] | None:
+        _logger.debug(f"map: {item}")
+        language_model = self._get_model()
+        result = self._guidance_function(language_model, item, common=self._common_data)
+        _logger.debug(f"Checking keys")
+        for k in result.keys():
+            assert k not in item, f"Duplicate key: {k}"
+
+        _logger.debug(f"Updating item")
+        item.update(**result)
+
+        return item
 
 
 def main():
@@ -119,8 +141,7 @@ def main():
         _logger.info("No common dataset present")
 
     # Bind arguments to the processor function
-    processor = functools.partial(
-        process_item,
+    processor = GuidanceAzureML(
         program_path=args.guidance_program,
         endpoint=args.azure_openai_endpoint,
         model=args.azure_openai_deployed_model,
@@ -129,7 +150,7 @@ def main():
 
     # Run the processing
     line_map_mp(
-        map_func=processor,
+        mapper=processor,
         source_file=args.input_dataset,
         dest_file=args.output_dataset,
         source_encoding=args.input_encoding,
