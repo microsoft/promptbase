@@ -18,6 +18,7 @@ class Scorer:
     def __init__(self, response_key: str):
         self.total_count = 0
         self.good_json_count = 0
+        self.json_keys_count = 0
         self.correct_name_count = 0
         self.correct_occupation_count = 0
         self.response_key = response_key
@@ -28,12 +29,25 @@ class Scorer:
         try:
             decoded_response = json.loads(response_answer)
             self.good_json_count += 1
-            if decoded_response["name"] == line["entity"]:
+
+            EXPECTED_KEYS = ["name", "occupation"]
+
+            if all([k in decoded_response.keys() for k in EXPECTED_KEYS]):
+                self.json_keys_count += 1
+
+            if self.fuzzy_string_match(
+                generated=decoded_response["name"], target=line["entity"]
+            ):
                 self.correct_name_count += 1
-            if decoded_response["occupation"] == line["target_mediated"]:
+            if self.fuzzy_string_match(
+                generated=decoded_response["occupation"], target=line["target_mediated"]
+            ):
                 self.correct_occupation_count += 1
         except:
             pass
+
+    def fuzzy_string_match(self, *, target: str, generated: str) -> bool:
+        return target.lower() in generated.lower()
 
     def generate_summary(self) -> dict[str, Any]:
         result = dict()
@@ -41,6 +55,7 @@ class Scorer:
 
         result["metrics"]["total"] = self.total_count
         result["metrics"]["good_json"] = self.good_json_count
+        result["metrics"]["json_keys"] = self.json_keys_count
         result["metrics"]["correct_name"] = self.correct_name_count
         result["metrics"]["correct_occupation"] = self.correct_occupation_count
         return result
