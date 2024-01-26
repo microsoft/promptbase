@@ -1,5 +1,4 @@
 import argparse
-import functools
 import pathlib
 
 from urllib.parse import urlparse, parse_qs

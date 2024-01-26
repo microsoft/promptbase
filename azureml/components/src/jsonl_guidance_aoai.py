@@ -1,5 +1,4 @@
 import argparse
-import functools
 import importlib.util
 import json
 import pathlib
