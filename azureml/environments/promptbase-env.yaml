@@ -12,7 +12,7 @@ conda_file:
     - python=3.11
     - pip
     - pip:
-      - aether-utils==0.0.1.dev0
+      - aether-utils==0.0.1.dev1
       - azure-identity
       - azure-keyvault-secrets
       - azureml-mlflow

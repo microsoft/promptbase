@@ -1,5 +1,4 @@
 import argparse
-import functools
 import pathlib
 
 from urllib.parse import urlparse, parse_qs
@@ -9,7 +8,7 @@ from azure.identity import DefaultAzureCredential, get_bearer_token_provider
 
 from openai import AzureOpenAI
 
-from aether_utils.jsonl_utils_multiprocessing import line_map_mp
+from aether_utils.jsonl_utils_multiprocessing import line_map_mp, ItemMapper
 from aether_utils.logging_utils import get_standard_logger_for_file
 
 
@@ -46,63 +45,69 @@ def parse_args():
     return args
 
 
-def get_aoai_client(
-    endpoint: str,
-) -> AzureOpenAI:
-    token_provider = get_bearer_token_provider(
-        DefaultAzureCredential(), "https://cognitiveservices.azure.com/.default"
-    )
-    parsed_url = urlparse(endpoint)
-    parsed_query = parse_qs(parsed_url.query)
+class AOAIEmbedder(ItemMapper):
+    def __init__(self, endpoint: str, src_key: str, dst_key: str):
+        super().__init__()
+        self._endpoint = endpoint
+        self._src_key = src_key
+        self._dst_key = dst_key
 
-    client = AzureOpenAI(
-        azure_endpoint=endpoint,
-        azure_ad_token_provider=token_provider,
-        api_version=parsed_query["api-version"],
-    )
-    return client
+    def start_up(self, worker_id: int) -> None:
+        _logger.info(f"Starting up {worker_id}")
+        self._azure_credential = DefaultAzureCredential()
 
+    def _get_aoai_client(self) -> AzureOpenAI:
+        token_provider = get_bearer_token_provider(
+            self._azure_credential, "https://cognitiveservices.azure.com/.default"
+        )
+        assert token_provider is not None
 
-def process_item(
-    item: dict[str, any],
-    src_key: str,
-    dst_key: str,
-    azure_aoai_endpoint: str,
-) -> dict[str, any]:
-    _logger.debug(f"process_item: {item}")
+        # Pending a fix going into the released version of guidance,
+        # we can only work with chat models
+        parsed_url = urlparse(self._endpoint)
+        parsed_query = parse_qs(parsed_url.query)
 
-    client = get_aoai_client(azure_aoai_endpoint)
+        client = AzureOpenAI(
+            azure_endpoint=self._endpoint,
+            azure_ad_token_provider=token_provider,
+            api_version=parsed_query["api-version"],
+        )
+        return client
 
-    parsed_url = urlparse(azure_aoai_endpoint)
-    deployment_name = parsed_url.path.split("/")[3]
-    _logger.debug(f"Got Deployment: {deployment_name}")
+    def map(self, item: dict[str, any]) -> dict[str, any] | None:
+        _logger.debug(f"map: {item}")
 
-    embeddings = (
-        client.embeddings.create(input=[item[src_key]], model=deployment_name)
-        .data[0]
-        .embedding
-    )
+        client = self._get_aoai_client()
 
-    _logger.debug(f"Updating item")
-    item[dst_key] = embeddings
+        parsed_url = urlparse(self._endpoint)
+        deployment_name = parsed_url.path.split("/")[3]
+        _logger.debug(f"Got Deployment: {deployment_name}")
 
-    return item
+        embeddings = (
+            client.embeddings.create(input=[item[self._src_key]], model=deployment_name)
+            .data[0]
+            .embedding
+        )
+
+        _logger.debug(f"Updating item")
+        item[self._dst_key] = embeddings
+
+        return item
 
 
 def main():
     args = parse_args()
 
     # Bind arguments to the processor function
-    processor = functools.partial(
-        process_item,
+    processor = AOAIEmbedder(
         src_key=args.source_key,
         dst_key=args.destination_key,
-        azure_aoai_endpoint=args.azure_openai_endpoint,
+        endpoint=args.azure_openai_endpoint,
     )
 
     # Run the processing
     line_map_mp(
-        map_func=processor,
+        mapper=processor,
         source_file=args.input_dataset,
         dest_file=args.output_dataset,
         source_encoding=args.input_encoding,
