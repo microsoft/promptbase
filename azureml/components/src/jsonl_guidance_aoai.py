@@ -88,7 +88,7 @@ class GuidanceAzureML(ItemMapper):
     def __init__(
         self, program_path: pathlib.Path, endpoint: str, model: str, common_data: any
     ):
-        super().__init__(self)
+        super().__init__()
         self._program_path = program_path
         self._endpoint = endpoint
         self._model = model
