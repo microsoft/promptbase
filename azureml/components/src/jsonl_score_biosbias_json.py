@@ -47,6 +47,8 @@ class Scorer:
             pass
 
     def fuzzy_string_match(self, *, target: str, generated: str) -> bool:
+        # I believe that this is the ultimate comparison done by:
+        # https://github.com/QingruZhang/PASTA/blob/b28e6307896df9f91c282ecf0201fa7bebdad0d6/evaluation/evaluator.py#L233
         return target.lower() in generated.lower()
 
     def generate_summary(self) -> dict[str, Any]:
