@@ -22,6 +22,7 @@ ALL_COMPONENTS = dict(
     jsonl_mmlu_fetch="jsonl_mmlu_fetch_component.yaml",
     jsonl_random_examples="jsonl_random_examples_component.yaml",
     jsonl_schema_checker="jsonl_schema_checker_component.yaml",
+    jsonl_score_biosbias_json="jsonl_score_biosbias_json_component.yaml",
     jsonl_score_multiplechoice="jsonl_score_multiplechoice_component.yaml",
     jsonl_to_json="jsonl_to_json_component.yaml",
     uri_folder_to_file="uri_folder_to_file_component.yaml",

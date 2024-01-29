@@ -107,3 +107,11 @@ class KNNFewshotCoTPipelineConfig:
     knn_config: KNNConfig = field(default_factory=KNNConfig)
     aoai_config: AOAIConfig = field(default_factory=AOAIConfig)
     aoai_embedding_config: AOAIConfig = field(default_factory=AOAIConfig)
+
+
+@dataclass
+class BiosBiasJSONPipelineConfig:
+    pipeline: PipelineConfig = field(default_factory=PipelineConfig)
+    biosbias_dataset: str = str()
+    json_guidance_program: str = str()
+    aoai_config: AOAIConfig = field(default_factory=AOAIConfig)
