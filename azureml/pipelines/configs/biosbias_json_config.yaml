@@ -5,7 +5,7 @@ defaults:
 
 zeroshot_config:
   pipeline:
-    base_experiment_name: biosbias_json
+    base_experiment_name: biosbias_json_phi2
     tags:
     default_compute_target: isolatedcompute
   biosbias_dataset: biosbias_small:1

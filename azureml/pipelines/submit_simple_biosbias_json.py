@@ -53,16 +53,24 @@ def create_biosbias_simple_json_pipeline(
 
     @dsl.pipeline()
     def basic_pipeline() -> Pipeline:
-        guidance_job = components.jsonl_guidance(
-            guidance_program=guidance_input,
-            guidance_workers=inference_config.workers,
-            max_errors=inference_config.max_errors,
-            input_dataset=bios_ds,
-            azure_openai_endpoint=inference_config.endpoint,
-            azure_openai_deployed_model=inference_config.model,
-        )
+        if False:
+            guidance_job = components.jsonl_guidance(
+                guidance_program=guidance_input,
+                guidance_workers=inference_config.workers,
+                max_errors=inference_config.max_errors,
+                input_dataset=bios_ds,
+                azure_openai_endpoint=inference_config.endpoint,
+                azure_openai_deployed_model=inference_config.model,
+            )
+            guidance_job.compute = inference_config.compute_target
+        else:
+            guidance_job = components.jsonl_guidance_phi2(
+                guidance_program=guidance_input,
+                max_errors=inference_config.max_errors,
+                input_dataset=bios_ds,
+            )
+            guidance_job.compute = "gpulowpriority"
         guidance_job.name = f"guidance_simple"
-        guidance_job.compute = inference_config.compute_target
 
         score_job = components.jsonl_score_biosbias_json(
             input_dataset=guidance_job.outputs.output_dataset,
