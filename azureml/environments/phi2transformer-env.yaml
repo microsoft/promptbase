@@ -4,7 +4,7 @@ name: phi2_transformer
 description: |
   A simple environment running Phi2 from Hugging Face
 
-image: mcr.microsoft.com/aifx/acpt/stable-ubuntu2004-cu117-py38-torch201:biweekly.202401.2
+image: mcr.microsoft.com/mirror/nvcr/nvidia/cuda:12.1.1-cudnn8-runtime-ubuntu22.04
 conda_file:
   channels:
     - defaults
