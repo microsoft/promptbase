@@ -1,0 +1,17 @@
+$schema: https://azuremlschemas.azureedge.net/latest/environment.schema.json
+
+name: phi2_transformer
+description: |
+  A simple environment running Phi2 from Hugging Face
+
+image: mcr.microsoft.com/aifx/acpt/stable-ubuntu2004-cu117-py38-torch201:biweekly.202401.2
+conda_file:
+  channels:
+    - defaults
+  dependencies:
+    - python=3.11
+    - pip
+    - pip:
+      - aether-utils==0.0.1.dev1
+      - guidance>0.1.5
+      - transformers
