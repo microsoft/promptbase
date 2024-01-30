@@ -17,3 +17,7 @@ conda_file:
     - pip:
       - --index-url https://download.pytorch.org/whl/cu118
       - torch
+      - --extra-index-url https://pypi.org/simple
+      - aether-utils==0.0.1.dev1
+      - guidance>0.1.5
+      - transformers
