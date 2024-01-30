@@ -39,29 +39,35 @@ def create_biosbias_simple_json_pipeline(
 ):
     components = get_component_collector(ml_client, version_string)
 
-    guidance_input = Input(
-        type="uri_file",
-        path=GUIDANCE_PROGRAMS_DIR / run_config.json_guidance_program,
-        model="download",
-    )
+    guidance_inputs = dict()
+    for prog_filename in run_config.json_guidance_programs:
+        k = prog_filename[0:-3]
+        v = Input(
+            type="uri_file",
+            path=GUIDANCE_PROGRAMS_DIR / prog_filename,
+            model="download",
+        )
+        guidance_inputs[k] = v
+    _logger.info(f"Found {len(guidance_inputs)} guidance programs")
 
     ds_parts = run_config.biosbias_dataset.split(":")
     bios_ds = ml_client.data.get(ds_parts[0], version=ds_parts[1])
 
     @dsl.pipeline()
     def basic_pipeline() -> Pipeline:
-        guidance_job = components.jsonl_guidance_phi2(
-            guidance_program=guidance_input,
-            input_dataset=bios_ds,
-        )
-        guidance_job.compute = run_config.phi2_config.compute_target
-        guidance_job.name = f"guidance_simple"
+        for progname, prog_input in guidance_inputs.items():
+            guidance_job = components.jsonl_guidance_phi2(
+                guidance_program=prog_input,
+                input_dataset=bios_ds,
+            )
+            guidance_job.compute = run_config.phi2_config.compute_target
+            guidance_job.name = f"guidance_simple_{progname}"
 
-        score_job = components.jsonl_score_biosbias_json(
-            input_dataset=guidance_job.outputs.output_dataset,
-            response_key="model_answer",
-        )
-        score_job.name = f"score_biosbias_json"
+            score_job = components.jsonl_score_biosbias_json(
+                input_dataset=guidance_job.outputs.output_dataset,
+                response_key="model_answer",
+            )
+            score_job.name = f"score_biosbias_json_{progname}"
 
     pipeline = basic_pipeline()
     pipeline.experiment_name = (

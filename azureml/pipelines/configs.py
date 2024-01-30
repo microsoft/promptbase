@@ -127,5 +127,5 @@ class BiosBiasJSONPipelineConfig:
 class Phi2BiosBiasJSONPipelineConfig:
     pipeline: PipelineConfig = field(default_factory=PipelineConfig)
     biosbias_dataset: str = str()
-    json_guidance_program: str = str()
+    json_guidance_programs: list[str] = field(default_factory=list)
     phi2_config: Phi2Config = field(default_factory=Phi2Config)

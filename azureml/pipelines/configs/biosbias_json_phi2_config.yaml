@@ -8,6 +8,8 @@ zeroshot_config:
     tags:
     default_compute_target: isolatedcompute
   biosbias_dataset: biosbias_small:1
-  json_guidance_program: simple_biosbias_json_completion.py
+  json_guidance_programs:
+    - simple_biosbias_json_completion.py
+    - simple_biosbias_json_completion_v2.py
   phi2_config:
     compute_target: gput4
