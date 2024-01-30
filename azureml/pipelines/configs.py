@@ -25,9 +25,11 @@ class AOAIConfig:
     max_errors: int = int()
     workers: int = int()
 
+
 @dataclass
 class Phi2Config:
     compute_target: str = str()
+
 
 @dataclass
 class ZeroShotRunConfig:
@@ -98,6 +100,7 @@ class RandomFewshotCoTPipelineConfig:
         default_factory=RandomExamplesConfig
     )
     aoai_config: AOAIConfig = field(default_factory=AOAIConfig)
+
 
 @dataclass
 class KNNFewshotCoTPipelineConfig:

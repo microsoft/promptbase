@@ -94,12 +94,12 @@ class ComponentCollector:
             self._client, PHI2_ENVIRONMENT_FILE, self._version_string
         )
         self.jsonl_guidance_phi2 = create_component_from_yaml(
-                self._client,
-                self._base_dir / "jsonl_guidance_phi2_component.yaml",
-                environment=phi2_environment,
-                version_string=self._version_string,
-            )
-        
+            self._client,
+            self._base_dir / "jsonl_guidance_phi2_component.yaml",
+            environment=phi2_environment,
+            version_string=self._version_string,
+        )
+
         _logger.info("Added all components")
 
 
