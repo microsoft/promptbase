@@ -8,15 +8,15 @@ image: mcr.microsoft.com/azureml/minimal-ubuntu22.04-py39-cuda11.8-gpu-inference
 conda_file:
   channels:
     - defaults
-    - pytorch
-    - nvidia
   dependencies:
     - python=3.11
-    - pytorch-cuda=11.8
     - pip
     - pip:
+      # Note that we have to force torch to install from this index
+      # in order to match the CUDA driver...
       - --index-url https://download.pytorch.org/whl/cu118
       - torch
+      # ... so we have to add PyPI back in as an alternative index
       - --extra-index-url https://pypi.org/simple
       - aether-utils==0.0.1.dev1
       - guidance>0.1.5
