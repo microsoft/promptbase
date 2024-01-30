@@ -38,23 +38,47 @@ def parse_args():
 
     # Information about the guidance program
     parser.add_argument("--guidance_program", type=pathlib.Path, required=True)
-    parser.add_argument("--max_errors", type=int, required=True)
 
     args = parser.parse_args()
     return args
 
-    
-def get_guidance_function(
-    program_path: pathlib.Path,
-) -> Callable[[Dict[str, Any]], Dict[str, Any]]:
-    _logger.debug("Importing guidance file")
-    spec = importlib.util.spec_from_file_location(USER_MODULE, program_path)
-    module_definition = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module_definition)
 
-    guidance_func = getattr(module_definition, GUIDANCE_FUNCTION)
+class Phi2Processor:
+    def __init__(
+        self,
+        program_path,
+        model: guidance.models.Model,
+        common_data: dict[str, any] | None,
+    ):
+        self._program_path = program_path
+        self._model = model
+        self._guidance_function = self._get_guidance_function()
+        self._common_data = common_data
 
-    return guidance_func
+    def __call__(self, item: Dict[str, Any]) -> dict[str, any]:
+        _logger.debug(f"__call__: {item}")
+        result = self._guidance_function(self._model, item, common=self._common_data)
+        _logger.debug(f"Checking keys")
+        for k in result.keys():
+            assert k not in item, f"Duplicate key: {k}"
+
+        _logger.debug(f"Updating item")
+        item.update(**result)
+
+        return item
+
+    def _get_guidance_function(
+        self,
+    ) -> Callable[[Dict[str, Any]], Dict[str, Any]]:
+        _logger.debug("Importing guidance file")
+        spec = importlib.util.spec_from_file_location(USER_MODULE, self._program_path)
+        module_definition = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module_definition)
+
+        guidance_func = getattr(module_definition, GUIDANCE_FUNCTION)
+
+        return guidance_func
+
 
 def main():
     args = parse_args()
@@ -68,22 +92,27 @@ def main():
     else:
         _logger.info("No common dataset present")
 
-
     torch.set_default_device("cuda")
+    guidance_model = guidance.models.Transformers(
+        "microsoft/phi-2", device=0, echo=False
+    )
+    _logger.info(f"guidance_model.device: {guidance_model.device}")
 
-    model = AutoModelForCausalLM.from_pretrained("microsoft/phi-2", torch_dtype="auto", trust_remote_code=True)
-    tokenizer = AutoTokenizer.from_pretrained("microsoft/phi-2", trust_remote_code=True)
+    processor = Phi2Processor(
+        program_path=args.guidance_program,
+        model=guidance_model,
+        common_data=common_data,
+    )
 
-    inputs = tokenizer('''def print_prime(n):
-    """
-    Print all primes between 1 and n
-    """''', return_tensors="pt", return_attention_mask=False)
+    s, f = line_map(
+        map_func=processor,
+        source_file=args.input_dataset,
+        dest_file=args.output_dataset,
+        source_encoding=args.input_encoding,
+        dest_encoding=args.output_encoding,
+    )
 
-    outputs = model.generate(**inputs, max_length=200)
-    text = tokenizer.batch_decode(outputs)[0]
-    print(text)
-
-    _logger.info("Complete")
+    _logger.info(f"Complete with {s} successes and {f} failures")
 
 
 if __name__ == "__main__":

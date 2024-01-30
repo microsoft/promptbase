@@ -12,11 +12,6 @@ inputs:
     type: uri_file
     optional: false
     description: Python file containing the guidance program
-  max_errors:
-    type: integer
-    optional: false
-    default: 5
-    description: Maximum number of failed lines to tolerate
   input_dataset:
     type: uri_file
     optional: false
@@ -59,7 +54,6 @@ code: ./src/
 command: >-
   python ./jsonl_guidance_phi2.py 
   --guidance_program ${{ inputs.guidance_program }}
-  --max_errors ${{ inputs.max_errors }}
   --input_dataset ${{ inputs.input_dataset }}
   --input_encoding ${{ inputs.input_encoding }}
   $[[--common_dataset ${{ inputs.common_dataset }} ]]

@@ -66,7 +66,6 @@ def create_biosbias_simple_json_pipeline(
         else:
             guidance_job = components.jsonl_guidance_phi2(
                 guidance_program=guidance_input,
-                max_errors=inference_config.max_errors,
                 input_dataset=bios_ds,
             )
             guidance_job.compute = "gput4"
