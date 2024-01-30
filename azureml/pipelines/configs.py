@@ -25,6 +25,9 @@ class AOAIConfig:
     max_errors: int = int()
     workers: int = int()
 
+@dataclass
+class Phi2Config:
+    compute_target: str = str()
 
 @dataclass
 class ZeroShotRunConfig:
@@ -115,3 +118,11 @@ class BiosBiasJSONPipelineConfig:
     biosbias_dataset: str = str()
     json_guidance_program: str = str()
     aoai_config: AOAIConfig = field(default_factory=AOAIConfig)
+
+
+@dataclass
+class Phi2BiosBiasJSONPipelineConfig:
+    pipeline: PipelineConfig = field(default_factory=PipelineConfig)
+    biosbias_dataset: str = str()
+    json_guidance_program: str = str()
+    phi2_config: Phi2Config = field(default_factory=Phi2Config)

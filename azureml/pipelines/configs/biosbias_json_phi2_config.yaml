@@ -1,7 +1,6 @@
 defaults:
   - _self_
   - aml_config
-  - aoai_config
 
 zeroshot_config:
   pipeline:
@@ -10,4 +9,5 @@ zeroshot_config:
     default_compute_target: isolatedcompute
   biosbias_dataset: biosbias_small:1
   json_guidance_program: simple_biosbias_json_completion.py
-  aoai_config: ${ default_aoai_config }
+  phi2_config:
+    compute_target: gput4
