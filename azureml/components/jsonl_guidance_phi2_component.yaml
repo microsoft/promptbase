@@ -56,41 +56,17 @@ outputs:
 
 code: ./src/
 
-command: |
-  nvidia-smi
-  echo
-  echo "#-#-#"
-  echo
-  conda list
-  echo
-  echo "#-#-#"
-  echo
-  pip list
-  echo
-  echo "#-#-#"
-  echo
-  python -c "import torch; print(torch.__version__)"
-  echo
-  echo "#-#-#"
-  echo
-  python -c "import torch; print(torch.cuda.nccl.version())"
-  echo
-  echo "#-#-#"
-  echo
-  python -c "import torch; print(torch.cuda.is_available())"
-  echo
-  echo "#-#-#"
-  echo
-  python ./jsonl_guidance_phi2.py \
-  --guidance_program ${{ inputs.guidance_program }} \
-  --max_errors ${{ inputs.max_errors }} \
-  --input_dataset ${{ inputs.input_dataset }} \
-  --input_encoding ${{ inputs.input_encoding }} \
-  $[[--common_dataset ${{ inputs.common_dataset }} ]] \
-  $[[--common_encoding ${{ inputs.common_encoding }} ]] \
-  --output_dataset ${{ outputs.output_dataset }} \
-  --output_encoding ${{ inputs.output_encoding }} \
-  --error_dataset ${{ outputs.error_dataset }} \
+command: >-
+  python ./jsonl_guidance_phi2.py 
+  --guidance_program ${{ inputs.guidance_program }}
+  --max_errors ${{ inputs.max_errors }}
+  --input_dataset ${{ inputs.input_dataset }}
+  --input_encoding ${{ inputs.input_encoding }}
+  $[[--common_dataset ${{ inputs.common_dataset }} ]]
+  $[[--common_encoding ${{ inputs.common_encoding }} ]]
+  --output_dataset ${{ outputs.output_dataset }}
+  --output_encoding ${{ inputs.output_encoding }}
+  --error_dataset ${{ outputs.error_dataset }}
   --error_encoding ${{ inputs.error_encoding }}
 
 environment:
