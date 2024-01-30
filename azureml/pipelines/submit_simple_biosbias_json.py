@@ -69,7 +69,7 @@ def create_biosbias_simple_json_pipeline(
                 max_errors=inference_config.max_errors,
                 input_dataset=bios_ds,
             )
-            guidance_job.compute = "gpulowpriority"
+            guidance_job.compute = "gput4"
         guidance_job.name = f"guidance_simple"
 
         score_job = components.jsonl_score_biosbias_json(
