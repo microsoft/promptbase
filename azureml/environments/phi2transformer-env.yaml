@@ -12,6 +12,7 @@ conda_file:
     - nvidia
   dependencies:
     - python=3.11
+    - pytorch
     - pytorch-cuda=11.8
     - pip
     - pip:
