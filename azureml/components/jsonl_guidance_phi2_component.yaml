@@ -1,0 +1,68 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+
+name: jsonl_guidance_phi2
+version: 0.0.1pre1
+display_name: JSONL Guidance Phi2
+type: command
+description: Runs a supplied Guidance program on every line of a JSONL file via Phi2
+is_deterministic: false
+
+inputs:
+  guidance_program:
+    type: uri_file
+    optional: false
+    description: Python file containing the guidance program
+  input_dataset:
+    type: uri_file
+    optional: false
+    description: Dataset containing JSONL input
+  input_encoding:
+    type: string
+    optional: false
+    default: utf-8-sig
+    description: Encoding format of the input dataset
+  common_dataset:
+    type: uri_file
+    optional: true
+    description: Dataset containing data to be shared with all rows in input
+  common_encoding:
+    type: string
+    optional: true
+    default: utf-8-sig
+    description: Encoding format of the common dataset
+  output_encoding:
+    type: string
+    optional: false
+    default: utf-8-sig
+    description: Encoding format of the output dataset
+  error_encoding:
+    type: string
+    optional: false
+    default: utf-8-sig
+    description: Encoding format of the error dataset
+
+outputs:
+  output_dataset:
+    type: uri_file
+    description: JSONL file
+  error_dataset:
+    type: uri_file
+    description: JSONL file containing failed lines
+
+code: ./src/
+
+command: >-
+  python ./jsonl_guidance_phi2.py 
+  --guidance_program ${{ inputs.guidance_program }}
+  --input_dataset ${{ inputs.input_dataset }}
+  --input_encoding ${{ inputs.input_encoding }}
+  $[[--common_dataset ${{ inputs.common_dataset }} ]]
+  $[[--common_encoding ${{ inputs.common_encoding }} ]]
+  --output_dataset ${{ outputs.output_dataset }}
+  --output_encoding ${{ inputs.output_encoding }}
+  --error_dataset ${{ outputs.error_dataset }}
+  --error_encoding ${{ inputs.error_encoding }}
+
+environment:
+  # Will be updated when component uploads
+  image: azureml:guidance_phi2_env@latest

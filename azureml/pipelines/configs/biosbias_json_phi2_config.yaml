@@ -1,0 +1,15 @@
+defaults:
+  - _self_
+  - aml_config
+
+zeroshot_config:
+  pipeline:
+    base_experiment_name: biosbias_json_phi2
+    tags:
+    default_compute_target: isolatedcompute
+  biosbias_dataset: biosbias_small:1
+  json_guidance_programs:
+    - simple_biosbias_json_completion.py
+    - simple_biosbias_json_completion_v2.py
+  phi2_config:
+    compute_target: gput4

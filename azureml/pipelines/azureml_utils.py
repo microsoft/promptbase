@@ -5,7 +5,7 @@ import pathlib
 from azure.ai.ml import load_component, MLClient, load_environment
 from azure.ai.ml.entities import Component, Environment
 
-from constants import COMPONENTS_DIR, ENVIRONMENT_FILE
+from constants import COMPONENTS_DIR, ENVIRONMENT_FILE, PHI2_ENVIRONMENT_FILE
 
 
 _logger = logging.getLogger(__file__)
@@ -87,6 +87,19 @@ class ComponentCollector:
             )
             _logger.info(f"Adding attribute {attr_name}")
             setattr(self, attr_name, component)
+
+        # Quickly put in the Phi2 environment
+        _logger.info("Working on Phi2 component")
+        phi2_environment = create_environment_from_yaml(
+            self._client, PHI2_ENVIRONMENT_FILE, self._version_string
+        )
+        self.jsonl_guidance_phi2 = create_component_from_yaml(
+            self._client,
+            self._base_dir / "jsonl_guidance_phi2_component.yaml",
+            environment=phi2_environment,
+            version_string=self._version_string,
+        )
+
         _logger.info("Added all components")
 
 
