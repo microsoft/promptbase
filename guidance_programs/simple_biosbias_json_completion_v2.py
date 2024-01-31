@@ -26,6 +26,7 @@ def zeroshot_biosbias_json(lm: guidance.models.Model, short_biography: str):
         Now generate the answer:
 """
     )
+    _logger.info(f"lm: {lm}")
     lm += gen(name="model_answer")
 
     return lm
