@@ -18,7 +18,7 @@ conda_file:
       - azureml-mlflow
       - fairlearn
       - datasets
-      - guidance>0.1.13
+      - guidance>=0.1.13
       - jsonschema
       - mlflow
       - numpy
