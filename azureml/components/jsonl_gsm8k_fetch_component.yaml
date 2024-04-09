@@ -23,7 +23,7 @@ outputs:
 code: ./src/
 
 command: >-
-  python ./jsonl_gsm8k_fetch.py\
+  python ./jsonl_gsm8k_fetch.py
   --output_encoding ${{ inputs.output_encoding }}
   --output_dataset ${{ outputs.output_dataset }}
 

@@ -1,6 +1,5 @@
 import argparse
 import json
-import locale
 import pathlib
 import re
 
@@ -51,23 +50,29 @@ def process_line(item: Dict[str, Any]) -> Dict[str, Any]:
 
     result["question"] = item["question"]
 
+    # The answer embeds a chain of thought and the
+    # numeric result
     split_answer = item["answer"].split("####")
-    result["answer"] = locale.atof(split_answer[1])
 
     result["thoughts"] = []
     for thought in split_answer[0].splitlines():
         result["thoughts"].append(extract_thought_parts(thought))
+
+    # The following is not how you're supposed to handle
+    # numbers with thousand separators.
+    # This is a work around, pending three-way negotiations
+    # with locale.atof() and the AzureML compute nodes
+    result["answer"] = float(split_answer[1].replace(",", ""))
+
     return result
 
 
 def main():
     args = parse_args()
 
-    # For parsing numbers
-    locale.setlocale(locale.LC_ALL, "en_US.UTF-8")
-
     for split in SPLITS:
         _logger.info(f"Starting split {split}")
+        line_count = 0
         target_url = f"{BASE_DATA_URL}{split}.jsonl"
 
         _logger.info(f"Fetching {target_url}")
@@ -81,7 +86,8 @@ def main():
                 nxt_item = json.loads(line)
                 output_item = process_line(nxt_item)
                 jlw.write_line(output_item)
-        _logger.info(f"Completed split {split}")
+                line_count += 1
+        _logger.info(f"Completed split {split} ({line_count} lines)")
 
     _logger.info("Complete")
 
