@@ -94,7 +94,10 @@ def main():
 
     torch.set_default_device("cuda")
     guidance_model = guidance.models.Transformers(
-        "microsoft/phi-2", device=0, echo=False
+        "microsoft/phi-2",
+        device_map="cuda:0",
+        echo=False,
+        trust_remote_code=True,
     )
     _logger.info(f"guidance_model.device: {guidance_model.device}")
 
