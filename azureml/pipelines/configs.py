@@ -30,6 +30,10 @@ class AOAIConfig:
 class Phi2Config:
     compute_target: str = str()
 
+@dataclass
+class TransformerConfig:
+    compute_target: str = str()
+
 
 @dataclass
 class ZeroShotRunConfig:
@@ -134,3 +138,6 @@ class Phi2BiosBiasJSONPipelineConfig:
 @dataclass
 class GSM8KZeroShotConfig:
     pipeline: PipelineConfig = field(default_factory=PipelineConfig)
+    json_guidance_programs: list[str] = field(default_factory=list)
+    transformer_config: TransformerConfig = field(default_factory=TransformerConfig)
+

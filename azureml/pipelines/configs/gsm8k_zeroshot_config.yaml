@@ -8,3 +8,7 @@ zeroshot_config:
     base_experiment_name: gsm8k_zeroshot
     tags:
     default_compute_target: isolatedcompute
+  json_guidance_programs:
+    - gsm8k_zero_or_few_shot.py
+  transformer_config:
+    compute_target: gput4

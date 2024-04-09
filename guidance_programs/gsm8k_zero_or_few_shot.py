@@ -6,7 +6,6 @@ import sys
 from typing import Any, Dict
 
 import guidance
-from guidance import gen, select, system, user, assistant
 
 
 _logger = logging.getLogger(__file__)
@@ -18,21 +17,22 @@ _logger.addHandler(logging.StreamHandler(stream=sys.stdout))
 def zero_shot_gsm8k(
     lm: guidance.models.Instruct,
     question: str,
-    choices: list[str],
     common: list[dict[str, Any]] | None,
 ):
     # Some general instruction to the model
     lm += """Taking a maths test. Answer the following question and
-    show your working
+    show your working.
 """
 
     if common:
         _logger.debug("Adding few shot examples")
         raise ValueError("common data not yet supported")
 
+    lm += question
 
+    schema_obj = dict(type="object", properties=dict(string_result="number"))
 
-    return lm
+    return lm + guidance.json(name="string_result", schema=schema_obj)
 
 
 def guidance_generation(
@@ -41,9 +41,7 @@ def guidance_generation(
     common: list[dict[str, Any]] | None = None,
 ) -> Dict[str, Any]:
     _logger.debug("Starting guidance_generation")
-    result = lm + zero_shot_gsm8k(
-        question=input["question"], common=common
-    )
+    result = lm + zero_shot_gsm8k(question=input["question"], common=common)
 
     _logger.debug(f"Result: {result}")
 

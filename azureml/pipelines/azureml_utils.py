@@ -100,6 +100,12 @@ class ComponentCollector:
             environment=phi2_environment,
             version_string=self._version_string,
         )
+        self.jsonl_guidance_mistral7b = create_component_from_yaml(
+            self._client,
+            self._base_dir / "jsonl_guidance_mistral7b_component.yaml",
+            environment=phi2_environment,
+            version_string=self._version_string,
+        )
 
         _logger.info("Added all components")
 
