@@ -1,0 +1,24 @@
+$schema: https://azuremlschemas.azureedge.net/latest/environment.schema.json
+
+name: phi2_transformer
+description: |
+  A simple environment running Phi2 from Hugging Face
+
+image: mcr.microsoft.com/azureml/minimal-ubuntu22.04-py39-cuda11.8-gpu-inference:20240122.v1
+conda_file:
+  channels:
+    - defaults
+  dependencies:
+    - python=3.11
+    - pip
+    - pip:
+      # Note that we have to force torch to install from this index
+      # in order to match the CUDA driver...
+      - --index-url https://download.pytorch.org/whl/cu118
+      - torch
+      # ... so we have to add PyPI back in as an alternative index
+      - --extra-index-url https://pypi.org/simple
+      - accelerate
+      - aether-utils==0.0.1.dev1
+      - guidance>=0.1.13
+      - transformers

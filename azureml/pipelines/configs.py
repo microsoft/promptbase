@@ -27,6 +27,11 @@ class AOAIConfig:
 
 
 @dataclass
+class Phi2Config:
+    compute_target: str = str()
+
+
+@dataclass
 class ZeroShotRunConfig:
     pipeline: PipelineConfig = field(default_factory=PipelineConfig)
     mmlu_dataset: str = str()
@@ -96,6 +101,7 @@ class RandomFewshotCoTPipelineConfig:
     )
     aoai_config: AOAIConfig = field(default_factory=AOAIConfig)
 
+
 @dataclass
 class KNNFewshotCoTPipelineConfig:
     pipeline: PipelineConfig = field(default_factory=PipelineConfig)
@@ -115,6 +121,14 @@ class BiosBiasJSONPipelineConfig:
     biosbias_dataset: str = str()
     json_guidance_program: str = str()
     aoai_config: AOAIConfig = field(default_factory=AOAIConfig)
+
+
+@dataclass
+class Phi2BiosBiasJSONPipelineConfig:
+    pipeline: PipelineConfig = field(default_factory=PipelineConfig)
+    biosbias_dataset: str = str()
+    json_guidance_programs: list[str] = field(default_factory=list)
+    phi2_config: Phi2Config = field(default_factory=Phi2Config)
 
 
 @dataclass
