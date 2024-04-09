@@ -115,3 +115,8 @@ class BiosBiasJSONPipelineConfig:
     biosbias_dataset: str = str()
     json_guidance_program: str = str()
     aoai_config: AOAIConfig = field(default_factory=AOAIConfig)
+
+
+@dataclass
+class GSM8KZeroShotConfig:
+    pipeline: PipelineConfig = field(default_factory=PipelineConfig)

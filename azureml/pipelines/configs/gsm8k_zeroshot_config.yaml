@@ -1,0 +1,10 @@
+defaults:
+  - _self_
+  - aml_config
+  - aoai_config
+
+zeroshot_config:
+  pipeline:
+    base_experiment_name: gsm8k_zeroshot
+    tags:
+    default_compute_target: isolatedcompute
