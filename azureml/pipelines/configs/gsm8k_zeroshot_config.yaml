@@ -5,7 +5,7 @@ defaults:
 
 zeroshot_config:
   pipeline:
-    base_experiment_name: gsm8k_zeroshot
+    base_experiment_name: gsm8k_zeroshot_debugging
     tags:
     default_compute_target: isolatedcompute
   json_guidance_programs:
