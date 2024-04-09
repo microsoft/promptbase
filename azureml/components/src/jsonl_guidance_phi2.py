@@ -99,7 +99,7 @@ def main():
         echo=False,
         trust_remote_code=True,
     )
-    _logger.info(f"guidance_model.device: {guidance_model.device}")
+    _logger.info(f"guidance_model.device: {guidance_model.engine.device}")
 
     processor = Phi2Processor(
         program_path=args.guidance_program,
