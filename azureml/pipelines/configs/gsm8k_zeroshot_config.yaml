@@ -9,6 +9,8 @@ zeroshot_config:
     tags:
     default_compute_target: isolatedcompute
   json_guidance_programs:
+    - gsm8k_zero_or_few_shot_plain.py
+    - gsm8k_zero_or_few_shot_regex_number.py
     - gsm8k_zero_or_few_shot.py
   llamacpp_config:
     compute_target: gput4
