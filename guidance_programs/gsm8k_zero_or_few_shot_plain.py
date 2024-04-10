@@ -21,7 +21,7 @@ def zero_shot_gsm8k(
     common: list[dict[str, Any]] | None,
 ):
     # Some general instruction to the model
-    lm += """Taking a maths test. Answer the following question:
+    lm += """Taking a maths test. Answer the following question. Respond with just the numerical answer:
 """
 
     if common:
