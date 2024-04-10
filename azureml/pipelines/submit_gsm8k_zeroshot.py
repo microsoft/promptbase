@@ -71,6 +71,13 @@ def create_gsm8k_zeroshot_pipeline(
             guidance_job.compute = run_config.llamacpp_config.compute_target
             guidance_job.name = f"guidance_mistral7b_{progname}"
 
+            score_job = components.jsonl_score_numeric(
+                input_dataset=guidance_job.outputs.output_dataset,
+                correct_key="answer",
+                response_key="zero_or_few_shot_answer",
+            )
+            score_job.name = f"score_{progname}"
+
     pipeline = basic_pipeline()
     pipeline.experiment_name = f"{run_config.pipeline.base_experiment_name}"
     pipeline.display_name = None
