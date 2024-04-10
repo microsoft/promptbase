@@ -15,4 +15,4 @@ zeroorfewshot_config:
   llamacpp_config:
     compute_target: gput4
   random_seed: 4521
-  n_samples: 5
+  n_samples: 2
