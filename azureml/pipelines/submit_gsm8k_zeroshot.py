@@ -68,7 +68,7 @@ def create_gsm8k_zeroshot_pipeline(
                 guidance_program=prog_input,
                 input_dataset=get_split_job.outputs.output_dataset,
             )
-            guidance_job.compute = run_config.transformer_config.compute_target
+            guidance_job.compute = run_config.llamacpp_config.compute_target
             guidance_job.name = f"guidance_mistral7b_{progname}"
 
     pipeline = basic_pipeline()

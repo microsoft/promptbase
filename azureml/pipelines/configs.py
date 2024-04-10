@@ -31,7 +31,7 @@ class Phi2Config:
     compute_target: str = str()
 
 @dataclass
-class TransformerConfig:
+class LlamaCppConfig:
     compute_target: str = str()
 
 
@@ -139,5 +139,5 @@ class Phi2BiosBiasJSONPipelineConfig:
 class GSM8KZeroShotConfig:
     pipeline: PipelineConfig = field(default_factory=PipelineConfig)
     json_guidance_programs: list[str] = field(default_factory=list)
-    transformer_config: TransformerConfig = field(default_factory=TransformerConfig)
+    llamacpp_config: LlamaCppConfig = field(default_factory=LlamaCppConfig)
 

@@ -10,5 +10,5 @@ zeroshot_config:
     default_compute_target: isolatedcompute
   json_guidance_programs:
     - gsm8k_zero_or_few_shot.py
-  transformer_config:
+  llamacpp_config:
     compute_target: gput4
