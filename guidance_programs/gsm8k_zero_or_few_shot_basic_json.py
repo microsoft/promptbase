@@ -38,7 +38,7 @@ def zero_shot_gsm8k(
     # Now ask the question
     lm += f"Question: {question}\n"
     lm += f"Reasoning:"
-    lm += guidance.gen("reasons")
+    lm += guidance.gen("reasons", max_tokens=50)
     lm += f"Answer: " + guidance.json(name="result_string", schema=dict(type="number"))
 
     return lm

@@ -34,11 +34,11 @@ def zero_shot_gsm8k(
             lm += "\n"
         lm += f"Answer: {e['answer']}"
         lm += "\n"
-    
+
     # Now ask the question
     lm += f"Question: {question}\n"
     lm += f"Reasoning:"
-    lm += guidance.gen("reasons")
+    lm += guidance.gen("reasons", max_tokens=50)
     lm += f"Answer: " + guidance.gen(name="result_string", regex=r"\d+\.?\d*")
 
     return lm
@@ -52,8 +52,10 @@ def guidance_generation(
     _logger.debug("Starting guidance_generation")
     if common:
         raise ValueError("Common Data not supported!")
-    
-    result = lm + zero_shot_gsm8k(question=input["question"], examples=input["examples"])
+
+    result = lm + zero_shot_gsm8k(
+        question=input["question"], examples=input["examples"]
+    )
 
     _logger.info(f"result_string: {result['result_string']}")
 
