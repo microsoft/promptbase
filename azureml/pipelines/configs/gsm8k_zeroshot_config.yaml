@@ -3,7 +3,7 @@ defaults:
   - aml_config
   - aoai_config
 
-zeroshot_config:
+zeroorfewshot_config:
   pipeline:
     base_experiment_name: gsm8k_zeroorfewshot_debugging
     tags:

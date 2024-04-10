@@ -27,7 +27,7 @@ _logger = get_standard_logger_for_file(__file__)
 
 @dataclass
 class PipelineConfig:
-    zeroshot_config: GSM8KZeroOrFewShotConfig = omegaconf.MISSING
+    zeroorfewshot_config: GSM8KZeroOrFewShotConfig = omegaconf.MISSING
     azureml_config: AMLConfig = omegaconf.MISSING
 
 
@@ -121,7 +121,7 @@ def main(config: PipelineConfig):
     )
 
     pipeline = create_gsm8k_zeroshot_pipeline(
-        ws_client, config.zeroshot_config, version_string
+        ws_client, config.zeroorfewshot_config, version_string
     )
     _logger.info("Submitting pipeline")
     submitted_job = ws_client.jobs.create_or_update(pipeline)
