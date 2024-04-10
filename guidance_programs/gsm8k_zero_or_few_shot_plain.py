@@ -18,19 +18,27 @@ _logger.addHandler(logging.StreamHandler(stream=sys.stdout))
 def zero_shot_gsm8k(
     lm: guidance.models.Instruct,
     question: str,
-    common: list[dict[str, Any]] | None,
+    examples: list[dict[str, Any]] | None,
 ):
     # Some general instruction to the model
-    lm += """Taking a maths test. Answer the following question. Respond with just the numerical answer:
-"""
+    lm += """You are taking a maths test\n\n"""
 
-    if common:
-        _logger.debug("Adding few shot examples")
-        raise ValueError("common data not yet supported")
+    # Show the few shots
+    for e in examples:
+        lm += f"Question: {e['question']}\n"
+        lm += f"Reasoning:"
+        for t in e["thoughts"]:
+            lm += t["step"] + t["result"]
+        lm += f"Answer: {e['answer']}"
+        lm += "\n"
+    
+    # Now ask the question
+    lm += f"Question: {question}\n"
+    lm += f"Reasoning:"
+    lm += guidance.gen("reasons")
+    lm += f"Answer: " + guidance.gen(name="result_string")
 
-    lm += question
-
-    return lm + guidance.gen(name="result_string")
+    return lm
 
 
 def guidance_generation(
@@ -39,9 +47,12 @@ def guidance_generation(
     common: list[dict[str, Any]] | None = None,
 ) -> Dict[str, Any]:
     _logger.debug("Starting guidance_generation")
-    result = lm + zero_shot_gsm8k(question=input["question"], common=common)
+    if common:
+        raise ValueError("Common Data not supported!")
+    
+    result = lm + zero_shot_gsm8k(question=input["question"], examples=input["examples"])
 
-    _logger.info(f"JSON portion: {result['result_string']}")
+    _logger.info(f"result_string: {result['result_string']}")
 
     float_result = float(result['result_string'])
 

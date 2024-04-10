@@ -136,7 +136,7 @@ class Phi2BiosBiasJSONPipelineConfig:
 
 
 @dataclass
-class GSM8KZeroShotConfig:
+class GSM8KZeroOrFewShotConfig:
     pipeline: PipelineConfig = field(default_factory=PipelineConfig)
     json_guidance_programs: list[str] = field(default_factory=list)
     llamacpp_config: LlamaCppConfig = field(default_factory=LlamaCppConfig)

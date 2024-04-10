@@ -18,7 +18,7 @@ from azure.ai.ml.entities import Pipeline
 
 from azureml_pipelines import create_zeroshot_pipeline
 from azureml_utils import get_component_collector
-from configs import AMLConfig, GSM8KZeroShotConfig
+from configs import AMLConfig, GSM8KZeroOrFewShotConfig
 from constants import GUIDANCE_PROGRAMS_DIR
 from logging_utils import get_standard_logger_for_file
 
@@ -27,7 +27,7 @@ _logger = get_standard_logger_for_file(__file__)
 
 @dataclass
 class PipelineConfig:
-    zeroshot_config: GSM8KZeroShotConfig = omegaconf.MISSING
+    zeroshot_config: GSM8KZeroOrFewShotConfig = omegaconf.MISSING
     azureml_config: AMLConfig = omegaconf.MISSING
 
 
@@ -36,7 +36,7 @@ cs.store(name="config", node=PipelineConfig)
 
 
 def create_gsm8k_zeroshot_pipeline(
-    ml_client: MLClient, run_config: GSM8KZeroShotConfig, version_string: str
+    ml_client: MLClient, run_config: GSM8KZeroOrFewShotConfig, version_string: str
 ):
     components = get_component_collector(ml_client, version_string)
 
