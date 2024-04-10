@@ -140,4 +140,6 @@ class GSM8KZeroShotConfig:
     pipeline: PipelineConfig = field(default_factory=PipelineConfig)
     json_guidance_programs: list[str] = field(default_factory=list)
     llamacpp_config: LlamaCppConfig = field(default_factory=LlamaCppConfig)
+    random_seed: int = int()
+    n_samples: int = int()
 

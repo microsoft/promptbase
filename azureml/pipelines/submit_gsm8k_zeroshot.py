@@ -56,17 +56,29 @@ def create_gsm8k_zeroshot_pipeline(
         mmlu_fetch_job = components.jsonl_gsm8k_fetch()
         mmlu_fetch_job.name = f"fetch_gsm8k"
 
-        get_split_job = components.uri_folder_to_file(
-            input_dataset=mmlu_fetch_job.outputs.output_dataset,
-            filename_pattern=f"test.jsonl",
+        split_outputs = dict()
+        for s in ["train", "test"]:
+            get_split_job = components.uri_folder_to_file(
+                input_dataset=mmlu_fetch_job.outputs.output_dataset,
+                filename_pattern=f"{s}.jsonl",
+            )
+            get_split_job.name = f"extract_split_{s}"
+            split_outputs[s] = get_split_job.outputs.output_dataset
+
+        random_examples_job = components.jsonl_random_examples(
+            input_dataset=split_outputs["train"],
+            example_dataset=split_outputs["test"],
+            output_key="examples",
+            num_examples=run_config.n_samples,
+            random_seed=run_config.random_seed
         )
-        get_split_job.name = f"extract_split_test"
+        random_examples_job.name=f"add_random_examples"
 
         for progname, prog_input in guidance_inputs.items():
 
             guidance_job = components.jsonl_guidance_mistral7b(
                 guidance_program=prog_input,
-                input_dataset=get_split_job.outputs.output_dataset,
+                input_dataset=random_examples_job.outputs.output_dataset,
             )
             guidance_job.compute = run_config.llamacpp_config.compute_target
             guidance_job.name = f"guidance_mistral7b_{progname}"
