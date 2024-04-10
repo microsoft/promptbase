@@ -40,6 +40,17 @@ def create_gsm8k_zeroshot_pipeline(
 ):
     components = get_component_collector(ml_client, version_string)
 
+    guidance_inputs = dict()
+    for prog_filename in run_config.json_guidance_programs:
+        k = prog_filename[0:-3]
+        v = Input(
+            type="uri_file",
+            path=GUIDANCE_PROGRAMS_DIR / prog_filename,
+            model="download",
+        )
+        guidance_inputs[k] = v
+    _logger.info(f"Found {len(guidance_inputs)} guidance programs")
+
     @dsl.pipeline()
     def basic_pipeline() -> Pipeline:
         mmlu_fetch_job = components.jsonl_gsm8k_fetch()
@@ -50,6 +61,15 @@ def create_gsm8k_zeroshot_pipeline(
             filename_pattern=f"test.jsonl",
         )
         get_split_job.name = f"extract_split_test"
+
+        for progname, prog_input in guidance_inputs.items():
+
+            guidance_job = components.jsonl_guidance_mistral7b(
+                guidance_program=prog_input,
+                input_dataset=get_split_job.outputs.output_dataset,
+            )
+            guidance_job.compute = run_config.transformer_config.compute_target
+            guidance_job.name = f"guidance_mistral7b_{progname}"
 
     pipeline = basic_pipeline()
     pipeline.experiment_name = f"{run_config.pipeline.base_experiment_name}"

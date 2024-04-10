@@ -52,8 +52,22 @@ outputs:
 code: ./src/
 
 command: |
-  # Get guidance from GitHub
-  pip install --upgrade git+https://github.com/guidance-ai/guidance
+  # Download the zip
+  wget https://github.com/guidance-ai/guidance/archive/refs/heads/main.zip
+  echo
+  ls
+  echo
+  # Unzip
+  unzip ./main.zip
+  echo
+  ls -p
+  echo
+  # Install from download
+  pip install --upgrade ./guidance-main/
+  echo
+  # Install LlamaCpp
+  CMAKE_ARGS="-DLLAMA_CUBLAS=on" pip install "llama-cpp-python<0.2.58"
+  echo
   # Run the script
   python ./jsonl_guidance_mistral7b.py \
     --guidance_program ${{ inputs.guidance_program }} \

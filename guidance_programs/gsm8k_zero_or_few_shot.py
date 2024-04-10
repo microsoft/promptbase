@@ -1,5 +1,6 @@
 # This is a very naive guidance program for GSM8K
 
+import json
 import logging
 import sys
 
@@ -30,9 +31,9 @@ def zero_shot_gsm8k(
 
     lm += question
 
-    schema_obj = dict(type="object", properties=dict(string_result="number"))
+    schema_obj = dict(type="object", properties=dict(answer=dict(type="number")))
 
-    return lm + guidance.json(name="string_result", schema=schema_obj)
+    return lm + guidance.json(name="json_result_object", schema=schema_obj)
 
 
 def guidance_generation(
@@ -43,7 +44,10 @@ def guidance_generation(
     _logger.debug("Starting guidance_generation")
     result = lm + zero_shot_gsm8k(question=input["question"], common=common)
 
-    _logger.debug(f"Result: {result}")
+    _logger.info(f"Result: {result}")
+    _logger.info(f"JSON portion: {result['json_result_object']}")
 
-    result = dict(zero_or_few_shot_choice=float(result["string_result"]))
+    loaded_obj = json.loads(result["json_result_object"])
+
+    result = dict(zero_or_few_shot_answer=loaded_obj["answer"])
     return result

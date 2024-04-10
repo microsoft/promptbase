@@ -7,6 +7,8 @@ from typing import Any, Callable, Dict
 
 import guidance
 
+from huggingface_hub import hf_hub_download
+
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
@@ -92,12 +94,14 @@ def main():
     else:
         _logger.info("No common dataset present")
 
-    guidance_model = guidance.models.Transformers(
-        "mistralai/Mistral-7B-v0.1",
-        device_map="cuda:0",
-        echo=False,
+    repo_id = "TheBloke/Mistral-7B-Instruct-v0.2-GGUF"
+    filename = "mistral-7b-instruct-v0.2.Q8_0.gguf"
+    downloaded_file = hf_hub_download(repo_id=repo_id, filename=filename)
+
+    guidance_model = guidance.models.LlamaCpp(
+        downloaded_file, verbose=True, n_gpu_layers=-1
     )
-    _logger.info(f"guidance_model.device: {guidance_model.engine.device}")
+    # _logger.info(f"guidance_model.device: {guidance_model.engine.device}")
 
     processor = LLMProcessor(
         program_path=args.guidance_program,
@@ -105,6 +109,7 @@ def main():
         common_data=common_data,
     )
 
+    _logger.info("Starting to process input")
     s, f = line_map(
         map_func=processor,
         source_file=args.input_dataset,
