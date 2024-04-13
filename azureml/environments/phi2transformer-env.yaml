@@ -21,4 +21,6 @@ conda_file:
       - accelerate
       - aether-utils==0.0.1.dev1
       - guidance>=0.1.13
+      - jsonschema
+      - pydantic
       - transformers
