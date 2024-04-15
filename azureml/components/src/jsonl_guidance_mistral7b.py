@@ -99,7 +99,7 @@ def main():
     downloaded_file = hf_hub_download(repo_id=repo_id, filename=filename)
 
     guidance_model = guidance.models.LlamaCpp(
-        downloaded_file, verbose=True, n_gpu_layers=-1
+        downloaded_file, verbose=True, n_gpu_layers=-1, n_ctx=4096
     )
     # _logger.info(f"guidance_model.device: {guidance_model.engine.device}")
 
