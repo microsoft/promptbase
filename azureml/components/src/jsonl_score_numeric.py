@@ -37,7 +37,9 @@ class Scorer:
             if y_t == y_p:
                 n_correct += 1
         result["n_correct"] = n_correct
-        result["accuracy"] = float(n_correct) / len(self.y_true)
+        result["accuracy"] = 0
+        if len(self.y_true) > 0:
+            result["accuracy"] = float(n_correct) / len(self.y_true)
 
         return result
 
