@@ -27,9 +27,11 @@ def zero_shot_gsm8k(
     for e in examples:
         lm += f"Question: {e['question']}\n"
         lm += f"Reasoning:\n"
-        for t in e["thoughts"]:
-            lm += t["step"]
+        for i, t in enumerate(e["thoughts"]):
+            lm += f"{i+1}.  {t['step']}"
             if "result" in t:
+                lm += " "
+                lm += t["calculation"]
                 lm += t["result"]
             lm += "\n"
         lm += f"Answer: {e['answer']}\n"

@@ -6,6 +6,8 @@ import sys
 
 from typing import Any, Dict
 
+from jsonschema import validate
+
 import guidance
 
 
@@ -26,7 +28,17 @@ def zero_shot_gsm8k(
     response_schema = dict(
         type="object",
         properties=dict(
-            thoughts=dict(type="array", items=dict(type="string")),
+            thoughts=dict(
+                type="array",
+                items=dict(
+                    type="object",
+                    properties=dict(
+                        step=dict(type="string"),
+                        calculation=dict(type="string"),
+                        result=dict(type="string"),
+                    ),
+                ),
+            ),
             result=dict(type="number"),
         ),
     )
@@ -37,11 +49,13 @@ def zero_shot_gsm8k(
 
         nxt_obj = dict(result=e["answer"], thoughts=[])
         for t in e["thoughts"]:
-            nxt_thought = t["step"]
+            nxt_thought = dict(step=t["step"])
             if "result" in t:
-                nxt_thought += t["result"]
+                nxt_thought["calculation"] = t["calculation"]
+                nxt_thought["result"] += t["result"]
             nxt_obj["thoughts"].append(nxt_thought)
 
+        validate(nxt_obj, schema=response_schema)
         lm += guidance.library._json._to_compact_json(nxt_obj)
         lm += "\n"
 
