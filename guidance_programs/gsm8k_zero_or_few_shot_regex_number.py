@@ -26,7 +26,7 @@ def zero_shot_gsm8k(
     # Show the few shots
     for e in examples:
         lm += f"Question: {e['question']}\n"
-        lm += f"Reasoning:"
+        lm += f"Reasoning:\n"
         for t in e["thoughts"]:
             lm += t["step"]
             if "result" in t:
@@ -38,7 +38,8 @@ def zero_shot_gsm8k(
     # Now ask the question
     lm += f"Question: {question}\n"
     lm += f"Reasoning:"
-    lm += guidance.gen("reasons", max_tokens=50)
+    lm += guidance.gen("reasons", max_tokens=100)
+    lm += "\n"
     lm += f"Answer: " + guidance.gen(name="result_string", regex=r"-?\d+\.?\d*")
 
     return lm
@@ -61,5 +62,5 @@ def guidance_generation(
 
     float_result = float(result["result_string"])
 
-    result = dict(zero_or_few_shot_answer=float_result)
+    result = dict(zero_or_few_shot_answer=float_result, final_lm=str(result))
     return result

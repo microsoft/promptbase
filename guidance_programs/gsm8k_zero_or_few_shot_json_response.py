@@ -72,5 +72,6 @@ def guidance_generation(
     result = dict(
         zero_or_few_shot_answer=loaded_obj["result"],
         zero_or_few_show_thoughts=loaded_obj["thoughts"],
+        final_lm=str(result),
     )
     return result
