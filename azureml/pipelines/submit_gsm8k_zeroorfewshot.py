@@ -65,12 +65,19 @@ def create_gsm8k_zeroshot_pipeline(
             get_split_job.name = f"extract_split_{s}"
             split_outputs[s] = get_split_job.outputs.output_dataset
 
-        random_examples_job = components.jsonl_random_examples(
+        sample_lines_job = components.jsonl_sample_lines(
             input_dataset=split_outputs["train"],
+            n_samples=run_config.n_samples,
+            random_seed=run_config.sample_random_seed
+        )
+        sample_lines_job.name= f"sample_{run_config.n_samples}_lines"
+
+        random_examples_job = components.jsonl_random_examples(
+            input_dataset=sample_lines_job.outputs.output_dataset,
             example_dataset=split_outputs["test"],
             output_key="examples",
-            num_examples=run_config.n_samples,
-            random_seed=run_config.random_seed
+            num_examples=run_config.n_fewshot,
+            random_seed=run_config.fewshot_random_seed
         )
         random_examples_job.name=f"add_random_examples"
 

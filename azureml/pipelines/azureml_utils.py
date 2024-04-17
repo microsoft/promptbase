@@ -22,6 +22,7 @@ ALL_COMPONENTS = dict(
     jsonl_knn_cosine_similarity="jsonl_knn_cosine_similarity_component.yaml",
     jsonl_mmlu_fetch="jsonl_mmlu_fetch_component.yaml",
     jsonl_random_examples="jsonl_random_examples_component.yaml",
+    jsonl_sample_lines="jsonl_sample_lines_component.yaml",
     jsonl_schema_checker="jsonl_schema_checker_component.yaml",
     jsonl_score_biosbias_json="jsonl_score_biosbias_json_component.yaml",
     jsonl_score_multiplechoice="jsonl_score_multiplechoice_component.yaml",

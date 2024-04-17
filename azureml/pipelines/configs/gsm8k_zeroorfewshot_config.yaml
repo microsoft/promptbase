@@ -15,5 +15,7 @@ zeroorfewshot_config:
     - gsm8k_zero_or_few_shot_json_response.py
   llamacpp_config:
     compute_target: gput4
-  random_seed: 4521
-  n_samples: 5
+  fewshot_random_seed: 4521
+  n_fewshot: 5
+  sample_random_seed: 234891
+  n_samples: 400
