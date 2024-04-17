@@ -19,6 +19,7 @@ conda_file:
       # ... so we have to add PyPI back in as an alternative index
       - --extra-index-url https://pypi.org/simple
       - accelerate
+      - azureml-mlflow
       - aether-utils==0.0.1.dev1
       - guidance>=0.1.13
       - jsonschema
