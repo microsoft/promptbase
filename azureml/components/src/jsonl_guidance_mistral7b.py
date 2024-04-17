@@ -2,6 +2,7 @@ import argparse
 import importlib.util
 import json
 import pathlib
+import time
 
 from typing import Any, Callable, Dict
 
@@ -9,7 +10,8 @@ import guidance
 
 from huggingface_hub import hf_hub_download
 
-import torch
+import mlflow
+
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from aether_utils.jsonl_utils import line_map
@@ -56,16 +58,21 @@ class LLMProcessor:
         self._model = model
         self._guidance_function = self._get_guidance_function()
         self._common_data = common_data
+        self._step = 0
 
     def __call__(self, item: Dict[str, Any]) -> dict[str, any]:
         _logger.debug(f"__call__: {item}")
+        start = time.time()
         result = self._guidance_function(self._model, item, common=self._common_data)
+        stop = time.time()
+        mlflow.log_metric("time_taken", value=stop-start, step=self._step)
         _logger.debug(f"Checking keys")
         for k in result.keys():
             assert k not in item, f"Duplicate key: {k}"
 
         _logger.debug(f"Updating item")
         item.update(**result)
+        self._step += 1
 
         return item
 
