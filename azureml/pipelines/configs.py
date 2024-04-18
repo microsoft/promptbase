@@ -30,6 +30,7 @@ class AOAIConfig:
 class Phi2Config:
     compute_target: str = str()
 
+
 @dataclass
 class LlamaCppConfig:
     compute_target: str = str()
@@ -144,4 +145,3 @@ class GSM8KZeroOrFewShotConfig:
     n_fewshot: int = int()
     sample_random_seed: int = int()
     n_samples: int = int()
-

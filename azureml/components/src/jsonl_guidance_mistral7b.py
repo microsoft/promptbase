@@ -65,7 +65,7 @@ class LLMProcessor:
         start = time.time()
         result = self._guidance_function(self._model, item, common=self._common_data)
         stop = time.time()
-        mlflow.log_metric("time_taken", value=stop-start, step=self._step)
+        mlflow.log_metric("time_taken", value=stop - start, step=self._step)
         _logger.debug(f"Checking keys")
         for k in result.keys():
             assert k not in item, f"Duplicate key: {k}"

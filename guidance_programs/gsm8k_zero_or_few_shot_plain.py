@@ -35,7 +35,8 @@ def zero_shot_gsm8k(
                 lm += t["result"]
             lm += "\n"
         lm += f"Answer: {e['answer']}\n"
-        lm += "\n\n"
+        lm += "\n"
+    lm += "\n"
 
     # Now ask the question
     lm += f"Question: {question}\n"
