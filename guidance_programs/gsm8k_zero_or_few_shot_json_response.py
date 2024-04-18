@@ -47,13 +47,14 @@ def zero_shot_gsm8k(
     for e in examples:
         lm += f"Question: {e['question']}\n"
 
-        nxt_obj = dict(result=e["answer"], thoughts=[])
+        nxt_obj = dict(thoughts=[])
         for t in e["thoughts"]:
-            nxt_thought = dict(step=t["step"])
+            nxt_thought = dict(step=t["step"], calculation="", result="")
             if "result" in t:
                 nxt_thought["calculation"] = t["calculation"]
-                nxt_thought["result"] += t["result"]
+                nxt_thought["result"] = t["result"]
             nxt_obj["thoughts"].append(nxt_thought)
+        nxt_obj["result"] = e["answer"]
 
         validate(nxt_obj, schema=response_schema)
         lm += guidance.library._json._to_compact_json(nxt_obj)
@@ -75,13 +76,13 @@ def guidance_generation(
     if common:
         raise ValueError("Common Data not supported!")
 
-    result = lm + zero_shot_gsm8k(
+    llm_result = lm + zero_shot_gsm8k(
         question=input["question"], examples=input["examples"]
     )
 
-    _logger.info(f"result_string: {result['response_json']}")
+    _logger.info(f"result_string: {llm_result['response_json']}")
 
-    loaded_obj = json.loads(result["response_json"])
+    loaded_obj = json.loads(llm_result["response_json"])
 
     result = dict(
         zero_or_few_shot_answer=loaded_obj["result"],
