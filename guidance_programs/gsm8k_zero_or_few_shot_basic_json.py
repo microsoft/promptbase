@@ -35,12 +35,12 @@ def zero_shot_gsm8k(
                 lm += t["result"]
             lm += "\n"
         lm += f"Answer: {e['answer']}"
-        lm += "\n"
+        lm += "\n\n"
 
     # Now ask the question
     lm += f"Question: {question}\n"
     lm += f"Reasoning:"
-    lm += guidance.gen("reasons", max_tokens=100)
+    lm += guidance.gen("reasons", max_tokens=100, stop="\n")
     lm += "\n"
     lm += f"Answer: " + guidance.json(name="result_string", schema=dict(type="number"))
 

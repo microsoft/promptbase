@@ -54,6 +54,7 @@ def zero_shot_gsm8k(
                 nxt_thought["calculation"] = t["calculation"]
                 nxt_thought["result"] += t["result"]
             nxt_obj["thoughts"].append(nxt_thought)
+        lm += "\n"
 
         validate(nxt_obj, schema=response_schema)
         lm += guidance.library._json._to_compact_json(nxt_obj)

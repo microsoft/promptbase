@@ -35,14 +35,16 @@ def zero_shot_gsm8k(
                 lm += t["result"]
             lm += "\n"
         lm += f"Answer: {e['answer']}"
-        lm += "\n"
+        lm += "\n\n"
 
     # Now ask the question
     lm += f"Question: {question}\n"
     lm += f"Reasoning:"
-    lm += guidance.gen("reasons", max_tokens=100)
+    lm += guidance.gen("reasons", max_tokens=100, stop="\n")
     lm += "\n"
-    lm += f"Answer: " + guidance.gen(name="result_string", regex=r"-?\d+\.?\d*")
+    lm += f"Answer: " + guidance.gen(
+        name="result_string", regex=r"-?\d+\.?\d*", stop="\n"
+    )
 
     return lm
 
