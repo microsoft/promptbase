@@ -52,6 +52,11 @@ outputs:
 code: ./src/
 
 command: |
+  # Install Rust toolchain
+  #apt update
+  #apt upgrade -y
+  #apt install -y rustc build-essential
+  #pip install setup-rust
   # Download the zip
   wget https://github.com/guidance-ai/guidance/archive/refs/heads/main.zip
   echo
