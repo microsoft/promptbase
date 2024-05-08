@@ -5,6 +5,9 @@ from typing import Any
 
 import datasets
 
+from azure.identity import DefaultAzureCredential
+from azure.ai.ml import MLClient
+
 from aether_utils.jsonl_file_utils import JSONLWriter
 from aether_utils.logging_utils import get_standard_logger_for_file
 
@@ -108,10 +111,34 @@ def parse_args():
     return args
 
 
+
+def process_data_split(data, subject: str) -> list[dict[str, Any]]:
+    all_questions = []
+    for line in data:
+        nxt = dict(
+            dataset="mmlu",
+            subject=subject,
+            question=line["question"],
+            choices=line["choices"],
+            correct_answer=line["answer"],
+        )
+        all_questions.append(nxt)
+
+    return all_questions
+
+
 def main():
     args = parse_args()
     assert args.workspace_config.exists(), f"Could not find {args.workspace_config}"
+
+    _logger.info("Creating AzureML client")
+    credential = DefaultAzureCredential(exclude_shared_token_cache_credential=True)
+    ml_client = MLClient.from_config(credential, path=args.workspace_config)
+
     _logger.info(f"Fetching {args.mmlu_dataset}")
+    hf_data = datasets.load_dataset("tasksource/mmlu", args.mmlu_dataset)
+
+    all_questions = process_data_split(hf_data[args.split], args.mmlu_dataset)
 
     _logger.info("Complete")
 
