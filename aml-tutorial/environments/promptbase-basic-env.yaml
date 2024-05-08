@@ -1,0 +1,24 @@
+$schema: https://azuremlschemas.azureedge.net/latest/environment.schema.json
+
+name: promptbase_basic
+description: |
+  A simple environment for promptbase
+
+image: mcr.microsoft.com/azureml/inference-base-2004
+conda_file:
+  channels:
+    - defaults
+  dependencies:
+    - python=3.12
+    - pip
+    - pip:
+      - aether-utils==0.0.1.dev1
+      - azure-identity
+      - azure-keyvault-secrets
+      - azureml-mlflow
+      - guidance>0.1.5
+      - jsonschema
+      - mlflow
+      - numpy
+      - openai>=1
+      - scikit-learn
