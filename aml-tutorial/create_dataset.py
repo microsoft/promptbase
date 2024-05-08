@@ -1,14 +1,19 @@
 import argparse
 import pathlib
+import tempfile
+import time
 
 from typing import Any
 
 import datasets
 
-from azure.identity import DefaultAzureCredential
 from azure.ai.ml import MLClient
+from azure.ai.ml.constants import AssetTypes
+from azure.ai.ml.entities import Data
 
-from aether_utils.jsonl_file_utils import JSONLWriter
+from azure.identity import DefaultAzureCredential
+
+from aether_utils.jsonl_file_utils import save_jsonl
 from aether_utils.logging_utils import get_standard_logger_for_file
 
 _logger = get_standard_logger_for_file(__file__)
@@ -111,7 +116,6 @@ def parse_args():
     return args
 
 
-
 def process_data_split(data, subject: str) -> list[dict[str, Any]]:
     all_questions = []
     for line in data:
@@ -138,7 +142,28 @@ def main():
     _logger.info(f"Fetching {args.mmlu_dataset}")
     hf_data = datasets.load_dataset("tasksource/mmlu", args.mmlu_dataset)
 
+    _logger.info(f"Reformatting data")
     all_questions = process_data_split(hf_data[args.split], args.mmlu_dataset)
+
+    with tempfile.TemporaryDirectory() as temp_dir:
+        out_dir = pathlib.Path(temp_dir)
+
+        dataset_name = f"mmlu_{args.mmlu_dataset}_{args.split}"
+
+        out_file = out_dir / f"{dataset_name}.jsonl"
+        save_jsonl(out_file, data=all_questions, destination_encoding="utf-8-sig")
+
+        aml_data = Data(
+            name=dataset_name,
+            version=str(int(time.time())),
+            description="Sample multiple choice dataset",
+            path=out_file,
+            type=AssetTypes.URI_FILE,
+        )
+        returned_data = ml_client.data.create_or_update(aml_data)
+        _logger.info(
+            f"Created dataset {returned_data.name} at version {returned_data.version}"
+        )
 
     _logger.info("Complete")
 
