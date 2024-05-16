@@ -1,12 +1,13 @@
 import argparse
+import json
 import pathlib
 import time
 
 from azure.identity import DefaultAzureCredential
 
-from azure.ai.ml import Input, MLClient, load_component, load_environment
+from azure.ai.ml import dsl, Input, MLClient, load_component, load_environment
 
-from azure.ai.ml.entities import Component, Environment
+from azure.ai.ml.entities import Component, Environment, Pipeline
 
 from aether_utils.logging_utils import get_standard_logger_for_file
 
@@ -32,6 +33,13 @@ def parse_args():
         type=pathlib.Path,
         required=True,
         help="Path to the guidance program to be run",
+    )
+
+    parser.add_argument(
+        "--other_config",
+        type=pathlib.Path,
+        required=True,
+        help="Path to file containing other configuration information",
     )
 
     args = parser.parse_args()
@@ -73,6 +81,11 @@ def main():
     args = parse_args()
     assert args.workspace_config.exists(), f"Could not find {args.workspace_config}"
     assert args.guidance_program.exists(), f"Could not find {args.guidance_program}"
+    assert args.other_config.exists(), f"Couldnot find {args.other_config}"
+
+    with open(args.other_config, "r") as jf:
+        other_config = json.load(jf)
+    _logger.info(f"Read in {args.other_config}")
 
     version_string = str(int(time.time()))
     _logger.info(f"AzureML object version for this run: {version_string}")
@@ -82,7 +95,7 @@ def main():
     ml_client = MLClient.from_config(credential, path=args.workspace_config)
 
     _logger.info("Obtaining MMLU dataset")
-    data = ml_client.data.get(name=args.dataset_name, label="latest")
+    mmlu_ds = ml_client.data.get(name=args.dataset_name, label="latest")
 
     _logger.info("Creating the Promptbase Environment")
     promptbase_env = create_environment_from_yaml(
@@ -105,6 +118,29 @@ def main():
         path=args.guidance_program,
         model="download",
     )
+
+    # -------------------------------------
+
+    @dsl.pipeline()
+    def basic_pipeline(guidance_program_input, dataset_input) -> Pipeline:
+        guidance_job = jsonl_guidance_aoai(
+            guidance_program=guidance_program_input,
+            guidance_workers=4,
+            max_errors=10,
+            input_dataset=dataset_input,
+            azure_openai_endpoint=other_config["aoai_endpoint"],
+            azure_openai_deployed_model=other_config["aoai_endpoint"],
+        )
+        guidance_job.name = "run_aoai_guidance"
+        guidance_job.compute = other_config["aoai_compute"]
+
+    constructed_pipeline = basic_pipeline(guidance_program_ds, mmlu_ds)
+    constructed_pipeline.experiment_name = f"simple_{args.dataset_name}"
+    constructed_pipeline.compute = other_config["general_compute"]
+
+    _logger.info("Submitting pipeline")
+    submitted_job = ml_client.jobs.create_or_update(constructed_pipeline)
+    _logger.info(f"Submitted: {submitted_job.name}")
 
     _logger.info("Script Complete. Monitor experiment in AzureML Portal")
 
