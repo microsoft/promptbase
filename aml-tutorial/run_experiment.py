@@ -4,7 +4,7 @@ import time
 
 from azure.identity import DefaultAzureCredential
 
-from azure.ai.ml import MLClient, load_component, load_environment
+from azure.ai.ml import Input, MLClient, load_component, load_environment
 
 from azure.ai.ml.entities import Component, Environment
 
@@ -25,6 +25,13 @@ def parse_args():
 
     parser.add_argument(
         "--dataset_name", type=str, required=True, help="Name of the dataset to process"
+    )
+
+    parser.add_argument(
+        "--guidance_program",
+        type=pathlib.Path,
+        required=True,
+        help="Path to the guidance program to be run",
     )
 
     args = parser.parse_args()
@@ -65,6 +72,7 @@ def create_component_from_yaml(
 def main():
     args = parse_args()
     assert args.workspace_config.exists(), f"Could not find {args.workspace_config}"
+    assert args.guidance_program.exists(), f"Could not find {args.guidance_program}"
 
     version_string = str(int(time.time()))
     _logger.info(f"AzureML object version for this run: {version_string}")
@@ -74,12 +82,12 @@ def main():
     ml_client = MLClient.from_config(credential, path=args.workspace_config)
 
     _logger.info("Obtaining MMLU dataset")
-    data = ml_client.data.get(name=args.dataset_name)
+    data = ml_client.data.get(name=args.dataset_name, label="latest")
 
     _logger.info("Creating the Promptbase Environment")
     promptbase_env = create_environment_from_yaml(
         ml_client,
-        pathlib.Path("./environments/promptbase-basic-env.yml"),
+        pathlib.Path("./environments/promptbase-basic-env.yaml"),
         version_string,
     )
 
@@ -89,6 +97,13 @@ def main():
         pathlib.Path("./components/jsonl_guidance_component.yaml"),
         version_string=version_string,
         environment=promptbase_env,
+    )
+
+    _logger.info("Registering the guidance program as an Input")
+    guidance_program_ds = Input(
+        type="uri_file",
+        path=args.guidance_program,
+        model="download",
     )
 
     _logger.info("Script Complete. Monitor experiment in AzureML Portal")
