@@ -4,7 +4,9 @@ import time
 
 from azure.identity import DefaultAzureCredential
 
-from azure.ai.ml import MLClient
+from azure.ai.ml import MLClient, load_component, load_environment
+
+from azure.ai.ml.entities import Component, Environment
 
 from aether_utils.logging_utils import get_standard_logger_for_file
 
@@ -29,6 +31,37 @@ def parse_args():
     return args
 
 
+def create_environment_from_yaml(
+    ml_client: MLClient, yaml_path: pathlib.Path, version_string: str
+) -> Environment:
+    _logger.info(f"Loading {yaml_path}")
+    loaded_yaml = load_environment(source=yaml_path)
+    _logger.info("Changing version")
+    loaded_yaml.version = version_string
+    _logger.info("Creating Environment")
+    my_env = ml_client.environments.create_or_update(loaded_yaml)
+    _logger.info(f"Environment {my_env.name}:{my_env.version} created")
+    return my_env
+
+
+def create_component_from_yaml(
+    ml_client: MLClient,
+    yaml_path: pathlib.Path,
+    version_string: str,
+    environment: Environment = None,
+) -> Component:
+    _logger.info(f"Loading {yaml_path}")
+    loaded_yaml = load_component(source=yaml_path)
+    _logger.info("Changing version")
+    loaded_yaml.version = version_string
+    _logger.info("Changing environment")
+    loaded_yaml.environment = environment
+    _logger.info("Creating component")
+    my_comp = ml_client.components.create_or_update(loaded_yaml)
+    _logger.info(f"Component {my_comp.name}:{my_comp.version} created")
+    return my_comp
+
+
 def main():
     args = parse_args()
     assert args.workspace_config.exists(), f"Could not find {args.workspace_config}"
@@ -42,8 +75,22 @@ def main():
 
     _logger.info("Obtaining MMLU dataset")
     data = ml_client.data.get(name=args.dataset_name)
-    
-    
+
+    _logger.info("Creating the Promptbase Environment")
+    promptbase_env = create_environment_from_yaml(
+        ml_client,
+        pathlib.Path("./environments/promptbase-basic-env.yml"),
+        version_string,
+    )
+
+    _logger.info("Creating the Guidance AOAI component")
+    jsonl_guidance_aoai = create_component_from_yaml(
+        ml_client,
+        pathlib.Path("./components/jsonl_guidance_component.yaml"),
+        version_string=version_string,
+        environment=promptbase_env,
+    )
+
     _logger.info("Script Complete. Monitor experiment in AzureML Portal")
 
 
