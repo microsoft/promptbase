@@ -135,6 +135,7 @@ def main():
         guidance_job.compute = other_config["aoai_compute"]
 
     constructed_pipeline = basic_pipeline(guidance_program_ds, mmlu_ds)
+    constructed_pipeline.display_name = None
     constructed_pipeline.experiment_name = f"simple_{args.dataset_name}"
     constructed_pipeline.compute = other_config["general_compute"]
 
