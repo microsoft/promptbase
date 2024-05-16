@@ -36,7 +36,8 @@ def parse_args():
     # Information about the model
     model_group = parser.add_argument_group("Model Endpoint")
     model_group.add_argument("--azure_openai_endpoint", type=str, required=True)
-    model_group.add_argument("--azure_openai_deployed_model", type=str, required=True)
+    model_group.add_argument("--azure_openai_deployment", type=str, required=True)
+    model_group.add_argument("--azure_openai_api_version", type=str, required=True)
 
     args = parser.parse_args()
     return args
@@ -57,7 +58,7 @@ def get_guidance_function(
 
 def get_model(
     endpoint: str,
-    model: str,
+    deployment: str,
 ) -> guidance.models.Model:
     _logger.debug("Attempting to create model object")
     token_provider = get_bearer_token_provider(
@@ -67,7 +68,7 @@ def get_model(
 
     # Pending a fix going into the released version of guidance,
     # we can only work with chat models
-    azureai_model = guidance.models.AzureOpenAIChat(
+    azureai_model = guidance.models.AzureOpenAI(
         model=model,
         azure_endpoint=endpoint,
         azure_ad_token_provider=token_provider,
