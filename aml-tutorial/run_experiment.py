@@ -42,8 +42,7 @@ def main():
 
     _logger.info("Obtaining MMLU dataset")
     data = ml_client.data.get(name=args.dataset_name)
-    import json
-    print(json.dumps(data._to_dict(), indent=4))
+    
     
     _logger.info("Script Complete. Monitor experiment in AzureML Portal")
 
