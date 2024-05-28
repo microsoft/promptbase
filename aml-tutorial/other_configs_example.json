@@ -1,0 +1,8 @@
+{
+    "aoai_endpoint": "https://SOMETHING.openai.azure.com/",
+    "aoai_deployment": "A_DEPLOYMENT_NAME",
+    "aoai_model": "gpt-4-32k",
+    "aoai_api_version": "2024-02-01",
+    "aoai_compute": "cluster_with_endpoint_permission",
+    "general_compute": "any_other_cluster"
+}

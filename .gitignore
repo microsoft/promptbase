@@ -24,3 +24,6 @@ azureml/**/outputs/*
 
 # DO include our schema jsons
 !azureml/json_schemas/*.json
+
+# Do include the example other_config
+!aml-tutorial/other_configs_example.json
