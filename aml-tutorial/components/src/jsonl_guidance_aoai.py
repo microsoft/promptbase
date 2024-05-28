@@ -37,6 +37,7 @@ def parse_args():
     model_group = parser.add_argument_group("Model Endpoint")
     model_group.add_argument("--azure_openai_endpoint", type=str, required=True)
     model_group.add_argument("--azure_openai_deployment", type=str, required=True)
+    model_group.add_argument("--azure_openai_model", type=str, required=True)
     model_group.add_argument("--azure_openai_api_version", type=str, required=True)
 
     args = parser.parse_args()
@@ -56,33 +57,22 @@ def get_guidance_function(
     return guidance_func
 
 
-def get_model(
-    endpoint: str,
-    deployment: str,
-) -> guidance.models.Model:
-    _logger.debug("Attempting to create model object")
-    token_provider = get_bearer_token_provider(
-        DefaultAzureCredential(), "https://cognitiveservices.azure.com/.default"
-    )
-    assert token_provider is not None
-
-    # Pending a fix going into the released version of guidance,
-    # we can only work with chat models
-    azureai_model = guidance.models.AzureOpenAI(
-        model=model,
-        azure_endpoint=endpoint,
-        azure_ad_token_provider=token_provider,
-    )
-
-    return azureai_model
-
-
 class GuidanceAzureML(ItemMapper):
-    def __init__(self, program_path: pathlib.Path, endpoint: str, model: str):
+    def __init__(
+        self,
+        *,
+        program_path: pathlib.Path,
+        endpoint: str,
+        deployment: str,
+        model: str,
+        api_version: str,
+    ):
         super().__init__()
         self._program_path = program_path
         self._endpoint = endpoint
+        self._deployment = deployment
         self._model = model
+        self._api_version = api_version
 
     def start_up(self, worker_id: int) -> None:
         _logger.info(f"Starting up {worker_id}")
@@ -97,9 +87,11 @@ class GuidanceAzureML(ItemMapper):
 
         # Pending a fix going into the released version of guidance,
         # we can only work with chat models
-        azureai_model = guidance.models.AzureOpenAIChat(
+        azureai_model = guidance.models.AzureOpenAI(
             model=self._model,
             azure_endpoint=self._endpoint,
+            azure_deployment=self._deployment,
+            version=self._api_version,
             azure_ad_token_provider=token_provider,
         )
 
@@ -126,7 +118,9 @@ def main():
     processor = GuidanceAzureML(
         program_path=args.guidance_program,
         endpoint=args.azure_openai_endpoint,
+        deployment=args.azure_openai_deployment,
         model=args.azure_openai_deployed_model,
+        api_version=args.azure_openai_api_version,
     )
 
     # Run the processing

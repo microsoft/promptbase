@@ -130,6 +130,7 @@ def main():
             input_dataset=dataset_input,
             azure_openai_endpoint=other_config["aoai_endpoint"],
             azure_openai_deployed_model=other_config["aoai_endpoint"],
+            azure_openai_api_version=other_config["aoai_api_version"]
         )
         guidance_job.name = "run_aoai_guidance"
         guidance_job.compute = other_config["aoai_compute"]

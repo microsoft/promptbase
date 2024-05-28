@@ -30,11 +30,19 @@ inputs:
     type: string
     optional: false
     description: The AzureAI OpenaAI endpoitn to call
-  azure_openai_deployed_model:
+  azure_openai_deployment:
+    type: string
+    optional: false
+    description: The name of the deployment from the portal
+  azure_openai_model:
     type: string
     optional: false
     default: gpt-3.5-turbo
     description: The OpenAI model behind the endpoint
+  azure_openai_api_version:
+    type: string
+    optional: false
+    description: The API version in use
 
 outputs:
   output_dataset:
@@ -53,7 +61,9 @@ command: >-
   --max_errors ${{ inputs.max_errors }}
   --input_dataset ${{ inputs.input_dataset }}
   --azure_openai_endpoint ${{ inputs.azure_openai_endpoint }}
-  --azure_openai_deployed_model ${{ inputs.azure_openai_deployed_model }}
+  --azure_openai_deployment ${{ inputs.azure_openai_deployment }}
+  --azure_openai_model ${{ inputs.azure_openai_model }}
+  --azure_openai_api_version ${{ inputs.azure_openai_api_version }}
   --output_dataset ${{ outputs.output_dataset }}
   --error_dataset ${{ outputs.error_dataset }}
 
