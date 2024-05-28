@@ -47,12 +47,13 @@ def parse_args():
 def get_guidance_function(
     program_path: pathlib.Path,
 ) -> Callable[[Dict[str, Any]], Dict[str, Any]]:
-    _logger.debug("Importing guidance file")
+    _logger.info(f"Importing guidance file: {program_path}")
     spec = importlib.util.spec_from_file_location(USER_MODULE, program_path)
     module_definition = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module_definition)
 
     guidance_func = getattr(module_definition, GUIDANCE_FUNCTION)
+    _logger.info("Guidance program imported")
 
     return guidance_func
 
@@ -78,6 +79,7 @@ class GuidanceAzureML(ItemMapper):
         _logger.info(f"Starting up {worker_id}")
         self._guidance_function = get_guidance_function(self._program_path)
         self._azure_credential = DefaultAzureCredential()
+        _logger.info(f"Start up complete {worker_id}")
 
     def _get_model(self) -> guidance.models.Model:
         token_provider = get_bearer_token_provider(
@@ -85,8 +87,6 @@ class GuidanceAzureML(ItemMapper):
         )
         assert token_provider is not None
 
-        # Pending a fix going into the released version of guidance,
-        # we can only work with chat models
         azureai_model = guidance.models.AzureOpenAI(
             model=self._model,
             azure_endpoint=self._endpoint,
@@ -98,7 +98,7 @@ class GuidanceAzureML(ItemMapper):
         return azureai_model
 
     def map(self, item: dict[str, any]) -> dict[str, any] | None:
-        _logger.debug(f"map: {item}")
+        _logger.info(f"map: {item}")
         language_model = self._get_model()
         result = self._guidance_function(language_model, item)
         _logger.debug(f"Checking keys")
@@ -119,7 +119,7 @@ def main():
         program_path=args.guidance_program,
         endpoint=args.azure_openai_endpoint,
         deployment=args.azure_openai_deployment,
-        model=args.azure_openai_deployed_model,
+        model=args.azure_openai_model,
         api_version=args.azure_openai_api_version,
     )
 

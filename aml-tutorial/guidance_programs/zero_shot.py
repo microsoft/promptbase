@@ -25,7 +25,7 @@ def zero_shot_multiple_choice(
     with system():
         lm += """You are a student taking a multiple choice test.
 You will be shown a question, followed by numbered multiple choice answers.
-Response with the number corresponding to the best answer.
+Respond with the number corresponding to the best answer.
 """
 
     with user():
@@ -44,12 +44,12 @@ def guidance_generation(
     lm: guidance.models.Model,
     input: Dict[str, Any],
 ) -> Dict[str, Any]:
-    _logger.debug("Starting guidance_generation")
+    _logger.info("Starting guidance_generation")
     result = lm + zero_shot_multiple_choice(
         question=input["question"], choices=input["choices"]
     )
 
-    _logger.debug(f"Result: {result}")
+    _logger.info(f"Result: {result}")
 
     result = dict(zero_or_few_shot_choice=int(result["string_choice"]))
     return result
