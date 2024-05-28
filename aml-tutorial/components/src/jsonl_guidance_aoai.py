@@ -86,6 +86,7 @@ class GuidanceAzureML(ItemMapper):
             self._azure_credential, "https://cognitiveservices.azure.com/.default"
         )
         assert token_provider is not None
+        _logger.info(f"Got token_provider")
 
         azureai_model = guidance.models.AzureOpenAI(
             model=self._model,
@@ -94,6 +95,7 @@ class GuidanceAzureML(ItemMapper):
             version=self._api_version,
             azure_ad_token_provider=token_provider,
         )
+        _logger.info(f"Created AzureOpenAI model")
 
         return azureai_model
 
