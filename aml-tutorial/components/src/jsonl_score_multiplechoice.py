@@ -70,7 +70,7 @@ def main():
     mlflow.log_metrics(summary)
     _logger.info("Writing output file")
 
-    with open(args.output_dataset, encoding=args.output_encoding, mode="w") as jf:
+    with open(args.output_dataset, encoding="utf-8-sig", mode="w") as jf:
         json.dump(summary, jf, indent=4)
 
 

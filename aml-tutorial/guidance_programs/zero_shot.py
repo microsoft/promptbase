@@ -51,5 +51,5 @@ def guidance_generation(
 
     _logger.info(f"Result: {result}")
 
-    result = dict(zero_or_few_shot_choice=int(result["string_choice"]))
+    result = dict(zero_shot_choice=int(result["string_choice"]))
     return result

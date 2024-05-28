@@ -112,6 +112,14 @@ def main():
         environment=promptbase_env,
     )
 
+    _logger.info("Creating the scorer component")
+    jsonl_score_multiplechoice = create_component_from_yaml(
+        ml_client,
+        pathlib.Path("./components/jsonl_score_multiplechoice_component.yaml"),
+        version_string=version_string,
+        environment=promptbase_env,
+    )
+
     _logger.info("Registering the guidance program as an Input")
     guidance_program_ds = Input(
         type="uri_file",
@@ -135,6 +143,13 @@ def main():
         )
         guidance_job.name = "run_aoai_guidance"
         guidance_job.compute = other_config["aoai_compute"]
+
+        score_job = jsonl_score_multiplechoice(
+            input_dataset=guidance_job.outputs.output_dataset,
+            correct_key="correct_answer",
+            response_key="zero_shot_choice",
+        )
+        score_job.name = "score_results"
 
     constructed_pipeline = basic_pipeline(guidance_program_ds, mmlu_ds)
     constructed_pipeline.display_name = None
