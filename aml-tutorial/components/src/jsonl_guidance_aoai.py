@@ -105,7 +105,7 @@ class GuidanceAzureML(ItemMapper):
         for k in result.keys():
             assert k not in item, f"Duplicate key: {k}"
 
-        _logger.debug(f"Updating item")
+        _logger.info(f"Updating item")
         item.update(**result)
 
         return item
