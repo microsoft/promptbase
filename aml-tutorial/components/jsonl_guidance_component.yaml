@@ -1,0 +1,72 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+
+name: jsonl_guidance_aoai
+version: 0.0.1pre1
+display_name: JSONL Guidance Azure Open AI
+type: command
+description: Runs a supplied Guidance program on every line of a JSONL file
+is_deterministic: false
+
+inputs:
+  guidance_program:
+    type: uri_file
+    optional: false
+    description: Python file containing the guidance program
+  guidance_workers:
+    type: integer
+    optional: false
+    default: 4
+    description: Number of workers to use
+  max_errors:
+    type: integer
+    optional: false
+    default: 5
+    description: Maximum number of failed lines to tolerate
+  input_dataset:
+    type: uri_file
+    optional: false
+    description: Dataset containing JSONL input
+  azure_openai_endpoint:
+    type: string
+    optional: false
+    description: The AzureAI OpenaAI endpoitn to call
+  azure_openai_deployment:
+    type: string
+    optional: false
+    description: The name of the deployment from the portal
+  azure_openai_model:
+    type: string
+    optional: false
+    default: gpt-3.5-turbo
+    description: The OpenAI model behind the endpoint
+  azure_openai_api_version:
+    type: string
+    optional: false
+    description: The API version in use
+
+outputs:
+  output_dataset:
+    type: uri_file
+    description: JSONL file
+  error_dataset:
+    type: uri_file
+    description: JSONL file containing failed lines
+
+code: ./src/
+
+command: >-
+  python ./jsonl_guidance_aoai.py
+  --guidance_program ${{ inputs.guidance_program }}
+  --guidance_workers ${{ inputs.guidance_workers }}
+  --max_errors ${{ inputs.max_errors }}
+  --input_dataset ${{ inputs.input_dataset }}
+  --azure_openai_endpoint ${{ inputs.azure_openai_endpoint }}
+  --azure_openai_deployment ${{ inputs.azure_openai_deployment }}
+  --azure_openai_model ${{ inputs.azure_openai_model }}
+  --azure_openai_api_version ${{ inputs.azure_openai_api_version }}
+  --output_dataset ${{ outputs.output_dataset }}
+  --error_dataset ${{ outputs.error_dataset }}
+
+environment:
+  # Will be updated when component uploads
+  image: azureml:promptbase_basic@latest
