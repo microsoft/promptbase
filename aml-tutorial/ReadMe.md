@@ -51,7 +51,7 @@ then ensure you are logged into Azure (e.g. with `az login`).
 The scripts in this repository always upload new versions of AzureML entities, with the `version` set to the current epoch seconds.
 This happens whether or not the underlying code actually changed.
 We do this to ensure that the latest code is always being used; trying to figure out exactly what needs to change is error-prone and the size of the uploaded entities is negligible.
-In a real system, once things like components have been debugged, we would put them in an AzureML registry, with more stable versioning.
+In a real system, once things like components have been debugged, we would put them in an AzureML Registry, with more stable versioning.
 
 ## Getting the Data
 
