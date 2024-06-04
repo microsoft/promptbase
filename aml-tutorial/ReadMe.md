@@ -44,6 +44,7 @@ Finally, install the prerequisites for interacting with AzureML via:
 ```bash
 pip install -r ./requirements.txt
 ```
+then ensure you are logged into Azure (e.g. with `az login`).
 
 ## A Note on AzureML versioning
 
@@ -68,3 +69,20 @@ There are a variety of MMLU datasets, which we [obtain from Hugging Face](https:
 These are pre-split into training, test and validation files (listed in descending size).
 For the tutorial, you need to pick one (the code in `azureml` will use one split as the questions to be answered, and another for few-shot examples).
 
+Once the script completes successfully, you should see a dataset named `mmlu_<DATASET NAME>_<SPLIT>` in the AzureML portal.
+You will need this name to create the pipeline.
+
+## Running the pipeline
+
+The `run_experiment.py` script does the following:
+- Creates an AzureML environment
+- Creates the two components (which use the environment)
+- Uploads the `guidance` program
+- Creates the pipeline, and submits it for execution
+
+To run the script:
+```bash
+python ./run_experiment.py --workspace_config /path/to/config.json --other_config /path/to/other_config.json --dataset_name mmlu_<DATASET NAME>_<SPLIT> --guidance_program ./guidance_programs/zero_shot.py
+```
+Once this script completes successfully, you should see an experiment in the AzureML portal with a name like `simple_mmlu_<DATASET NAME>_<SPLIT>`, with a freshly created Pipeline run.
+If you run the script again, then a new run will be created within the same experiment.
