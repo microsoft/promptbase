@@ -1,7 +1,7 @@
 # AzureML Tutorial
 
 This directory holds the code for the introduction to AzureML presented at MLADS 2024.
-The goal is to provide a foundation for understanding the rather more complex pipelines found in the `azureml` directory of this repository.
+The goal is to provide a foundation for understanding the rather more complex pipelines found in the [`azureml/`](https://github.com/microsoft/promptbase/tree/main/azureml) directory of this repository.
 
 The tutorial implements a simple two-component pipeline, which runs a zero-shot prompt on an MMLU dataset.
 The first component runs the dataset line-by-line through a [`guidance`](https://github.com/guidance-ai/guidance) program, storing the model result as an extra key on each line.
@@ -89,11 +89,11 @@ If you run the script again, then a new run will be created within the same expe
 
 ## Comparison to the `azureml/` Code
 
-The code in this directory has been written for simplicity, leading to a number of differences to the `azureml/` directory.
-The biggest single difference is that scripts in `azureml` make use of [the Hydra package](https://hydra.cc/) for configuration management.
+The code in this directory has been written for simplicity, leading to a number of differences to the [`azureml/`](https://github.com/microsoft/promptbase/tree/main/azureml) directory.
+The biggest single difference is that scripts in `azureml/` make use of [the Hydra package](https://hydra.cc/) for configuration management.
 This is far more flexible and powerful than the couple of JSON files used here, but its complexity would obscure the AzureML portion of the code.
 
-A number of the Pipelines in `azureml` make use of sub-pipelines.
+A number of the Pipelines in `azureml/` make use of sub-pipelines.
 These further increase code flexibility and re-use, but are not needed for a basic tutorial.
 
 Finally, the `azureml/` code is more configurable.
