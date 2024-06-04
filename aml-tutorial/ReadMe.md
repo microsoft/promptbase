@@ -62,7 +62,7 @@ The `create_dataset.py` script will:
 
 The script is run with:
 ```bash
-python ./create_dataset.py --workspace_config /path/to/config.json --mmlu_dataset <DATASET NAME> --split <train/test/validation>
+python ./create_dataset.py --workspace_config /path/to/config.json --mmlu_dataset <DATASET NAME> --split <train|test|alidation>
 ```
 The `workspace_config` is the `config.json` file mentioned in the Setup section above.
 There are a variety of MMLU datasets, which we [obtain from Hugging Face](https://huggingface.co/datasets/tasksource/mmlu).
