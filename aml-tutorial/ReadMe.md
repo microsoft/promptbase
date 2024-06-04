@@ -86,3 +86,16 @@ python ./run_experiment.py --workspace_config /path/to/config.json --other_confi
 ```
 Once this script completes successfully, you should see an experiment in the AzureML portal with a name like `simple_mmlu_<DATASET NAME>_<SPLIT>`, with a freshly created Pipeline run.
 If you run the script again, then a new run will be created within the same experiment.
+
+## Comparison to the `azureml/` Code
+
+The code in this directory has been written for simplicity, leading to a number of differences to the `azureml/` directory.
+The biggest single difference is that scripts in `azureml` make use of [the Hydra package](https://hydra.cc/) for configuration management.
+This is far more flexible and powerful than the couple of JSON files used here, but its complexity would obscure the AzureML portion of the code.
+
+A number of the Pipelines in `azureml` make use of sub-pipelines.
+These further increase code flexibility and re-use, but are not needed for a basic tutorial.
+
+Finally, the `azureml/` code is more configurable.
+The code in this tutorial hard-codes several constants which are configurable in `azureml/`.
+Additionally, `azureml/` exposes the arguments which control the encoding used when the JSONL files are saved and loaded.
