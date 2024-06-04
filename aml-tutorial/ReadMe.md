@@ -58,3 +58,13 @@ The `create_dataset.py` script will:
 - Fetch the specified MMLU dataset
 - Reformat it into JSONL
 - Save it to AzureML as a Dataset
+
+The script is run with:
+```bash
+python ./create_dataset.py --workspace_config /path/to/config.json --mmlu_dataset <DATASET NAME> --split <train/test/validation>
+```
+The `workspace_config` is the `config.json` file mentioned in the Setup section above.
+There are a variety of MMLU datasets, which we [obtain from Hugging Face](https://huggingface.co/datasets/tasksource/mmlu).
+These are pre-split into training, test and validation files (listed in descending size).
+For the tutorial, you need to pick one (the code in `azureml` will use one split as the questions to be answered, and another for few-shot examples).
+
