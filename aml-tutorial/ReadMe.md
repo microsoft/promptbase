@@ -23,7 +23,7 @@ After checking out this repository, there are some setup steps to be followed.
 
 First, from the AzureML portal, download the `config.json` file for your workspace.
 This contains the subscription, resource group and name of your workspace.
-It is used to create the `MLClient` object used to interact with AzureML.
+It is used to create the [`MLClient` object](https://learn.microsoft.com/en-us/python/api/azure-ai-ml/azure.ai.ml.mlclient?view=azure-python) used to interact with AzureML.
 
 Second, create an `other_configs.json` file, based on `other_configs_example.json`.
 This is as follows:
