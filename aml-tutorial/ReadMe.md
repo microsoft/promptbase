@@ -39,3 +39,22 @@ This is as follows:
 ```
 As you can see, this contains information about the Azure OpenAI endpoint, and the compute clusters available for use.
 If you only have one, set both the `_compute` keys to the same value.
+
+Finally, install the prerequisites for interacting with AzureML via:
+```bash
+pip install -r ./requirements.txt
+```
+
+## A Note on AzureML versioning
+
+The scripts in this repository always upload new versions of AzureML entities, with the `version` set to the current epoch seconds.
+This happens whether or not the underlying code actually changed.
+We do this to ensure that the latest code is always being used; trying to figure out exactly what needs to change is error-prone and the size of the uploaded entities is negligible.
+In a real system, once things like components have been debugged, we would put them in an AzureML registry, with more stable versioning.
+
+## Getting the Data
+
+The `create_dataset.py` script will:
+- Fetch the specified MMLU dataset
+- Reformat it into JSONL
+- Save it to AzureML as a Dataset
