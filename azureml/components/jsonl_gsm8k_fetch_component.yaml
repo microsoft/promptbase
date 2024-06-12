@@ -1,0 +1,32 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+
+name: jsonl_gsm8k_fetch
+version: 0.0.1pre1
+display_name: JSONL GSM8K Fetcher
+type: command
+description: Fetches the GSM8K dataset, and formats into JSONL
+is_deterministic: true
+
+inputs:
+  output_encoding:
+    type: string
+    optional: false
+    default: utf-8-sig
+    description: Encoding format of the output datasets
+
+outputs:
+  output_dataset:
+    type: uri_folder
+    description: |
+      Folder which will contain 'train.jsonl' and 'test.jsonl'
+
+code: ./src/
+
+command: >-
+  python ./jsonl_gsm8k_fetch.py
+  --output_encoding ${{ inputs.output_encoding }}
+  --output_dataset ${{ outputs.output_dataset }}
+
+environment:
+  # Will be updated when component uploads
+  image: azureml:promptbase_aml@latest

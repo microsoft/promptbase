@@ -1,0 +1,52 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+
+name: jsonl_sample_lines
+display_name: 'JSONL Sample Lines'
+type: command
+description: |
+  Samples lines (without replacement) from a JSONL file
+is_deterministic: true
+
+inputs:
+  input_dataset:
+    type: uri_file
+    optional: false
+    description: Dataset containing JSONL input
+  input_encoding:
+    type: string
+    optional: false
+    default: utf-8-sig
+    description: Encoding format of the input dataset
+  n_samples:
+    type: integer
+    optional: false
+    description: Number of samples required
+  random_seed:
+    type: integer
+    optional: false
+    description: Seed for Pythons PRNG
+  output_encoding:
+    type: string
+    optional: false
+    default: utf-8-sig
+    description: Encoding format of the output dataset
+
+outputs:
+  output_dataset:
+    type: uri_file
+    description: Dataset containing sampled JSONL
+
+code: ./src
+
+command: >-
+  python ./jsonl_sample_lines.py
+  --input_dataset ${{ inputs.input_dataset }}
+  --input_encoding ${{ inputs.input_encoding }}
+  --n_samples ${{ inputs.n_samples }}
+  --random_seed ${{ inputs.random_seed }}
+  --output_dataset ${{ outputs.output_dataset }}
+  --output_encoding ${{ inputs.output_encoding }}
+
+environment:
+  # Will be updated when component uploads
+  image: azureml:promptbase_aml@latest

@@ -15,15 +15,18 @@ _logger.setLevel(logging.INFO)
 ALL_COMPONENTS = dict(
     jsonl_embeddings="jsonl_embeddings_aoai_component.yaml",
     jsonl_filter_correct_multiplechoice="jsonl_filter_correct_multiplechoice_component.yaml",
+    jsonl_gsm8k_fetch="jsonl_gsm8k_fetch_component.yaml",
     jsonl_guidance="jsonl_guidance_component.yaml",
     jsonl_key_filter="jsonl_key_filter_component.yaml",
     jsonl_key_rename="jsonl_key_rename_component.yaml",
     jsonl_knn_cosine_similarity="jsonl_knn_cosine_similarity_component.yaml",
     jsonl_mmlu_fetch="jsonl_mmlu_fetch_component.yaml",
     jsonl_random_examples="jsonl_random_examples_component.yaml",
+    jsonl_sample_lines="jsonl_sample_lines_component.yaml",
     jsonl_schema_checker="jsonl_schema_checker_component.yaml",
     jsonl_score_biosbias_json="jsonl_score_biosbias_json_component.yaml",
     jsonl_score_multiplechoice="jsonl_score_multiplechoice_component.yaml",
+    jsonl_score_numeric="jsonl_score_numeric_component.yaml",
     jsonl_to_json="jsonl_to_json_component.yaml",
     uri_folder_to_file="uri_folder_to_file_component.yaml",
 )
@@ -96,6 +99,12 @@ class ComponentCollector:
         self.jsonl_guidance_phi2 = create_component_from_yaml(
             self._client,
             self._base_dir / "jsonl_guidance_phi2_component.yaml",
+            environment=phi2_environment,
+            version_string=self._version_string,
+        )
+        self.jsonl_guidance_mistral7b = create_component_from_yaml(
+            self._client,
+            self._base_dir / "jsonl_guidance_mistral7b_component.yaml",
             environment=phi2_environment,
             version_string=self._version_string,
         )

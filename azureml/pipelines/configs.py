@@ -32,6 +32,11 @@ class Phi2Config:
 
 
 @dataclass
+class LlamaCppConfig:
+    compute_target: str = str()
+
+
+@dataclass
 class ZeroShotRunConfig:
     pipeline: PipelineConfig = field(default_factory=PipelineConfig)
     mmlu_dataset: str = str()
@@ -129,3 +134,14 @@ class Phi2BiosBiasJSONPipelineConfig:
     biosbias_dataset: str = str()
     json_guidance_programs: list[str] = field(default_factory=list)
     phi2_config: Phi2Config = field(default_factory=Phi2Config)
+
+
+@dataclass
+class GSM8KZeroOrFewShotConfig:
+    pipeline: PipelineConfig = field(default_factory=PipelineConfig)
+    json_guidance_programs: list[str] = field(default_factory=list)
+    llamacpp_config: LlamaCppConfig = field(default_factory=LlamaCppConfig)
+    fewshot_random_seed: int = int()
+    n_fewshot: int = int()
+    sample_random_seed: int = int()
+    n_samples: int = int()
